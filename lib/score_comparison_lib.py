@@ -166,13 +166,13 @@ def evaluate_noteNode_diff(noteNode1,noteNode2):
         Every difference will count for 1 point of dissimilarity
         WARNING!! Chords are still not supported
     """
-    if (type(noteNode1) is not NoteNode) or (type(noteNode2) is not NoteNode)  : #if we are comparing object that are not NoteNode, fail
+    if (type(noteNode1) is not nt.NoteNode) or (type(noteNode2) is not nt.NoteNode)  : #if we are comparing object that are not NoteNode, fail
         raise TypeError("The type of noteNode1 and noteNode2  is {} and {}, but it must be NoteNode".format(type(noteNode1), type(noteNode2)))
     else: #we are comparing two NoteNode
         diff = 0
         op_list = [] #the list of differences between the two notes
-        noteNode1_info = generalNote_info(noteNode1.note)
-        noteNode2_info= generalNote_info(noteNode2.note)
+        noteNode1_info = nt.generalNote_info(noteNode1.note)
+        noteNode2_info= nt.generalNote_info(noteNode2.note)
         #add if the type is different (e.g. a chord and a rest)
         if noteNode1_info["type"] != noteNode2_info["type"]: 
             diff += 1
