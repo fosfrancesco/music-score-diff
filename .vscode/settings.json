@@ -1,9 +1,9 @@
 {
-    "python.pythonPath": "C:\\Users\\fosca\\Anaconda3\\envs\\music_env\\python.exe",
-    "python.testing.pytestArgs": [
-        "test"
-    ],
+        "python.testing.pytestArgs": [
+            "."
+        ],
     "python.testing.unittestEnabled": false,
     "python.testing.nosetestsEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "python.pythonPath": "C:\\Users\\fosca\\Anaconda3\\envs\\music_env\\python.exe"
 }

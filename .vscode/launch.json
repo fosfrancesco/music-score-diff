@@ -9,7 +9,14 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
+            "cwd": "${workspaceRoot}",
+            "env": {
+                "PYTHONPATH": "${workspaceRoot};${env.PYTHONPATH}"
+            },
+            "envFile": "${workspaceRoot}/.env",
             "console": "integratedTerminal",
-        }
+            "pythonPath": "${config:python.pythonPath}",
+        },
+        
     ]
 }

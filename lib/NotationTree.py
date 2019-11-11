@@ -409,18 +409,18 @@ class ScoreTrees:
             score {[music21 score]} a music21 score
         """
         self.part_list = [] #contains a FullNoteTree for each measure
-        print("#parts = {}".format(len(score.parts)))
+    #    print("#parts = {}".format(len(score.parts)))
         for part_index, part in enumerate(score.parts.stream()):
-            print("#measure for part {} = {}".format(part_index, len(part.getElementsByClass('Measure'))))
+    #        print("#measure for part {} = {}".format(part_index, len(part.getElementsByClass('Measure'))))
             tree_part = [] #tree part is a list of tree measures
             for measure_index, measure in enumerate(part.getElementsByClass('Measure')):
                 tree_measure = [] #measure is a list of voices (each represented by a FNT)
                 if len(measure.voices) == 0:  # there is a single Voice ( == for the library there are no voices)
-                    print("Part {}, measure {}".format(part_index,measure_index))
+    #                print("Part {}, measure {}".format(part_index,measure_index))
                     tree_measure.append(FullNoteTree(measure,bar_reference=measure_index, mei_id=[note.id for note in get_notes(measure)]))
                 else:  # there are multiple voices (or an array with just one voice)
                     for voice in measure.voices:
-                        print("Part {}, measure {}".format(part_index,measure_index))
+    #                    print("Part {}, measure {}".format(part_index,measure_index))
                         tree_measure.append(FullNoteTree(voice, bar_reference=measure_index, mei_id=[note.id for note in get_notes(voice)]))
                 tree_part.append(tree_measure) #add the measures to the tree part
             self.part_list.append(tree_part) #add the complete part to part_list

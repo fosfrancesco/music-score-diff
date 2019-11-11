@@ -4,7 +4,7 @@ import lib.NotationTree as nt
 import lib.m21utils as m21u
 import copy
 
-
+#memoizers to speed up the recursive computation
 def memoize_inside_bars_diff(func):
     mem = {}
     def memoizer(original, compare_to):
@@ -13,7 +13,6 @@ def memoize_inside_bars_diff(func):
             mem[key] = func(original, compare_to)
         return copy.deepcopy(mem[key])
     return memoizer
-
 def memoize_block_diff(func):
     mem = {}
     def memoizer(original, compare_to):
@@ -22,7 +21,6 @@ def memoize_block_diff(func):
             mem[key] = func(original, compare_to)
         return copy.deepcopy(mem[key])
     return memoizer
-
 def memoize_lcs_diff(func):
     mem = {}
     def memoizer(original, compare_to):
@@ -35,15 +33,26 @@ def memoize_lcs_diff(func):
 
 # algorithm in section 3.2 
 # INPUT: two lists of notationTree hashes (one part from the first score and one part from the second score)
-# OUTPUT: the LCS of the two lists
+# OUTPUT: the allignment between the two lists
 @memoize_lcs_diff
 def lcs_diff (original, compare_to):
-    if (len(original) == 0):
+    if (len(original) == 0 and len(compare_to)== 0):
         cost = 0
         return [], cost
+    elif (len(original) == 0):
+        cost = 0
+        op_list = []
+        #iterate on the rest instead of go recurively (for performances)
+        for e in compare_to[::-1]: #reverse to simulate the recurstion
+            op_list.append(("comparetostep",None,e,0))
+        return op_list, cost
     elif (len(compare_to) == 0):
         cost = 0
-        return [], cost
+        op_list = []
+        #iterate on the rest instead of go recurively (for performances)
+        for e in original[::-1]: #reverse to simulate the recurstion
+            op_list.append(("originalstep",e,None,0))
+        return op_list, cost
     elif original[0] == compare_to[0]:
         op_list, cost = lcs_diff(original[1:], compare_to[1:]) 
         cost += 1
@@ -56,16 +65,44 @@ def lcs_diff (original, compare_to):
         #original-step
         op_list["originalstep"], cost["originalstep"]= lcs_diff(original[1:], compare_to) 
         cost["originalstep"]+= 0
-        op_list["originalstep"].append(("originalstep",original[0], None, 1))
+        op_list["originalstep"].append(("originalstep",original[0], None, 0))
         #compare_to-step
         op_list["comparetostep"], cost["comparetostep"]= lcs_diff(original, compare_to[1:])
         cost["comparetostep"] += 0
-        op_list["comparetostep"].append(("comparetostep",None, compare_to[0], 1))
+        op_list["comparetostep"].append(("comparetostep",None, compare_to[0], 0))
         
         #compute the maximum of the possibilities
         max_key = max(cost, key=cost.get)
         out = op_list[max_key], cost[max_key]
         return out
+
+
+# get the list of non common subsequence from the algorithm lcs_diff
+# that will be used to proceed further
+def non_common_subsequences(original,compare_to):
+    #get the list of operations
+    op_list, cost = lcs_diff(original,compare_to)
+    #retrieve the non common subsequences
+    non_common_subsequences= []
+    non_common_subsequences.append({"original":[],"compare_to":[]})
+    ind = 0
+    for op in op_list[::-1]:
+        if op[0] == "equal":
+            non_common_subsequences.append({"original":[],"compare_to":[]})
+            ind +=1
+        elif op[0] == "originalstep":
+            non_common_subsequences[ind]["original"].append(op[1])
+        elif op[0] == "comparetostep":
+            non_common_subsequences[ind]["compare_to"].append(op[2])
+    #remove the empty dict from the list
+    non_common_subsequences = [s for s in non_common_subsequences if s!={"original":[],"compare_to":[]} ]
+    return non_common_subsequences
+
+
+            
+
+
+        
 
 
 @memoize_block_diff

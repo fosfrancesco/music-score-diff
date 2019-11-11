@@ -1,1 +1,9 @@
-[]
+[
+  "test_nt.py::test_scoretree1",
+  "test_scl.py::test_non_common_subsequences1",
+  "test_scl.py::test_non_common_subsequences2",
+  "test_scl.py::test_non_common_subsequences3",
+  "test_scl.py::test_non_common_subsequences4",
+  "test_scl.py::test_non_common_subsequences5",
+  "test_scl.py::test_non_common_subsequences6"
+]
