@@ -39,6 +39,20 @@ def generalNote_to_string(gn):
         out_string+= "*"
     return out_string
 
+def note2string(gn):
+    string = gn.nameWithOctave
+    #if it has an accident
+    if (string[1] == "#" or string[1] == "-"):
+        #check if the accident is display in the score
+        if gn.pitch.accidental.displayStatus == False:
+            #delete the accidental from the string
+            string = string[0]+string[2]
+    #add tie information
+    if gn.tie is not None and ( gn.tie.type == "stop" or gn.tie.type == "continue"):
+        string += "T" 
+    return string
+
+
 def generalNote_to_string_with_pitch(gn):
     """
     Return the NoteString with pitch, notehead number and dots.
@@ -53,11 +67,11 @@ def generalNote_to_string_with_pitch(gn):
     if gn.isRest:
         out_string += "R"
     elif gn.isChord:
-        pitches = [p.nameWithOctave for p in gn.sortDiatonicAscending().pitches]
+        pitches = [note2string(p) for p in gn.sortDiatonicAscending().notes]
         for p in pitches:
             out_string += p
     elif gn.isNote:
-        out_string += gn.nameWithOctave
+        out_string += note2string(gn)
     else:
         raise TypeError("The generalNote must be a Chord, a Rest or a Note")
 
@@ -112,30 +126,30 @@ def generalNote_info(gn):
 
 
 
-def get_ties(note_list):
-    _general_ties_list = []
-    for n in note_list:
-        if n.tie == None:
-            _general_ties_list.append(None)
-        else:
-            _general_ties_list.append(n.tie.type)
-    # keep only the information of when a note is tied to the previous
-    # (also we solve the bad notation of having a start and a not specified stop, that can happen in music21)
-    _ties_list = [False] * len(_general_ties_list)
-    for i, t in enumerate(_general_ties_list):
-        if t == 'start' and i < len(_ties_list) - 1:
-            _ties_list[i + 1] = True
-        elif t == 'continue' and i < len(_ties_list) - 1:
-            _ties_list[i + 1] = True
-            if i == 0: # we can have a continue in the first note if the tie is from the previous bar
-                _ties_list[i] = True
-        elif t == 'stop':
-            if i == 0: # we can have a stop in the first note if the tie is from the previous bar
-                _ties_list[i] = True
-            else:
-                # assert (_ties_list[i] == True) #removed to import wrong scores even if it vould be correct
-                _ties_list[i] = True
-    return _ties_list
+# def get_ties(note_list):
+#     _general_ties_list = []
+#     for n in note_list:
+#         if n.tie == None:
+#             _general_ties_list.append(None)
+#         else:
+#             _general_ties_list.append(n.tie.type)
+#     # keep only the information of when a note is tied to the previous
+#     # (also we solve the bad notation of having a start and a not specified stop, that can happen in music21)
+#     _ties_list = [False] * len(_general_ties_list)
+#     for i, t in enumerate(_general_ties_list):
+#         if t == 'start' and i < len(_ties_list) - 1:
+#             _ties_list[i + 1] = True
+#         elif t == 'continue' and i < len(_ties_list) - 1:
+#             _ties_list[i + 1] = True
+#             if i == 0: # we can have a continue in the first note if the tie is from the previous bar
+#                 _ties_list[i] = True
+#         elif t == 'stop':
+#             if i == 0: # we can have a stop in the first note if the tie is from the previous bar
+#                 _ties_list[i] = True
+#             else:
+#                 # assert (_ties_list[i] == True) #removed to import wrong scores even if it vould be correct
+#                 _ties_list[i] = True
+#     return _ties_list
 
 
 def get_types(note_list):

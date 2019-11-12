@@ -367,39 +367,6 @@ class FullNoteTree:
         return str((str(self.beams_tree), str(self.tuplets_tree)))
 
 
-class MonophonicScoreTrees:
-    def __init__(self,score):
-        """
-        Take a monophonic music21 score and store it a sequence of Full Trees
-        Arguments:
-            score {[music21 score]} a monofonic music21 score
-        Raises:
-            Exception -- [if there is more than 1 part]
-            Exception -- [if the part has more than 1 voice]
-        """
-        self.measuresTrees = [] #contains a FullNoteTree for each measure
-        if len(score.parts) !=1: #check that the score have just one part
-            raise Exception("The score have more than one part")
-        for measure_index, measure in enumerate(score.parts[0].getElementsByClass('Measure')):
-            if len(measure.voices) == 0:  # there is a single Voice ( == for the library there are no voices)
-                self.measuresTrees.append(FullNoteTree(measure,bar_reference=measure_index, mei_id=[note.id for note in get_notes(measure)]))
-            else:  # there are multiple voices (or an array with just one voice)
-                if len(measure.voices) !=1:
-                    raise Exception("The part 1 has more than one voice")
-                for voice in measure.voices:
-                    self.measuresTrees.append(FullNoteTree(voice, bar_reference=measure_index, mei_id=[note.id for note in get_notes(voice)]))
-
-    def __eq__(self,other): 
-        if not isinstance(other, MonophonicScoreTrees):
-            return False
-        else:
-            if len(self.measuresTrees)!= len(other.measuresTrees): #chek if they have the same number of measures
-                return False
-            for fnt in zip (self.measuresTrees,other.measuresTrees): #check if FullNoteTree are the same for each bar
-                if fnt[0] != fnt[1]:
-                    return False
-            return True
-
 class ScoreTrees:
     def __init__(self,score):
         """
@@ -435,26 +402,3 @@ class ScoreTrees:
     #             if fnt[0] != fnt[1]:
     #                 return False
     #         return True
-
-class ScoreTrees_single_voice:
-    def __init__(self,score):
-        """
-        Take a music21 score and store it a sequence of Full Trees
-        The hierarchy is "score -> parts ->measures -> voices -> notes"
-        Arguments:
-            score {[music21 score]} a music21 score
-        """
-        self.part_list = [] #contains a FullNoteTree for each measure
-        print("#parts = {}".format(len(score.parts)))
-        for part_index, part in enumerate(score.parts.stream()):
-            print("#measure for part {} = {}".format(part_index, len(part.getElementsByClass('Measure'))))
-            tree_part = [] #tree part is a list of single voices measures (each represented by a FNT)
-            for measure_index, measure in enumerate(part.getElementsByClass('Measure')):
-                if len(measure.voices) == 0:  # there is a single Voice ( == for the library there are no voices)
-                    print("Part {}, measure {}".format(part_index,measure_index))
-                    tree_part.append(FullNoteTree(measure,bar_reference=measure_index, mei_id=[note.id for note in get_notes(measure)]))
-                else:  # there are multiple voices (or an array with just one voice)
-                    for voice in measure.voices[0:1]:
-                        print("Part {}, measure {}".format(part_index,measure_index))
-                        tree_part.append(FullNoteTree(voice, bar_reference=measure_index, mei_id=[note.id for note in get_notes(voice)]))
-            self.part_list.append(tree_part) #add the complete part to part_list

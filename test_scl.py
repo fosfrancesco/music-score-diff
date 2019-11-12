@@ -42,6 +42,27 @@ def test_non_common_subsequences5():
 
 def test_non_common_subsequences6():
     #import scores
+    score1_path = Path("test_scores/polyphonic_score_1a.mei")
+    with open(score1_path, 'r') as f:
+        mei_string = f.read()
+        conv = m21.mei.MeiToM21Converter(mei_string)
+        score1 = conv.run()
+    score2_path = Path("test_scores/polyphonic_score_1b.mei")
+    with open(score2_path, 'r') as f:
+        mei_string = f.read()
+        conv = m21.mei.MeiToM21Converter(mei_string)
+        score2 = conv.run()
+    #build ScoreTrees
+    score_tree1 = nt.ScoreTrees(score1)
+    score_tree2 = nt.ScoreTrees(score2)
+    #compute the non common_subsequences for part 0
+    part = 0
+    non_common_subsequences = scl.non_common_subsequences(score_tree1.part_list[part], score_tree2.part_list[part])
+    assert(len(non_common_subsequences)==2)
+
+
+def test_non_common_subsequences7():
+    #import scores
     score1_path = Path("test_scores/monophonic_score_1a.mei")
     with open(score1_path, 'r') as f:
         mei_string = f.read()
@@ -55,10 +76,39 @@ def test_non_common_subsequences6():
     #build ScoreTrees
     score_tree1 = nt.ScoreTrees(score1)
     score_tree2 = nt.ScoreTrees(score2)
-    #compute the non common_subsequences
+    #compute the non common_subsequences for part 0
     part = 0
     non_common_subsequences = scl.non_common_subsequences(score_tree1.part_list[part], score_tree2.part_list[part])
-    assert(1 == 1)
+    expected_non_common1 = {
+        "original": [score_tree1.part_list[0][1]],
+        "compare_to": [score_tree2.part_list[0][1]]
+    }
+    expected_non_common2 = {
+        "original": [score_tree1.part_list[0][5],score_tree1.part_list[0][6],score_tree1.part_list[0][7],score_tree1.part_list[0][8]],
+        "compare_to": [score_tree2.part_list[0][5],score_tree2.part_list[0][6],score_tree2.part_list[0][7]]
+    }
+    assert(len(non_common_subsequences)==2)
+    assert(non_common_subsequences[0] == expected_non_common1)
+    assert(non_common_subsequences[1] == expected_non_common2)    
 
 
+# def test_blick_diff1():
+#     score1_path = Path("test_scores/monophonic_score_1a.mei")
+#     with open(score1_path, 'r') as f:
+#         mei_string = f.read()
+#         conv = m21.mei.MeiToM21Converter(mei_string)
+#         score1 = conv.run()
+#     score2_path = Path("test_scores/monophonic_score_1b.mei")
+#     with open(score2_path, 'r') as f:
+#         mei_string = f.read()
+#         conv = m21.mei.MeiToM21Converter(mei_string)
+#         score2 = conv.run()
+#     #build ScoreTrees
+#     score_tree1 = nt.ScoreTrees(score1)
+#     score_tree2 = nt.ScoreTrees(score2)
+#     #compute the sequences of beaming tree
+#     to complete!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# #   compute the blockdiff between all the bars (just for test, in practise we will run on non common subseq)
+#     op_list, cost = scl.block_diff(seq1,seq2)
+#     assert(1==1)
 
