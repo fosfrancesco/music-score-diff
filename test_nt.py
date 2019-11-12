@@ -73,3 +73,5 @@ def test_ties1():
     #number of voices for each measure in part 0
     for m in score_trees1.part_list[0]:
         assert(len(m)==1)
+    expected_tree_repr = "(([E4]4,([E4T]4,[D4]4)),([C4,E4]4,([C4T]4,[D4]4)),[E4,G4,C5]4,([E4]4,[F4]4))"
+    assert(str(score_trees1.part_list[0][0][0].beams_tree) == expected_tree_repr )

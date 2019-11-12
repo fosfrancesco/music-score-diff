@@ -39,18 +39,21 @@ def generalNote_to_string(gn):
         out_string+= "*"
     return out_string
 
-def note2string(gn):
-    string = gn.nameWithOctave
-    #if it has an accident
-    if (string[1] == "#" or string[1] == "-"):
-        #check if the accident is display in the score
-        if gn.pitch.accidental.displayStatus == False:
-            #delete the accidental from the string
-            string = string[0]+string[2]
+
+def note2tuple(note):
+    #pitch name and octave
+    note_pitch = note.pitch.name[0] + str(note.pitch.octave)
+    #if it has an accident. Problem: what if it is hidden?
+    if note.pitch.accidental == None:
+        note_accidental = "None"
+    else: 
+        note_accidental = note.pitch.accidental.name
     #add tie information
-    if gn.tie is not None and ( gn.tie.type == "stop" or gn.tie.type == "continue"):
-        string += "T" 
-    return string
+    if note.tie is not None and ( note.tie.type == "stop" or note.tie.type == "continue"):
+        note_tie = True
+    else:
+        note_tie = False
+    return (note_pitch, note_accidental, note_tie)
 
 
 def generalNote_to_string_with_pitch(gn):

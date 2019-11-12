@@ -92,23 +92,21 @@ def test_non_common_subsequences7():
     assert(non_common_subsequences[1] == expected_non_common2)    
 
 
-# def test_blick_diff1():
-#     score1_path = Path("test_scores/monophonic_score_1a.mei")
-#     with open(score1_path, 'r') as f:
-#         mei_string = f.read()
-#         conv = m21.mei.MeiToM21Converter(mei_string)
-#         score1 = conv.run()
-#     score2_path = Path("test_scores/monophonic_score_1b.mei")
-#     with open(score2_path, 'r') as f:
-#         mei_string = f.read()
-#         conv = m21.mei.MeiToM21Converter(mei_string)
-#         score2 = conv.run()
-#     #build ScoreTrees
-#     score_tree1 = nt.ScoreTrees(score1)
-#     score_tree2 = nt.ScoreTrees(score2)
-#     #compute the sequences of beaming tree
-#     to complete!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# #   compute the blockdiff between all the bars (just for test, in practise we will run on non common subseq)
-#     op_list, cost = scl.block_diff(seq1,seq2)
-#     assert(1==1)
+def test_block_diff1():
+    score1_path = Path("test_scores/monophonic_score_1a.mei")
+    with open(score1_path, 'r') as f:
+        mei_string = f.read()
+        conv = m21.mei.MeiToM21Converter(mei_string)
+        score1 = conv.run()
+    score2_path = Path("test_scores/monophonic_score_1b.mei")
+    with open(score2_path, 'r') as f:
+        mei_string = f.read()
+        conv = m21.mei.MeiToM21Converter(mei_string)
+        score2 = conv.run()
+    #build ScoreTrees
+    score_tree1 = nt.ScoreTrees(score1)
+    score_tree2 = nt.ScoreTrees(score2)
+#   compute the blockdiff between all the bars (just for test, in practise we will run on non common subseq)
+    op_list, cost = scl.block_diff(score_tree1.measures_from_part(0),score_tree2.measures_from_part(0))
+    assert(1==1)
 

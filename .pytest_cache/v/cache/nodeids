@@ -9,5 +9,10 @@
   "test_scl.py::test_non_common_subsequences4",
   "test_scl.py::test_non_common_subsequences5",
   "test_scl.py::test_non_common_subsequences6",
-  "test_scl.py::test_non_common_subsequences7"
+  "test_scl.py::test_non_common_subsequences7",
+  "test_scl.py::test_block_diff1",
+  "test_utils.py::test_note2tuple1",
+  "test_utils.py::test_note2tuple2",
+  "test_utils.py::test_note2tuple3",
+  "test_utils.py::test_note2tuple4"
 ]

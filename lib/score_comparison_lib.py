@@ -110,10 +110,10 @@ def block_diff (original, compare_to):
     if len(original) == 0 and len(compare_to) == 0:
         return [("empty",original,compare_to,0)], 0
     elif (len(original) == 0):
-        cost = sum([tree.subtree_size() for tree in compare_to])
+        cost = sum([tree.subtree_size() for voice in compare_to for tree in voice])
         return [("blockins",original,compare_to,cost)], cost
     elif (len(compare_to) == 0):
-        cost = sum([tree.subtree_size() for tree in original])
+        cost = sum([tree.subtree_size() for voice in original for tree in voice])
         return [("blockdel",original,compare_to,cost)], cost
     else: 
         #compute the cost and the op_list for the many possibilities of recursion
@@ -121,21 +121,33 @@ def block_diff (original, compare_to):
         op_list = {}
         #del-bar
         op_list["delbar"], cost["delbar"]= block_diff(original[1:], compare_to) 
-        cost["delbar"]+= original[0].subtree_size()
-        op_list["delbar"].append(("delbar",original[0], None, original[0].subtree_size()))
+        cost["delbar"]+= sum([voice.subtree_size() for voice in original[0]])
+        op_list["delbar"].append(("delbar",original[0], None, sum([voice.subtree_size() for voice in original[0]])))
         #ins-bar
         op_list["insbar"], cost["insbar"]= block_diff(original, compare_to[1:])
-        cost["insbar"] += compare_to[0].subtree_size()
-        op_list["insbar"].append(("insbar",None, compare_to[0], compare_to[0].subtree_size()))
+        cost["insbar"] += sum([voice.subtree_size() for voice in compare_to[0]])
+        op_list["insbar"].append(("insbar",None, compare_to[0], sum([voice.subtree_size() for voice in compare_to[0]])))
         #edit-bar
         op_list["editbar"], cost["editbar"]= block_diff(original[1:], compare_to[1:])
         if original[0] == compare_to[0]: #to avoid perform the inside_bars_diff if it's not needed
             inside_bar_op_list = []
             inside_bar_cost = 0
         else: 
-            inside_bar_op_list, inside_bar_cost = inside_bars_diff(original[0].beams_tree.root.children, compare_to[0].beams_tree.root.children) 
-            #############to update with also the tuplet trees##########################
-            ##########################################################################
+            #consider all possible voice couples (one from score1 and one from score2)
+            possible_couples = [(v1,v2) for v1 in original[0] for v2 in compare_to[0]]
+            #compute the cost for all couples
+            inside_bar_op_list_couples = []
+            inside_bar_cost_couples = []
+            for c in possible_couples:
+                inside_bar_op_list_temp, inside_bar_cost_temp = inside_bars_diff(c[0].beams_tree.root.children, c[1].beams_tree.root.children) 
+                #############to update with also the tuplet trees##########################
+                ##########################################################################
+                inside_bar_op_list_couples.append(inside_bar_op_list_temp)
+                inside_bar_cost_couples.append(inside_bar_cost_temp)
+            #select the couple that yield the minimum cost
+            min_index = inside_bar_cost_couples.index(min(inside_bar_cost_couples))
+            inside_bar_op_list = inside_bar_op_list_couples[min_index]
+            inside_bar_cost = inside_bar_cost_couples[min_index]
         cost["editbar"] += inside_bar_cost
         op_list["editbar"].append(("editbar",original[0], compare_to[0], inside_bar_cost))
         op_list["editbar"].extend(inside_bar_op_list)
@@ -208,27 +220,23 @@ def evaluate_noteNode_diff(noteNode1,noteNode2):
     else: #we are comparing two NoteNode
         diff = 0
         op_list = [] #the list of differences between the two notes
-        noteNode1_info = nt.generalNote_info(noteNode1.note)
-        noteNode2_info= nt.generalNote_info(noteNode2.note)
-        #add if the type is different (e.g. a chord and a rest)
-        if noteNode1_info["type"] != noteNode2_info["type"]: 
+        noteNode1_info = noteNode1.music_notation_repr
+        noteNode2_info= noteNode2.music_notation_repr
+        TO IMPLEMENT THE EDIT FOR NOTES AND THEN CHANGE THE DICT TO NORMAL LIST INDEX
+        # add for the pitches
+        if noteNode1_info[0][0][0] != noteNode2_info["pitches"][0][0]: #if the note pitch is different
             diff += 1
-            op_list.append(("typeedit",noteNode1,noteNode1,1))
-        else: #compute info about the pitch only if the type is the same
-            # add for the pitches
-            if noteNode1_info["pitches"][0][0] != noteNode2_info["pitches"][0][0]: #if the note pitch is different
-                diff += 1
-                op_list.append(("pitch",noteNode1,noteNode2,1))
-            if noteNode1_info["pitches"][0][1] != noteNode2_info["pitches"][0][1]: #if the accident is different
-                diff += 1
-                if noteNode1_info["pitches"][0][1] is None:
-                    assert noteNode2_info["pitches"][0][1] is not None
-                    op_list.append(("accidentins",None,noteNode2,1))
-                elif noteNode2_info["pitches"][0][1] is None:
-                    assert noteNode1_info["pitches"][0][1] is not None
-                    op_list.append(("accidentdel",noteNode1,None,1))
-                else: #a different tipe of alteration is present
-                    op_list.append(("accidentedit",noteNode1,noteNode2,1))
+            op_list.append(("pitch",noteNode1,noteNode2,1))
+        if noteNode1_info["pitches"][0][1] != noteNode2_info["pitches"][0][1]: #if the accident is different
+            diff += 1
+            if noteNode1_info["pitches"][0][1] is None:
+                assert noteNode2_info["pitches"][0][1] is not None
+                op_list.append(("accidentins",None,noteNode2,1))
+            elif noteNode2_info["pitches"][0][1] is None:
+                assert noteNode1_info["pitches"][0][1] is not None
+                op_list.append(("accidentdel",noteNode1,None,1))
+            else: #a different tipe of alteration is present
+                op_list.append(("accidentedit",noteNode1,noteNode2,1))
         #add for the notehead
         if noteNode1_info["noteHead"] != noteNode2_info["noteHead"]: #add for the notehead
             diff += 1
