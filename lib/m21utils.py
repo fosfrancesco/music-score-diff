@@ -56,6 +56,22 @@ def note2tuple(note):
     return (note_pitch, note_accidental, note_tie)
 
 
+def pitch_size(pitch):
+    """Compute the size of a pitch. 
+    Arguments:
+        pitch {[triple]} -- a triple (pitchname,accidental,tie)
+    """
+    size = 0
+    #add for the pitchname
+    size +=1
+    #add for the accidental
+    if pitch[1] != "None":
+        size+=1
+    #add for the tie
+    if pitch[2]:
+        size +=1
+    return size
+
 def generalNote_to_string_with_pitch(gn):
     """
     Return the NoteString with pitch, notehead number and dots.

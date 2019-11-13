@@ -1,7 +1,8 @@
 # from music21 import *
-from lib.m21utils import get_enhance_beamings, get_notes, get_tuplets_type, get_tuplets_info, generalNote_to_string, generalNote_to_string_with_pitch, generalNote_info, note2tuple
-from fractions import Fraction
+import lib.m21utils as m21u
 import music21 as m21
+from fractions import Fraction
+
 
 #Digraph and the show() function are not useful for the website, so they are commented to reduce the dependencies
 from graphviz import Digraph
@@ -24,7 +25,7 @@ class AnnotatedNote:
         Return the string representation of the notehead
         """
         #retrieve the notehead (or rest) type and dots
-        out_string = generalNote_to_string_with_pitch(self.note)
+        out_string = m21u.generalNote_to_string_with_pitch(self.note)
         #now add the tie information
         return out_string
 
@@ -168,9 +169,9 @@ class NoteNode(Node):
         if self.general_note.isRest:
             pitches = [("R","None",False)] #accidental and tie are automaticaly set for rests
         elif self.general_note.isChord:
-            pitches = [note2tuple(p) for p in self.general_note.sortDiatonicAscending().notes]
+            pitches = [m21u.note2tuple(p) for p in self.general_note.sortDiatonicAscending().notes]
         elif self.general_note.isNote:
-            pitches = [note2tuple(self.general_note)]
+            pitches = [m21u.note2tuple(self.general_note)]
         else:
             raise TypeError("The generalNote must be a Chord, a Rest or a Note")
         #note head
@@ -186,9 +187,14 @@ class NoteNode(Node):
     
     def subtree_size(self):
         """
-        Return 1 since the note node cannot have children
+        Return the number of elements in the general-note
         """
-        size = 1
+        size = 0
+        #add for the pitches
+        for pitch in self.music_notation_repr[0]:
+            size += m21u.pitch_size(pitch)
+        #add for the dots
+        size+= self.music_notation_repr[2]
         return size
 
     def to_string(self):
@@ -228,13 +234,13 @@ class NoteTree:
         self.tree_type = tree_type
         self.duration_initialized = False
         if measure is not None:
-            self.note_list = get_notes(measure)
+            self.note_list = m21u.get_notes(measure)
             if tree_type == 'beams':
-                self.en_beam_list = get_enhance_beamings(self.note_list) #beams and type (type for note shorter than quarter notes)
+                self.en_beam_list = m21u.get_enhance_beamings(self.note_list) #beams and type (type for note shorter than quarter notes)
                 #create a list of notes with beaming information attached
                 self.annot_notes = []
                 #create a fake tuple info in order to assign names
-                self.tuple_info = get_enhance_beamings(self.note_list)
+                self.tuple_info = m21u.get_enhance_beamings(self.note_list)
                 for i in range(len(self.tuple_info)):
                     for ii in range(len(self.tuple_info[i])):
                         self.tuple_info[i][ii] = ""
@@ -242,8 +248,8 @@ class NoteTree:
                     self.annot_notes.append(AnnotatedNote(n,self.en_beam_list[i],tuple_info = self.tuple_info[i]))
                 self._recursive_tree_generation(self.annot_notes,self.root,0)
             elif tree_type == 'tuplets':
-                self.tuplet_list = get_tuplets_type(self.note_list) #corrected tuplets (with "start" and "continue")
-                self.tuple_info = get_tuplets_info(self.note_list)
+                self.tuplet_list = m21u.get_tuplets_type(self.note_list) #corrected tuplets (with "start" and "continue")
+                self.tuple_info = m21u.get_tuplets_info(self.note_list)
                 # create a list of notes with ties and tuplets information attached
                 self.annot_notes = []
                 for i, n in enumerate(self.note_list):
@@ -411,11 +417,11 @@ class ScoreTrees:
                 tree_measure = [] #measure is a list of voices (each represented by a FNT)
                 if len(measure.voices) == 0:  # there is a single Voice ( == for the library there are no voices)
     #                print("Part {}, measure {}".format(part_index,measure_index))
-                    tree_measure.append(FullNoteTree(measure,bar_reference=measure_index, mei_id=[note.id for note in get_notes(measure)]))
+                    tree_measure.append(FullNoteTree(measure,bar_reference=measure_index, mei_id=[note.id for note in m21u.get_notes(measure)]))
                 else:  # there are multiple voices (or an array with just one voice)
                     for voice in measure.voices:
     #                    print("Part {}, measure {}".format(part_index,measure_index))
-                        tree_measure.append(FullNoteTree(voice, bar_reference=measure_index, mei_id=[note.id for note in get_notes(voice)]))
+                        tree_measure.append(FullNoteTree(voice, bar_reference=measure_index, mei_id=[note.id for note in m21u.get_notes(voice)]))
                 tree_part.append(tree_measure) #add the measures to the tree part
             self.part_list.append(tree_part) #add the complete part to part_list
         

@@ -2,6 +2,7 @@ import lib.score_comparison_lib as scl
 from pathlib import Path
 import lib.NotationTree as nt
 import music21 as m21
+from collections import Counter
 
 def test_non_common_subsequences1():
     original = [1,2,3,4,5,6,7,8,9,10]
@@ -92,6 +93,75 @@ def test_non_common_subsequences7():
     assert(non_common_subsequences[1] == expected_non_common2)    
 
 
+def test_pitches_diff1():
+    n1 = m21.note.Note(nameWithOctave='D#5',quarterLength=1)
+    n2 = m21.note.Note(nameWithOctave='D--5',quarterLength=1)
+    #create noteNodes
+    parent = nt.Root()
+    noteNode1 = nt.NoteNode(parent,n1)
+    noteNode2 = nt.NoteNode(parent,n2)
+    #pitches to compare
+    pitch1 = noteNode1.music_notation_repr[0][0]
+    pitch2 = noteNode2.music_notation_repr[0][0]
+    #compare
+    op_list, cost = scl.pitches_diff(pitch1,pitch2,noteNode1,noteNode2)
+    assert(cost == 1)
+    assert(op_list == [("accidentedit",noteNode1,noteNode2,1)])
+
+def test_pitches_diff2():
+    n1 = m21.note.Note(nameWithOctave='E5',quarterLength=2)
+    n2 = m21.note.Note(nameWithOctave='D--5',quarterLength=1)
+    #create noteNodes
+    parent = nt.Root()
+    noteNode1 = nt.NoteNode(parent,n1)
+    noteNode2 = nt.NoteNode(parent,n2)
+    #pitches to compare
+    pitch1 = noteNode1.music_notation_repr[0][0]
+    pitch2 = noteNode2.music_notation_repr[0][0]
+    #compare
+    op_list, cost = scl.pitches_diff(pitch1,pitch2,noteNode1,noteNode2)
+    assert(cost == 2)
+    assert(len(op_list)==2)
+    assert(("accidentins",None,noteNode2,1) in op_list)
+    assert(("pitchnameedit", noteNode1,noteNode2,1) in op_list)
+
+def test_pitches_diff3():
+    n1 = m21.note.Note(nameWithOctave='D--5',quarterLength=2)
+    n1.tie = m21.tie.Tie('stop')
+    n2 = m21.note.Rest(quarterLength=0.5)
+    #create noteNodes
+    parent = nt.Root()
+    noteNode1 = nt.NoteNode(parent,n1)
+    noteNode2 = nt.NoteNode(parent,n2)
+    #pitches to compare
+    pitch1 = noteNode1.music_notation_repr[0][0]
+    pitch2 = noteNode2.music_notation_repr[0][0]
+    #compare
+    op_list, cost = scl.pitches_diff(pitch1,pitch2,noteNode1,noteNode2)
+    assert(cost == 3)
+    assert(len(op_list)==3)
+    assert(("accidentdel",noteNode1,None,1) in op_list)
+    assert(("pitchtypeedit", noteNode1,noteNode2,1) in op_list)
+    assert(("tiedel", noteNode1,None,1) in op_list)
+
+def test_pitches_diff4():
+    n1 = m21.note.Note(nameWithOctave='D5',quarterLength=2)
+    n1.tie = m21.tie.Tie('stop')
+    n2 = m21.note.Note(nameWithOctave='D#5',quarterLength=3)
+    n2.tie = m21.tie.Tie('stop')
+    #create noteNodes
+    parent = nt.Root()
+    noteNode1 = nt.NoteNode(parent,n1)
+    noteNode2 = nt.NoteNode(parent,n2)
+    #pitches to compare
+    pitch1 = noteNode1.music_notation_repr[0][0]
+    pitch2 = noteNode2.music_notation_repr[0][0]
+    #compare
+    op_list, cost = scl.pitches_diff(pitch1,pitch2,noteNode1,noteNode2)
+    assert(cost == 1)
+    assert(len(op_list)==1)
+    assert(("accidentins",None,noteNode2,1) in op_list)
+
 def test_block_diff1():
     score1_path = Path("test_scores/monophonic_score_1a.mei")
     with open(score1_path, 'r') as f:
@@ -109,4 +179,7 @@ def test_block_diff1():
 #   compute the blockdiff between all the bars (just for test, in practise we will run on non common subseq)
     op_list, cost = scl.block_diff(score_tree1.measures_from_part(0),score_tree2.measures_from_part(0))
     assert(1==1)
+
+
+
 
