@@ -1,6 +1,7 @@
 import lib.score_comparison_lib as scl
 from pathlib import Path
 import lib.NotationTree as nt
+import lib.NotationLinear as nlin
 import music21 as m21
 from collections import Counter
 
@@ -92,6 +93,35 @@ def test_non_common_subsequences7():
     assert(non_common_subsequences[0] == expected_non_common1)
     assert(non_common_subsequences[1] == expected_non_common2)    
 
+def test_non_common_subsequences_lin1():
+    #import scores
+    score1_path = Path("test_scores/monophonic_score_1a.mei")
+    with open(score1_path, 'r') as f:
+        mei_string = f.read()
+        conv = m21.mei.MeiToM21Converter(mei_string)
+        score1 = conv.run()
+    score2_path = Path("test_scores/monophonic_score_1b.mei")
+    with open(score2_path, 'r') as f:
+        mei_string = f.read()
+        conv = m21.mei.MeiToM21Converter(mei_string)
+        score2 = conv.run()
+    #build ScoreLinear
+    score_lin1 = nlin.ScoreLinear(score1)
+    score_lin2 = nlin.ScoreLinear(score2)
+    #compute the non common_subsequences for part 0
+    part = 0
+    non_common_subsequences = scl.non_common_subsequences(score_lin1.part_list[part], score_lin2.part_list[part])
+    expected_non_common1 = {
+        "original": [score_lin1.part_list[0][1]],
+        "compare_to": [score_lin2.part_list[0][1]]
+    }
+    expected_non_common2 = {
+        "original": [score_lin1.part_list[0][5],score_lin1.part_list[0][6],score_lin1.part_list[0][7],score_lin1.part_list[0][8]],
+        "compare_to": [score_lin2.part_list[0][5],score_lin2.part_list[0][6],score_lin2.part_list[0][7]]
+    }
+    assert(len(non_common_subsequences)==2)
+    assert(non_common_subsequences[0] == expected_non_common1)
+    assert(non_common_subsequences[1] == expected_non_common2)  
 
 def test_pitches_diff1():
     n1 = m21.note.Note(nameWithOctave='D#5',quarterLength=1)
@@ -162,7 +192,7 @@ def test_pitches_diff4():
     assert(len(op_list)==1)
     assert(("accidentins",None,noteNode2,1) in op_list)
 
-def test_block_diff1():
+def test_block_diff_tree1():
     score1_path = Path("test_scores/monophonic_score_1a.mei")
     with open(score1_path, 'r') as f:
         mei_string = f.read()
@@ -177,8 +207,62 @@ def test_block_diff1():
     score_tree1 = nt.ScoreTrees(score1)
     score_tree2 = nt.ScoreTrees(score2)
 #   compute the blockdiff between all the bars (just for test, in practise we will run on non common subseq)
-    op_list, cost = scl.block_diff(score_tree1.measures_from_part(0),score_tree2.measures_from_part(0))
-    assert(1==1)
+    op_list, cost = scl.block_diff_tree(score_tree1.measures_from_part(0),score_tree2.measures_from_part(0))
+    assert(cost==13)
+
+def test_block_diff_lin1():
+    score1_path = Path("test_scores/monophonic_score_1a.mei")
+    with open(score1_path, 'r') as f:
+        mei_string = f.read()
+        conv = m21.mei.MeiToM21Converter(mei_string)
+        score1 = conv.run()
+    score2_path = Path("test_scores/monophonic_score_1b.mei")
+    with open(score2_path, 'r') as f:
+        mei_string = f.read()
+        conv = m21.mei.MeiToM21Converter(mei_string)
+        score2 = conv.run()
+    #build ScoreTrees
+    score_lin1 = nlin.ScoreLinear(score1)
+    score_lin2 = nlin.ScoreLinear(score2)
+#   compute the blockdiff between all the bars (just for test, in practise we will run on non common subseq)
+    op_list, cost = scl.block_diff_lin(score_lin1.measures_from_part(0),score_lin2.measures_from_part(0))
+    assert(cost==8)
+
+def test_multivoice_scorelin_diff1():
+    score1_path = Path("test_scores/multivoice_score_1a.mei")
+    with open(score1_path, 'r') as f:
+        mei_string = f.read()
+        conv = m21.mei.MeiToM21Converter(mei_string)
+        score1 = conv.run()
+    score2_path = Path("test_scores/multivoice_score_1b.mei")
+    with open(score2_path, 'r') as f:
+        mei_string = f.read()
+        conv = m21.mei.MeiToM21Converter(mei_string)
+        score2 = conv.run()
+    #build ScoreTrees
+    score_lin1 = nlin.ScoreLinear(score1)
+    score_lin2 = nlin.ScoreLinear(score2)
+    #compute the complete score diff
+    op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
+    assert(cost==8)
+
+def test_complete_scorelin_diff1():
+    score1_path = Path("test_scores/monophonic_score_1a.mei")
+    with open(score1_path, 'r') as f:
+        mei_string = f.read()
+        conv = m21.mei.MeiToM21Converter(mei_string)
+        score1 = conv.run()
+    score2_path = Path("test_scores/monophonic_score_1b.mei")
+    with open(score2_path, 'r') as f:
+        mei_string = f.read()
+        conv = m21.mei.MeiToM21Converter(mei_string)
+        score2 = conv.run()
+    #build ScoreTrees
+    score_lin1 = nlin.ScoreLinear(score1)
+    score_lin2 = nlin.ScoreLinear(score2)
+    #compute the complete score diff
+    op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
+    assert(cost==8)
 
 
 

@@ -87,7 +87,7 @@ class Node:
     def subtree_size(self):
         """
         Return the size (number of nodes) of the subtree under the node (taking into accunt the node)
-        This class is override in NoteNode to make the recursion stop
+        This class is override in NoteNode to make the recursion stop and in Root to not count the root
         """
         size = 1
         for c in self.get_children():
@@ -135,6 +135,16 @@ class Root(Node):
 
     def get_parent(self):
         raise TypeError('Root nodes have no parent')
+
+    def subtree_size(self):
+        """
+        Return the size (number of nodes) of the subtree under the node (taking into accunt the node)
+        We don't add 1 for the root node
+        """
+        size = 0
+        for c in self.get_children():
+            size+=c.subtree_size()
+        return size
 
 
 class InternalNode(Node):
