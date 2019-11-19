@@ -5,7 +5,7 @@
     <encoding>
       <software>Finale 2014 for Windows</software>
       <software>Dolet Light for Finale 2014</software>
-      <encoding-date>2019-11-18</encoding-date>
+      <encoding-date>2019-11-19</encoding-date>
       <supports element="accidental" type="yes"/>
       <supports element="beam" type="yes"/>
       <supports element="stem" type="yes"/>
@@ -55,7 +55,7 @@
   </part-list>
   <!--=========================================================-->
   <part id="P1">
-    <measure number="1" width="479">
+    <measure number="1" width="476">
       <print>
         <system-layout>
           <system-margins>
@@ -91,7 +91,7 @@
         <type>quarter</type>
         <stem default-y="-55">down</stem>
       </note>
-      <note default-x="183">
+      <note default-x="182">
         <pitch>
           <step>G</step>
           <octave>4</octave>
@@ -101,7 +101,7 @@
         <type>quarter</type>
         <stem default-y="5.5">up</stem>
       </note>
-      <note default-x="281">
+      <note default-x="280">
         <pitch>
           <step>D</step>
           <octave>5</octave>
@@ -111,7 +111,7 @@
         <type>quarter</type>
         <stem default-y="-45">down</stem>
       </note>
-      <note default-x="380">
+      <note default-x="378">
         <pitch>
           <step>B</step>
           <octave>4</octave>
@@ -123,8 +123,8 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="2" width="504">
-      <note default-x="13">
+    <measure number="2" width="507">
+      <note default-x="17">
         <pitch>
           <step>G</step>
           <octave>5</octave>
@@ -134,7 +134,7 @@
         <type>half</type>
         <stem default-y="34">up</stem>
       </note>
-      <note default-x="266">
+      <note default-x="269">
         <pitch>
           <step>F</step>
           <octave>5</octave>
@@ -147,7 +147,7 @@
       <backup>
         <duration>8</duration>
       </backup>
-      <note default-x="13">
+      <note default-x="16">
         <pitch>
           <step>G</step>
           <octave>4</octave>
@@ -158,7 +158,7 @@
         <stem default-y="-65">down</stem>
         <beam number="1">begin</beam>
       </note>
-      <note default-x="76">
+      <note default-x="79">
         <pitch>
           <step>A</step>
           <octave>4</octave>
@@ -169,7 +169,7 @@
         <stem default-y="-63">down</stem>
         <beam number="1">continue</beam>
       </note>
-      <note default-x="140">
+      <note default-x="142">
         <pitch>
           <step>B</step>
           <octave>4</octave>
@@ -180,7 +180,7 @@
         <stem default-y="-62">down</stem>
         <beam number="1">continue</beam>
       </note>
-      <note default-x="202">
+      <note default-x="206">
         <pitch>
           <step>C</step>
           <octave>5</octave>
@@ -195,7 +195,7 @@
           <tied orientation="under" type="start"/>
         </notations>
       </note>
-      <note default-x="266">
+      <note default-x="269">
         <pitch>
           <step>C</step>
           <octave>5</octave>
@@ -210,7 +210,7 @@
           <tied type="stop"/>
         </notations>
       </note>
-      <note default-x="329">
+      <note default-x="332">
         <pitch>
           <step>A</step>
           <octave>4</octave>
@@ -221,7 +221,7 @@
         <stem default-y="-60">down</stem>
         <beam number="1">end</beam>
       </note>
-      <note default-x="392">
+      <note default-x="395">
         <pitch>
           <step>G</step>
           <octave>4</octave>
@@ -230,6 +230,18 @@
         <voice>2</voice>
         <type>quarter</type>
         <stem default-y="-59">down</stem>
+      </note>
+      <backup>
+        <duration>8</duration>
+      </backup>
+      <note default-x="16">
+        <pitch>
+          <step>C</step>
+          <octave>3</octave>
+        </pitch>
+        <duration>8</duration>
+        <voice>3</voice>
+        <type>whole</type>
       </note>
       <barline location="right">
         <bar-style>light-heavy</bar-style>

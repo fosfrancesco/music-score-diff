@@ -565,3 +565,48 @@ def complete_scorelin_diff(score_lin1,score_lin2):
             cost_total+=cost_block
     return op_list_total, cost_total
 
+def voices_coupling_recursive(original, compare_to):
+    """compare all the possible voices permutations, considering also deletion and insertion (equation on office lens)
+    original [list] -- a list of VoiceLinear
+    compare_to [list] -- a list of VoiceLinear
+    """
+    if (len(original) == 0 and len(compare_to) == 0): #stop the recursion
+        return [], 0
+    elif len(original) == 0:
+        #insertion
+        op_list, cost = voices_coupling_recursive(original, compare_to[1:])
+        #add for the inserted voice
+        op_list.append(("voiceins",None, compare_to[0], compare_to[0].notation_size()))
+        return op_list, cost
+    elif len(compare_to) == 0:
+        #deletion
+        op_list, cost = voices_coupling_recursive(original[1:], compare_to)
+        #add for the deleted voice
+        op_list.append(("voicedel",original[0],None, original[0].notation_size()))
+        return op_list, cost
+    else:
+        cost= {}
+        op_list = {}
+        for i,c in enumerate(compare_to):
+            #deletion
+            op_list["voicedel"], cost["voicedel"] = voices_coupling_recursive(original[1:], compare_to)
+            op_list.extend(("voicedel",original[0], None,original[0].notation_size()))
+            cost["voicedel"] += original[0].notation_size()
+            #substitution
+            op_list["voicesub"], cost["voicesub"] = voices_coupling_recursive(original[1:], compare_to[:i] +  compare_to[i+1:])
+            if compare_to[0] != original[0]: #add the cost of the sub and the operations from inside_bar_diff
+                op_list_inside_bar, cost_inside_bar = inside_bars_diff_lin(original[0].annot_notes, c.annot_notes) #compute the distance from original[0] and compare_to[i]
+                op_list["voicesub"].extend(op_list_inside_bar)
+                cost["voicesub"] += cost_inside_bar
+        #compute the minimum of the possibilities
+        min_key = min(cost, key=cost.get)
+        out = op_list[min_key], cost[min_key]
+        return out
+
+
+
+
+    
+
+
+
