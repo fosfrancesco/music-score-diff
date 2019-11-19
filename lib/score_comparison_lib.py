@@ -195,13 +195,13 @@ def pitches_leveinsthein_diff(original, compare_to,noteNode1,noteNode2):
     elif (len(original) == 0):
         cost = m21u.pitch_size(compare_to[0])
         op_list, cost = pitches_leveinsthein_diff(original, compare_to[1:],noteNode1,noteNode2)
-        op_list.append(("inspitch",None,compare_to[0],m21u.pitch_size(compare_to[0])))
+        op_list.append(("inspitch",None,noteNode2,m21u.pitch_size(compare_to[0])))
         cost += m21u.pitch_size(compare_to[0])
         return op_list, cost
     elif (len(compare_to) == 0):
         cost = m21u.pitch_size(original[0])
         op_list, cost = pitches_leveinsthein_diff(original[1:], compare_to,noteNode1,noteNode2)
-        op_list.append(("delpitch",original[0],None,m21u.pitch_size(original[0])))
+        op_list.append(("delpitch",noteNode1,None,m21u.pitch_size(original[0])))
         cost += m21u.pitch_size(original[0])
         return op_list, cost
     else: 
@@ -211,11 +211,11 @@ def pitches_leveinsthein_diff(original, compare_to,noteNode1,noteNode2):
         #del-pitch
         op_list["delpitch"], cost["delpitch"]= pitches_leveinsthein_diff(original[1:], compare_to,noteNode1,noteNode2) 
         cost["delpitch"]+= m21u.pitch_size(original[0])
-        op_list["delpitch"].append(("delpitch",original[0], None, m21u.pitch_size(original[0])))
+        op_list["delpitch"].append(("delpitch",noteNode1, None, m21u.pitch_size(original[0])))
         #ins-pitch
         op_list["inspitch"], cost["inspitch"]= pitches_leveinsthein_diff(original, compare_to[1:],noteNode1,noteNode2)
         cost["inspitch"] += m21u.pitch_size(compare_to[0])
-        op_list["inspitch"].append(("inspitch",None, compare_to[0], m21u.pitch_size(compare_to[0])))
+        op_list["inspitch"].append(("inspitch",None, noteNode2, m21u.pitch_size(compare_to[0])))
         #edit-pitch
         op_list["editpitch"], cost["editpitch"]= pitches_leveinsthein_diff(original[1:], compare_to[1:],noteNode1,noteNode2)
         if original[0] == compare_to[0]: #to avoid perform the pitch_diff
@@ -391,21 +391,8 @@ def block_diff_lin (original, compare_to ):
             inside_bar_op_list = []
             inside_bar_cost = 0
         else: 
-            #consider all possible voice couples (one from score1 and one from score2)
-            #TODO: TO UPDATE WITH DAMERAU DISTANTE
-            possible_couples = [(v1,v2) for v1 in original[0] for v2 in compare_to[0]]
-            #compute the cost for all couples
-            inside_bar_op_list_couples = []
-            inside_bar_cost_couples = []
-            for c in possible_couples:
-                inside_bar_op_list_temp, inside_bar_cost_temp = inside_bars_diff_lin(c[0].annot_notes, c[1].annot_notes) 
-                inside_bar_op_list_couples.append(inside_bar_op_list_temp)
-                inside_bar_cost_couples.append(inside_bar_cost_temp)
-            #select the couple that yield the minimum cost
-            min_index = inside_bar_cost_couples.index(min(inside_bar_cost_couples))
-            inside_bar_op_list = inside_bar_op_list_couples[min_index]
-            inside_bar_cost = inside_bar_cost_couples[min_index]
-            #add the voice insertion/deletion for the non matching 
+            #run the voice coupling algorithm
+            inside_bar_op_list, inside_bar_cost = voices_coupling_recursive(original[0], compare_to[0])
         cost["editbar"] += inside_bar_cost
         op_list["editbar"].extend(inside_bar_op_list)
         #compute the minimum of the possibilities
@@ -551,6 +538,7 @@ def beamtuplet_leveinsthein_diff(original, compare_to,note1,note2,type):
 
 def complete_scorelin_diff(score_lin1,score_lin2):
     #for now just working with equal number of parts that are already paires
+    #TODO : extend to different number of parts
     assert(score_lin1.n_of_parts == score_lin2.n_of_parts )
     n_of_parts = score_lin1.n_of_parts
     op_list_total, cost_total = [], 0
@@ -561,7 +549,7 @@ def complete_scorelin_diff(score_lin1,score_lin2):
         #compute blockdiff
         for subseq in ncs:
             op_list_block, cost_block = block_diff_lin(subseq["original"],subseq["compare_to"])
-            op_list_total.append(op_list_block)
+            op_list_total.extend(op_list_block)
             cost_total+=cost_block
     return op_list_total, cost_total
 
@@ -577,27 +565,29 @@ def voices_coupling_recursive(original, compare_to):
         op_list, cost = voices_coupling_recursive(original, compare_to[1:])
         #add for the inserted voice
         op_list.append(("voiceins",None, compare_to[0], compare_to[0].notation_size()))
+        cost+= compare_to[0].notation_size()
         return op_list, cost
     elif len(compare_to) == 0:
         #deletion
         op_list, cost = voices_coupling_recursive(original[1:], compare_to)
         #add for the deleted voice
         op_list.append(("voicedel",original[0],None, original[0].notation_size()))
+        cost+= original[0].notation_size()
         return op_list, cost
     else:
         cost= {}
         op_list = {}
-        for i,c in enumerate(compare_to):
-            #deletion
-            op_list["voicedel"], cost["voicedel"] = voices_coupling_recursive(original[1:], compare_to)
-            op_list.extend(("voicedel",original[0], None,original[0].notation_size()))
-            cost["voicedel"] += original[0].notation_size()
+        #deletion
+        op_list["voicedel"], cost["voicedel"] = voices_coupling_recursive(original[1:], compare_to)
+        op_list["voicedel"].append(("voicedel",original[0], None,original[0].notation_size()))
+        cost["voicedel"] += original[0].notation_size()
+        for i,c in enumerate(compare_to):   
             #substitution
-            op_list["voicesub"], cost["voicesub"] = voices_coupling_recursive(original[1:], compare_to[:i] +  compare_to[i+1:])
+            op_list["voicesub"+str(i)], cost["voicesub"+str(i)] = voices_coupling_recursive(original[1:], compare_to[:i] +  compare_to[i+1:])
             if compare_to[0] != original[0]: #add the cost of the sub and the operations from inside_bar_diff
                 op_list_inside_bar, cost_inside_bar = inside_bars_diff_lin(original[0].annot_notes, c.annot_notes) #compute the distance from original[0] and compare_to[i]
-                op_list["voicesub"].extend(op_list_inside_bar)
-                cost["voicesub"] += cost_inside_bar
+                op_list["voicesub"+str(i)].extend(op_list_inside_bar)
+                cost["voicesub"+str(i)] += cost_inside_bar
         #compute the minimum of the possibilities
         min_key = min(cost, key=cost.get)
         out = op_list[min_key], cost[min_key]

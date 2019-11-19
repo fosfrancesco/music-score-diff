@@ -32,7 +32,6 @@
   "test_scl.py::test_pitches_diff2",
   "test_scl.py::test_pitches_diff3",
   "test_scl.py::test_pitches_diff4",
-  "test_scl.py::test_block_diff_tree1",
   "test_scl.py::test_block_diff_lin1",
   "test_scl.py::test_multivoice_scorelin_diff1",
   "test_scl.py::test_complete_scorelin_diff1",

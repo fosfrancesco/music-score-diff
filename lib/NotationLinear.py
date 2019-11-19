@@ -90,6 +90,9 @@ class AnnotatedNote:
                 else: raise Exception ("Incorrect tuplets type: {}".format(t))     
         return string
 
+    def get_note_id(self):
+        return [self.general_note.id]
+
 
 class VoiceLinear:
     def __init__(self, voice, bar_reference = None, mei_id = None):
@@ -128,6 +131,9 @@ class VoiceLinear:
         string = string[:-1] # delete the last comma
         string += "]"
         return string
+
+    def get_note_id(self):
+        return [an.general_note.id for an in self.annot_notes]
 
 
 
