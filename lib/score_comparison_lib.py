@@ -47,10 +47,10 @@ def memoize_lcs_diff(func):
     return memoizer
 def memoize_pitches_lev_diff(func):
     mem = {}
-    def memoizer(original, compare_to, noteNode1, noteNode2):
-        key = str(original) + str(compare_to) +str(noteNode1) + str(noteNode2)
+    def memoizer(original, compare_to, noteNode1, noteNode2, ids):
+        key = str(original) + str(compare_to) +str(noteNode1) + str(noteNode2) + str(ids)
         if key not in mem:
-            mem[key] = func(original, compare_to,noteNode1, noteNode2)
+            mem[key] = func(original, compare_to,noteNode1, noteNode2,ids)
         return copy.deepcopy(mem[key])
     return memoizer
 def memoize_beamtuplet_lev_diff(func):
@@ -184,24 +184,27 @@ def block_diff_tree (original, compare_to ):
 
 
 @memoize_pitches_lev_diff
-def pitches_leveinsthein_diff(original, compare_to,noteNode1,noteNode2):
+def pitches_leveinsthein_diff(original, compare_to,noteNode1,noteNode2, ids):
     """Compute the leveinsthein distance between two sequences of pitches
     Arguments:
         original {list} -- list of pitches
         compare_to {list} -- list of pitches
+        noteNode1 {annotatedNote} --for referencing
+        noteNode2 {annotatedNote} --for referencing
+        ids {tuple} -- a tuple of 2 elements with the indices of the notes considered
     """
     if (len(original) == 0 and len(compare_to) == 0):
         return [], 0
     elif (len(original) == 0):
         cost = m21u.pitch_size(compare_to[0])
-        op_list, cost = pitches_leveinsthein_diff(original, compare_to[1:],noteNode1,noteNode2)
-        op_list.append(("inspitch",None,noteNode2,m21u.pitch_size(compare_to[0])))
+        op_list, cost = pitches_leveinsthein_diff(original, compare_to[1:],noteNode1,noteNode2,(ids[0],ids[1]+1))
+        op_list.append(("inspitch",None,noteNode2,m21u.pitch_size(compare_to[0]),ids))
         cost += m21u.pitch_size(compare_to[0])
         return op_list, cost
     elif (len(compare_to) == 0):
         cost = m21u.pitch_size(original[0])
-        op_list, cost = pitches_leveinsthein_diff(original[1:], compare_to,noteNode1,noteNode2)
-        op_list.append(("delpitch",noteNode1,None,m21u.pitch_size(original[0])))
+        op_list, cost = pitches_leveinsthein_diff(original[1:], compare_to,noteNode1,noteNode2,(ids[0]+1,ids[1]))
+        op_list.append(("delpitch",noteNode1,None,m21u.pitch_size(original[0]),ids))
         cost += m21u.pitch_size(original[0])
         return op_list, cost
     else: 
@@ -209,20 +212,20 @@ def pitches_leveinsthein_diff(original, compare_to,noteNode1,noteNode2):
         cost= {}
         op_list = {}
         #del-pitch
-        op_list["delpitch"], cost["delpitch"]= pitches_leveinsthein_diff(original[1:], compare_to,noteNode1,noteNode2) 
+        op_list["delpitch"], cost["delpitch"]= pitches_leveinsthein_diff(original[1:], compare_to,noteNode1,noteNode2,(ids[0]+1,ids[1])) 
         cost["delpitch"]+= m21u.pitch_size(original[0])
-        op_list["delpitch"].append(("delpitch",noteNode1, None, m21u.pitch_size(original[0])))
+        op_list["delpitch"].append(("delpitch",noteNode1, None, m21u.pitch_size(original[0]),ids))
         #ins-pitch
-        op_list["inspitch"], cost["inspitch"]= pitches_leveinsthein_diff(original, compare_to[1:],noteNode1,noteNode2)
+        op_list["inspitch"], cost["inspitch"]= pitches_leveinsthein_diff(original, compare_to[1:],noteNode1,noteNode2,(ids[0],ids[1]+1))
         cost["inspitch"] += m21u.pitch_size(compare_to[0])
-        op_list["inspitch"].append(("inspitch",None, noteNode2, m21u.pitch_size(compare_to[0])))
+        op_list["inspitch"].append(("inspitch",None, noteNode2, m21u.pitch_size(compare_to[0]),ids))
         #edit-pitch
-        op_list["editpitch"], cost["editpitch"]= pitches_leveinsthein_diff(original[1:], compare_to[1:],noteNode1,noteNode2)
+        op_list["editpitch"], cost["editpitch"]= pitches_leveinsthein_diff(original[1:], compare_to[1:],noteNode1,noteNode2,(ids[0]+1,ids[1]+1))
         if original[0] == compare_to[0]: #to avoid perform the pitch_diff
             pitch_diff_op_list = []
             pitch_diff_cost = 0
         else: 
-            pitch_diff_op_list, pitch_diff_cost = pitches_diff(original[0], compare_to[0],noteNode1,noteNode2) 
+            pitch_diff_op_list, pitch_diff_cost = pitches_diff(original[0], compare_to[0],noteNode1,noteNode2,(ids[0],ids[1])) 
         cost["editpitch"] += pitch_diff_cost
         op_list["editpitch"].extend(pitch_diff_op_list)
         #compute the minimum of the possibilities
@@ -312,13 +315,14 @@ def note_note_diff(noteNode1,noteNode2):
     return op_list, cost
 
 
-def pitches_diff(pitch1,pitch2,noteNode1,noteNode2):
+def pitches_diff(pitch1,pitch2,noteNode1,noteNode2,ids):
     """compute the differences between two pitch (definition from the paper).
     a pitch consist of a tuple: pitch name (letter+number), accidental, tie.
     param : pitch1. The music_notation_repr tuple of note1
     param : pitch2. The music_notation_repr tuple of note2
     param : noteNode1. The noteNode where pitch1 belongs
     param : noteNode2. The noteNode where pitch2 belongs
+    param : ids. (id_from_note1,id_from_note2) The indices of the notes in case of a chord
     Returns:
         [list] -- the list of differences
         [int] -- the cost of diff
@@ -331,30 +335,30 @@ def pitches_diff(pitch1,pitch2,noteNode1,noteNode2):
         # TODO: select the note in a more precise way in case of a chord
         #rest to note
         if  (pitch1[0][0] == "R") != (pitch2[0][0] == "R"): #xor
-            op_list.append(("pitchtypeedit",noteNode1,noteNode2,1))       
+            op_list.append(("pitchtypeedit",noteNode1,noteNode2,1,ids))       
         else: #they are two notes
-            op_list.append(("pitchnameedit",noteNode1,noteNode2,1))
+            op_list.append(("pitchnameedit",noteNode1,noteNode2,1,ids))
     #add for the accidentals
     if pitch1[1] != pitch2[1]: #if the accidental is different
         cost += 1
         if pitch1[1] == "None":
             assert  pitch2[1] != "None"
-            op_list.append(("accidentins",None,noteNode2,1))
+            op_list.append(("accidentins",None,noteNode2,1,ids))
         elif pitch2[1] == "None":
             assert pitch1[1] != "None"
-            op_list.append(("accidentdel",noteNode1,None,1))
+            op_list.append(("accidentdel",noteNode1,None,1,ids))
         else: #a different tipe of alteration is present
-            op_list.append(("accidentedit",noteNode1,noteNode2,1))
+            op_list.append(("accidentedit",noteNode1,noteNode2,1,ids))
     #add for the ties
     if pitch1[2] != pitch2[2]: #exclusive or. Add if one is tied and not the other
         ################probably to revise for chords
         cost += 1
         if pitch1[2]:
             assert not pitch2[2]
-            op_list.append(("tiedel",noteNode1,None,1))
+            op_list.append(("tiedel",noteNode1,None,1,ids))
         elif pitch2[2]:
             assert not pitch1[2]
-            op_list.append(("tieins",None,noteNode2,1))
+            op_list.append(("tieins",None,noteNode2,1,ids))
     return op_list, cost
 
 
@@ -457,7 +461,7 @@ def annotated_note_diff(annNote1,annNote2):
         op_list_pitch, cost_pitch = [],0
     else:
         #pitches diff is computed using leveinshtein differences (they are already ordered)
-        op_list_pitch, cost_pitch = pitches_leveinsthein_diff(annNote1.pitches, annNote2.pitches,annNote1,annNote2)
+        op_list_pitch, cost_pitch = pitches_leveinsthein_diff(annNote1.pitches, annNote2.pitches,annNote1,annNote2,(0,0))
     op_list.extend(op_list_pitch)
     cost += cost_pitch
     #add for the notehead
@@ -469,9 +473,9 @@ def annotated_note_diff(annNote1,annNote2):
         dots_diff = abs(annNote1.dots- annNote2.dots) #add one for each dot
         cost += dots_diff
         if annNote1.dots > annNote2.dots:
-            op_list.append(("dotsdel",annNote1,None,dots_diff))
+            op_list.append(("dotdel",annNote1,None,dots_diff))
         else:
-            op_list.append(("dotsins",None,annNote2,dots_diff))
+            op_list.append(("dotins",None,annNote2,dots_diff))
     #add for the beamings
     if annNote1.beamings != annNote2.beamings:
         beam_op_list, beam_cost = beamtuplet_leveinsthein_diff(annNote1.beamings, annNote2.beamings,annNote1,annNote2,"beam")
@@ -479,7 +483,7 @@ def annotated_note_diff(annNote1,annNote2):
         cost += beam_cost
     #add for the tuplets
     if annNote1.tuplets != annNote2.tuplets:
-        tuplet_op_list, tuplet_cost = beamtuplet_leveinsthein_diff(annNote1.beamings, annNote2.beamings,annNote1,annNote2,"tuplet")
+        tuplet_op_list, tuplet_cost = beamtuplet_leveinsthein_diff(annNote1.tuplets, annNote2.tuplets,annNote1,annNote2,"tuplet")
         op_list.extend(tuplet_op_list)
         cost += tuplet_cost
 
@@ -517,7 +521,7 @@ def beamtuplet_leveinsthein_diff(original, compare_to,note1,note2,type):
         #del-pitch
         op_list["del"+type], cost["del"+type]= beamtuplet_leveinsthein_diff(original[1:], compare_to,note1,note2,type) 
         cost["del"+type]+= 1
-        op_list["del"+type].append(("del"+type,original[0], None, 1))
+        op_list["del"+type].append(("del"+type,note1, None, 1))
         #ins-pitch
         op_list["ins"+type], cost["ins"+type]= beamtuplet_leveinsthein_diff(original, compare_to[1:],note1,note2,type)
         cost["ins"+type] += 1

@@ -134,9 +134,9 @@ def test_pitches_diff1():
     pitch1 = noteNode1.music_notation_repr[0][0]
     pitch2 = noteNode2.music_notation_repr[0][0]
     #compare
-    op_list, cost = scl.pitches_diff(pitch1,pitch2,noteNode1,noteNode2)
+    op_list, cost = scl.pitches_diff(pitch1,pitch2,noteNode1,noteNode2,(0,0))
     assert(cost == 1)
-    assert(op_list == [("accidentedit",noteNode1,noteNode2,1)])
+    assert(op_list == [("accidentedit",noteNode1,noteNode2,1,(0,0))])
 
 def test_pitches_diff2():
     n1 = m21.note.Note(nameWithOctave='E5',quarterLength=2)
@@ -149,11 +149,11 @@ def test_pitches_diff2():
     pitch1 = noteNode1.music_notation_repr[0][0]
     pitch2 = noteNode2.music_notation_repr[0][0]
     #compare
-    op_list, cost = scl.pitches_diff(pitch1,pitch2,noteNode1,noteNode2)
+    op_list, cost = scl.pitches_diff(pitch1,pitch2,noteNode1,noteNode2,(0,0))
     assert(cost == 2)
     assert(len(op_list)==2)
-    assert(("accidentins",None,noteNode2,1) in op_list)
-    assert(("pitchnameedit", noteNode1,noteNode2,1) in op_list)
+    assert(("accidentins",None,noteNode2,1,(0,0)) in op_list)
+    assert(("pitchnameedit", noteNode1,noteNode2,1,(0,0)) in op_list)
 
 def test_pitches_diff3():
     n1 = m21.note.Note(nameWithOctave='D--5',quarterLength=2)
@@ -167,12 +167,12 @@ def test_pitches_diff3():
     pitch1 = noteNode1.music_notation_repr[0][0]
     pitch2 = noteNode2.music_notation_repr[0][0]
     #compare
-    op_list, cost = scl.pitches_diff(pitch1,pitch2,noteNode1,noteNode2)
+    op_list, cost = scl.pitches_diff(pitch1,pitch2,noteNode1,noteNode2,(0,0))
     assert(cost == 3)
     assert(len(op_list)==3)
-    assert(("accidentdel",noteNode1,None,1) in op_list)
-    assert(("pitchtypeedit", noteNode1,noteNode2,1) in op_list)
-    assert(("tiedel", noteNode1,None,1) in op_list)
+    assert(("accidentdel",noteNode1,None,1,(0,0)) in op_list)
+    assert(("pitchtypeedit", noteNode1,noteNode2,1,(0,0)) in op_list)
+    assert(("tiedel", noteNode1,None,1,(0,0)) in op_list)
 
 def test_pitches_diff4():
     n1 = m21.note.Note(nameWithOctave='D5',quarterLength=2)
@@ -187,10 +187,10 @@ def test_pitches_diff4():
     pitch1 = noteNode1.music_notation_repr[0][0]
     pitch2 = noteNode2.music_notation_repr[0][0]
     #compare
-    op_list, cost = scl.pitches_diff(pitch1,pitch2,noteNode1,noteNode2)
+    op_list, cost = scl.pitches_diff(pitch1,pitch2,noteNode1,noteNode2,(0,0))
     assert(cost == 1)
     assert(len(op_list)==1)
-    assert(("accidentins",None,noteNode2,1) in op_list)
+    assert(("accidentins",None,noteNode2,1,(0,0)) in op_list)
 
 # def test_block_diff_tree1():
 #     score1_path = Path("test_scores/monophonic_score_1a.mei")

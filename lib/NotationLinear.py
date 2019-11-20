@@ -3,7 +3,7 @@ from fractions import Fraction
 import music21 as m21
 
 class AnnotatedNote:
-    def __init__(self, general_note, enhanced_beam_list, tuple_info):
+    def __init__(self, general_note, enhanced_beam_list, tuple_list):
         """
         A class with the purpose to extend music21 GeneralNote
         :param note: the music21 generalNote
@@ -12,7 +12,7 @@ class AnnotatedNote:
         """
         self.general_note = general_note
         self.beamings = enhanced_beam_list
-        self.tuplets = tuple_info
+        self.tuplets = tuple_list
         ##compute the representaiton of NoteNode as in the paper
         #pitches is a list  of elements, each one is (pitchposition, accidental, tie)
         if self.general_note.isRest:
@@ -106,7 +106,7 @@ class VoiceLinear:
         #create a list of notes with beaming and tuplets information attached
         self.annot_notes = []
         for i, n in enumerate(self.note_list):
-                self.annot_notes.append(AnnotatedNote(n,self.en_beam_list[i],self.tuple_info[i]))
+                self.annot_notes.append(AnnotatedNote(n,self.en_beam_list[i],self.tuplet_list[i]))
         #set references for pointing at that specific measure
         self.bar_reference = bar_reference
         self.mei_id = mei_id
