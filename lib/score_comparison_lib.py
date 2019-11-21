@@ -600,7 +600,10 @@ def complete_scorelin_diff(score_lin1,score_lin2):
     return op_list_total, cost_total
 
 
-# def annotations2json():
+# def op_list2json(op_list):
+
+
+
     
 
 

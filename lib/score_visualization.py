@@ -65,6 +65,11 @@ def oplist2annotations(operations):
             assert(type(op[1])==nlin.AnnotatedNote)
             assert(len(op)==5) #the indices must be there
             annotations1.extend([{"id": id, "color": DEL_COLOR, "target": "notehead","head_id":op[4][0]} for id in op[1].get_note_id()])
+        elif op[0] == "headedit":
+            assert(type(op[1])==nlin.AnnotatedNote)
+            assert(type(op[2])==nlin.AnnotatedNote)
+            annotations1.extend([{"id": id, "color": SUB_COLOR, "target": "notehead","head_id":"all"} for id in op[1].get_note_id()])
+            annotations2.extend([{"id": id, "color": SUB_COLOR, "target": "notehead","head_id":"all"} for id in op[2].get_note_id()])
         #beam
         elif op[0] == "insbeam":
             assert(type(op[2])==nlin.AnnotatedNote)
@@ -141,10 +146,11 @@ def produce_annnot_svg(mei_file, annotations, out_path="annotated_score.svg"):
             element = svg_tree.find(".//{}[@id='{}']".format(el_dict["g"],ann["id"]))
             element.set("fill", ann["color"])
         elif ann["target"] == "notehead":
-            # try to extract the notehead
-            notehead = find_notehead(ann["id"], svg_tree, ann["head_id"])
+            # try to extract the notehead (or noteheads)
+            notehead_list = find_notehead(ann["id"], svg_tree, ann["head_id"])
             #color the notehead
-            notehead.set("fill", ann["color"])  
+            for notehead in notehead_list:
+                notehead.set("fill", ann["color"])  
         elif ann["target"] == "beam":
             stem = find_stem(ann["id"], svg_tree)
             #color the stem
@@ -205,12 +211,20 @@ def find_notehead(note_id, svg_tree,head_id):
     note = svg_tree.find(".//{}[@id='{}']".format(el_dict["g"],note_id))
     #try find the notehead (not Null if we have a single note)
     notehead = note.find("{}".format(el_dict["use"]))
-
-    if notehead is None: #we are dealing with a chord
+    if notehead is not None:
+        return [notehead]
+    else: #we are dealing with a chord
         n_list= note.findall("{}[@class='{}']".format(el_dict["g"],"note"))
-        n = n_list[head_id]
-        notehead = n.find("{}".format(el_dict["use"]))
-    return notehead
+        if head_id != "all":
+            n = n_list[head_id]
+            notehead = n.find("{}".format(el_dict["use"]))
+            return [notehead]
+        else:
+            noteheads = []
+            for n in n_list:
+                noteheads.append(n.find("{}".format(el_dict["use"])))
+            return noteheads
+
 
 def find_lce(notes_id_list, svg_tree, parent_map):
     #build the ancestor list for each note
@@ -251,12 +265,12 @@ def find_tie(note_id, svg_tree,head_id,parent_map):
         element = parent_map[element]
         if element.attrib["class"]== "measure":
             found = True
-    #find all ties in the measure
-    ties_list = element.findall("{}[@class='{}']".format(el_dict["g"],"tie"))
+    #find all ties in the measure (keep only those with the path element)
+    ties_list = [t for t in element.findall("{}[@class='{}']".format(el_dict["g"],"tie")) if t.find("{}".format(el_dict["path"])) is not None]
     #from each tie take the "path" elements inside
     paths_list = [t.find("{}".format(el_dict["path"])) for t in ties_list]
     #find the coordinates of the each path
-    coord__string_list = [path.get("d") for path in paths_list ]
+    coord__string_list = [path.get("d") for path in paths_list]
     coord_list =[]
     for path in coord__string_list:
         #take the element in position 4 and 5 that are x and y of the right part of the tie

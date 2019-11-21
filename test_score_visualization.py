@@ -195,3 +195,24 @@ def test_annotation_production8():
     sv.produce_annnot_svg(score1_path,ann1,out_path=Path("output/tie_score_2a.svg"))
     sv.produce_annnot_svg(score2_path,ann2,out_path=Path("output/tie_score_2b.svg"))
     assert(1==1)
+
+def test_annotation_production9():
+    score1_path = Path("test_scores/polyphonic_score_2a.mei")
+    with open(score1_path, 'r') as f:
+        mei_string = f.read()
+        conv = m21.mei.MeiToM21Converter(mei_string)
+        score1 = conv.run()
+    score2_path = Path("test_scores/polyphonic_score_2b.mei")
+    with open(score2_path, 'r') as f:
+        mei_string = f.read()
+        conv = m21.mei.MeiToM21Converter(mei_string)
+        score2 = conv.run()
+    #build ScoreTrees
+    score_lin1 = nlin.ScoreLinear(score1)
+    score_lin2 = nlin.ScoreLinear(score2)
+    #compute the complete score diff
+    op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
+    ann1, ann2 = sv.oplist2annotations(op_list)
+    sv.produce_annnot_svg(score1_path,ann1,out_path=Path("output/polyphonic_score_2a.svg"))
+    sv.produce_annnot_svg(score2_path,ann2,out_path=Path("output/polyphonic_score_2b.svg"))
+    assert(1==1)
