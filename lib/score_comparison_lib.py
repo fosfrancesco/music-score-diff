@@ -540,22 +540,6 @@ def beamtuplet_leveinsthein_diff(original, compare_to,note1,note2,type):
         out = op_list[min_key], cost[min_key]
         return out
 
-def complete_scorelin_diff(score_lin1,score_lin2):
-    #for now just working with equal number of parts that are already paires
-    #TODO : extend to different number of parts
-    assert(score_lin1.n_of_parts == score_lin2.n_of_parts )
-    n_of_parts = score_lin1.n_of_parts
-    op_list_total, cost_total = [], 0
-    #iterate for all parts in the score
-    for p_number in range(n_of_parts):
-        #compute non-common-subseq
-        ncs = non_common_subsequences(score_lin1.part_list[p_number], score_lin2.part_list[p_number])
-        #compute blockdiff
-        for subseq in ncs:
-            op_list_block, cost_block = block_diff_lin(subseq["original"],subseq["compare_to"])
-            op_list_total.extend(op_list_block)
-            cost_total+=cost_block
-    return op_list_total, cost_total
 
 def voices_coupling_recursive(original, compare_to):
     """compare all the possible voices permutations, considering also deletion and insertion (equation on office lens)
@@ -597,6 +581,27 @@ def voices_coupling_recursive(original, compare_to):
         out = op_list[min_key], cost[min_key]
         return out
 
+
+def complete_scorelin_diff(score_lin1,score_lin2):
+    #for now just working with equal number of parts that are already paires
+    #TODO : extend to different number of parts
+    assert(score_lin1.n_of_parts == score_lin2.n_of_parts )
+    n_of_parts = score_lin1.n_of_parts
+    op_list_total, cost_total = [], 0
+    #iterate for all parts in the score
+    for p_number in range(n_of_parts):
+        #compute non-common-subseq
+        ncs = non_common_subsequences(score_lin1.part_list[p_number], score_lin2.part_list[p_number])
+        #compute blockdiff
+        for subseq in ncs:
+            op_list_block, cost_block = block_diff_lin(subseq["original"],subseq["compare_to"])
+            op_list_total.extend(op_list_block)
+            cost_total+=cost_block
+    return op_list_total, cost_total
+
+
+# def annotations2json():
+    
 
 
 

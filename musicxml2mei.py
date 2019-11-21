@@ -27,12 +27,12 @@ def musicxml2mei(musicxml_path, out_path):
         return False
 
 
-xml_path = Path("test_scores/musicxml/tuplet_score_1b.xml")
-mei_path = Path("test_scores/tuplet_score_1b.mei")
+xml_path = Path("test_scores/musicxml/tie_score_2b.xml")
+mei_path = Path("test_scores/tie_score_2b.mei")
 musicxml2mei(xml_path, mei_path)
 
-xml_path = Path("test_scores/musicxml/tuplet_score_1a.xml")
-mei_path = Path("test_scores/tuplet_score_1a.mei")
+xml_path = Path("test_scores/musicxml/tie_score_2a.xml")
+mei_path = Path("test_scores/tie_score_2a.mei")
 musicxml2mei(xml_path, mei_path)
 
 

@@ -8,6 +8,7 @@ from collections import Counter
 import copy
 import re
 import subprocess
+import math
 
 import lib.NotationLinear as nlin
 
@@ -18,7 +19,8 @@ SUB_COLOR = "yellow"
 el_dict={
     "g": "{http://www.w3.org/2000/svg}g",
     "polygon" : "{http://www.w3.org/2000/svg}polygon",
-    "use" : "{http://www.w3.org/2000/svg}use"
+    "use" : "{http://www.w3.org/2000/svg}use",
+    "path" : "{http://www.w3.org/2000/svg}path"
 }
 
 def oplist2annotations(operations):
@@ -88,6 +90,24 @@ def oplist2annotations(operations):
         elif op[0] == "dotdel":
             assert(type(op[1])==nlin.AnnotatedNote)
             annotations1.extend([{"id": id, "color": DEL_COLOR, "target":"dot"} for id in op[1].get_note_id()])
+        #tuplets TODO
+        elif op[0] == "instuplet":
+            pass
+        elif op[0] == "deltuplet":
+            pass
+        elif op[0] == "edittuplet":
+            pass
+        elif op[0] == "instuplet":
+            pass
+        elif op[0] == "deltuplet":
+            pass
+        #ties TODO
+        elif op[0] == "tieins":
+            assert(type(op[2])==nlin.AnnotatedNote)
+            annotations2.extend([{"id": id, "color": INS_COLOR, "target":"tie","head_id":op[4][1]} for id in op[2].get_note_id()])
+        elif op[0] == "tiedel":
+            assert(type(op[1])==nlin.AnnotatedNote)
+            annotations1.extend([{"id": id, "color": DEL_COLOR, "target":"tie","head_id":op[4][0]} for id in op[1].get_note_id()])
         else:
             print("Annotation type {} not yet supported for visualization".format(op[0]))
     return annotations1, annotations2
@@ -135,13 +155,19 @@ def produce_annnot_svg(mei_file, annotations, out_path="annotated_score.svg"):
         elif ann["target"] == "accidental":
             #find accident
             accident = find_accident(ann["id"],svg_tree,ann["head_id"])
-            #color the corresponding accident
+            #color the corresponding accidental
             accident.set("fill", ann["color"])
         elif ann["target"] == "dot":
             #find dots
             dots = find_dots(ann["id"],svg_tree)
-            #color the corresponding beam
+            #color the corresponding dot
             dots.set("fill", ann["color"])
+        elif ann["target"] == "tie":
+            #find dots
+            tie, tie_line = find_tie(ann["id"],svg_tree,ann["head_id"],parent_map)
+            #color the corresponding tie
+            tie.set("fill", ann["color"])
+            tie_line.set("stroke", ann["color"])
         else:
             raise TypeError("Unsupported annotation target: {}".format(ann["target"]))
     with open(out_path, 'wb') as svg_file:
@@ -205,3 +231,41 @@ def find_lce(notes_id_list, svg_tree, parent_map):
             found = True
     lce = ancestors[0][level]
     return lce
+
+def find_tie(note_id, svg_tree,head_id,parent_map):
+    note = svg_tree.find(".//{}[@id='{}']".format(el_dict["g"],note_id))
+    #find the notehead
+    notehead = note.find("{}".format(el_dict["use"]))
+    if notehead is None: #we are dealing with a chord
+        n_list= note.findall("{}[@class='{}']".format(el_dict["g"],"note"))
+        n = n_list[head_id]
+        notehead = n.find("{}".format(el_dict["use"]))
+    #find the x and y notehead coordinates
+    x_note = int(notehead.get("x"))
+    y_note = int(notehead.get("y"))
+
+    #find the parent measure
+    element = note
+    found = False
+    while not found:   
+        element = parent_map[element]
+        if element.attrib["class"]== "measure":
+            found = True
+    #find all ties in the measure
+    ties_list = element.findall("{}[@class='{}']".format(el_dict["g"],"tie"))
+    #from each tie take the "path" elements inside
+    paths_list = [t.find("{}".format(el_dict["path"])) for t in ties_list]
+    #find the coordinates of the each path
+    coord__string_list = [path.get("d") for path in paths_list ]
+    coord_list =[]
+    for path in coord__string_list:
+        #take the element in position 4 and 5 that are x and y of the right part of the tie
+        coord_list.append(list(int(path.replace(",", " ").split()[i]) for i in [4,5])) #trick to split both on "," and " "
+    
+    #compute the pointwise distances for all the possible ties
+    distances = []
+    for coords in coord_list:
+        distances.append(math.sqrt((x_note - coords[0])**2 + (y_note - coords[1])**2)  )
+    #get the index of the minimum
+    min_index = distances.index(min(distances))
+    return ties_list[min_index], paths_list[min_index]
