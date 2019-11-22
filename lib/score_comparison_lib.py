@@ -1,6 +1,7 @@
 import json
 import operator
 import lib.NotationTree as nt
+import lib.NotationLinear as nlin
 import lib.m21utils as m21u
 import copy
 
@@ -532,7 +533,7 @@ def beamtuplet_leveinsthein_diff(original, compare_to,note1,note2,type):
             beam_diff_op_list = []
             beam_diff_cost = 0
         else: 
-            beam_diff_op_list, beam_diff_cost = [("edit"+type,original[0], compare_to[0], 1)],1
+            beam_diff_op_list, beam_diff_cost = [("edit"+type,note1, note2, 1)],1
         cost["edit"+type] += beam_diff_cost
         op_list["edit"+type].extend(beam_diff_op_list)
         #compute the minimum of the possibilities
@@ -600,7 +601,167 @@ def complete_scorelin_diff(score_lin1,score_lin2):
     return op_list_total, cost_total
 
 
-# def op_list2json(op_list):
+def op_list2json(op_list):
+    operations = []
+    for op in op_list:
+        #bar
+        if op[0] == "insbar":
+            assert(type(op[2]) == list)
+            id_list = [id for voice in op[2] for id in voice.get_note_id()]
+            operations.append({"operation": "insbar",
+                            "reference_score1": None,
+                            "reference_score2": id_list,
+                            "info": None})
+        elif op[0] == "delbar":
+            assert(type(op[1]) == list)
+            id_list = [id for voice in op[1] for id in voice.get_note_id()]
+            operations.append({"operation": "delbar",
+                            "reference_score1": id_list,
+                            "reference_score2": None,
+                            "info": None})
+        #voices
+        if op[0] == "voiceins":
+            assert(type(op[2]) == nlin.VoiceLinear)
+            operations.append({"operation": "insvoice",
+                            "reference_score1": None,
+                            "reference_score2": op[2].get_note_id(),
+                            "info": None})
+        elif op[0] == "voicedel":
+            assert(type(op[1]) == nlin.VoiceLinear)
+            operations.append({"operation": "delvoice",
+                            "reference_score1": op[1].get_note_id(),
+                            "reference_score2": None,
+                            "info": None})
+        #note
+        elif op[0] == "noteins":
+            assert(type(op[2])==nlin.AnnotatedNote)
+            operations.append({"operation": "insnote",
+                            "reference_score1": None,
+                            "reference_score2": op[2].get_note_id(),
+                            "info": None})
+        elif op[0] == "notedel":
+            assert(type(op[1])==nlin.AnnotatedNote)
+            operations.append({"operation": "delnote",
+                            "reference_score1": op[1].get_note_id(),
+                            "reference_score2": None,
+                            "info": None})
+        #pitch
+        elif op[0] == "pitchnameedit":
+            assert(type(op[1])==nlin.AnnotatedNote)
+            assert(type(op[2])==nlin.AnnotatedNote)
+            assert(len(op)==5) #the indices must be there
+            operations.append({"operation": "subpitchname",
+                            "reference_score1": op[1].get_note_id(),
+                            "reference_score2": op[2].get_note_id(),
+                            "info": op[4]})
+        elif op[0] == "inspitch":
+            assert(type(op[2])==nlin.AnnotatedNote)
+            assert(len(op)==5) #the indices must be there
+            operations.append({"operation": "inspitch",
+                            "reference_score1": None,
+                            "reference_score2": op[2].get_note_id(),
+                            "info": (None,op[4][1])})
+        elif op[0] == "delpitch":
+            assert(type(op[1])==nlin.AnnotatedNote)
+            assert(len(op)==5) #the indices must be there
+            operations.append({"operation": "delpitch",
+                            "reference_score1": op[1].get_note_id(),
+                            "reference_score2": None,
+                            "info": (op[4][0],None)})
+        elif op[0] == "headedit":
+            assert(type(op[1])==nlin.AnnotatedNote)
+            assert(type(op[2])==nlin.AnnotatedNote)
+            operations.append({"operation": "subnotehead",
+                            "reference_score1": op[1].get_note_id(),
+                            "reference_score2": op[2].get_note_id(),
+                            "info": None})
+        #beam
+        elif op[0] == "insbeam":
+            assert(type(op[2])==nlin.AnnotatedNote)
+            operations.append({"operation": "insbeam",
+                            "reference_score1": None,
+                            "reference_score2": op[2].get_note_id(),
+                            "info": None})
+        elif op[0] == "delbeam":
+            assert(type(op[1])==nlin.AnnotatedNote)
+            operations.append({"operation": "delbeam",
+                            "reference_score1": op[1].get_note_id(),
+                            "reference_score2": None,
+                            "info": None})
+        elif op[0] == "editbeam":
+            assert(type(op[1])==nlin.AnnotatedNote)
+            assert(type(op[2])==nlin.AnnotatedNote)
+            operations.append({"operation": "subbeam",
+                            "reference_score1": op[1].get_note_id(),
+                            "reference_score2": op[2].get_note_id(),
+                            "info": None})
+        #accident
+        elif op[0] == "accidentins":
+            assert(type(op[2])==nlin.AnnotatedNote)
+            operations.append({"operation": "insaccidental",
+                            "reference_score1": None,
+                            "reference_score2": op[2].get_note_id(),
+                            "info": (None,op[4][1])})
+        elif op[0] == "accidentdel":
+            assert(type(op[1])==nlin.AnnotatedNote)
+            operations.append({"operation": "delaccidental",
+                            "reference_score1": op[1].get_note_id(),
+                            "reference_score2": None,
+                            "info": (op[4][0],None)})
+        elif op[0] == "accidentedit":
+            assert(type(op[1])==nlin.AnnotatedNote)
+            assert(type(op[2])==nlin.AnnotatedNote)
+            operations.append({"operation": "subaccidental",
+                            "reference_score1": op[1].get_note_id(),
+                            "reference_score2": op[2].get_note_id(),
+                            "info": op[4]})
+        elif op[0] == "dotins":
+            assert(type(op[2])==nlin.AnnotatedNote)
+            operations.append({"operation": "insdot",
+                            "reference_score1": None,
+                            "reference_score2": op[2].get_note_id(),
+                            "info": None})               
+        elif op[0] == "dotdel":
+            assert(type(op[1])==nlin.AnnotatedNote)
+            operations.append({"operation": "deldot",
+                            "reference_score1": op[1].get_note_id(),
+                            "reference_score2": None,
+                            "info": None})
+        #tuplets TODO
+        elif op[0] == "instuplet":
+            assert(type(op[2])==nlin.AnnotatedNote)
+            operations.append({"operation": "instuplet",
+                            "reference_score1": None,
+                            "reference_score2": op[2].get_note_id(),
+                            "info": None})
+        elif op[0] == "deltuplet":
+            assert(type(op[1])==nlin.AnnotatedNote)
+            operations.append({"operation": "deltuplet",
+                            "reference_score1": op[1].get_note_id(),
+                            "reference_score2": None,
+                            "info": None})
+        elif op[0] == "edittuplet":
+            assert(type(op[1])==nlin.AnnotatedNote)
+            assert(type(op[2])==nlin.AnnotatedNote)
+            operations.append({"operation": "subtuplet",
+                            "reference_score1": op[1].get_note_id(),
+                            "reference_score2": op[2].get_note_id(),
+                            "info": None})
+        elif op[0] == "tieins":
+            assert(type(op[2])==nlin.AnnotatedNote)
+            operations.append({"operation": "instie",
+                            "reference_score1": None,
+                            "reference_score2": op[2].get_note_id(),
+                            "info": (None,op[4][1])})
+        elif op[0] == "tiedel":
+            assert(type(op[1])==nlin.AnnotatedNote)
+            operations.append({"operation": "deltie",
+                            "reference_score1": op[1].get_note_id(),
+                            "reference_score2": None,
+                            "info": (op[4][0],None)})
+        else:
+            print("Annotation type {} not yet supported for visualization".format(op[0]))
+    return operations
 
 
 

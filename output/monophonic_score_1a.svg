@@ -26,37 +26,37 @@
 	<ns0:style type="text/css">g.page-margin{font-family:Times;} g.tempo{font-weight:bold;} g.dir, g.dynam, g.mNum{font-style:italic;} g.label{font-weight:normal;}</ns0:style>
 	<ns0:svg class="definition-scale" viewBox="0 0 21000 29700">
 		<ns0:g class="page-margin" transform="translate(500, 500)">
-			<ns0:g class="system" id="system-0000000000002211">
-				<ns0:g class="label" id="label-0000000000028167">
+			<ns0:g class="system" id="system-0000000000003079">
+				<ns0:g class="label" id="label-0000000000027772">
 					<ns0:text font-size="0px" text-anchor="end" x="2769" y="1170">
-						<ns0:tspan class="text" id="text-0000000000012106">
+						<ns0:tspan class="text" id="text-0000000000014106">
 							<ns0:tspan class="text" font-size="405px">MusicXML Part</ns0:tspan>
 						</ns0:tspan>
 					</ns0:text>
 				</ns0:g>
-				<ns0:g class="section boundaryStart" id="section-0000000000001763" />
+				<ns0:g class="section boundaryStart" id="section-0000000000015601" />
 				<ns0:g class="measure" id="d1e62">
-					<ns0:g class="staff" id="staff-0000000000021739">
+					<ns0:g class="staff" id="staff-0000000000013724">
 						<ns0:path d="M3039 720 L8190 720" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M3039 900 L8190 900" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M3039 1080 L8190 1080" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M3039 1260 L8190 1260" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M3039 1440 L8190 1440" stroke="#000000" stroke-width="13" />
-						<ns0:g class="clef" id="clef-0000000000026810">
+						<ns0:g class="clef" id="clef-0000000000027611">
 							<ns0:use height="720px" width="720px" x="3129" y="1260" ns1:href="#E050" />
 						</ns0:g>
-						<ns0:g class="meterSig" id="msig-0000000000019511">
+						<ns0:g class="meterSig" id="msig-0000000000001711">
 							<ns0:use height="720px" width="720px" x="3864" y="900" ns1:href="#E084" />
 							<ns0:use height="720px" width="720px" x="3864" y="1260" ns1:href="#E084" />
 						</ns0:g>
-						<ns0:g class="layer" id="layer-0000000000031381">
+						<ns0:g class="layer" id="layer-0000000000007943">
 							<ns0:g class="note" id="d1e92">
 								<ns0:use height="720px" width="720px" x="4444" y="900" ns1:href="#E0A4" />
 								<ns0:g class="stem">
 									<ns0:rect height="608" width="18" x="4444" y="922" />
 								</ns0:g>
 							</ns0:g>
-							<ns0:g class="beam" id="beam-0000000000016848">
+							<ns0:g class="beam" id="beam-0000000000009123">
 								<ns0:polygon points="5254,1297 5800,1350 5800,1260 5254,1207 " />
 								<ns0:g class="note" id="d1e106">
 									<ns0:use height="720px" width="720px" x="5254" y="630" ns1:href="#E0A4" />
@@ -71,7 +71,7 @@
 									</ns0:g>
 								</ns0:g>
 							</ns0:g>
-							<ns0:g class="beam" id="beam-0000000000002852">
+							<ns0:g class="beam" id="beam-0000000000018525">
 								<ns0:polygon points="6310,1477 6857,1530 6857,1440 6310,1387 " />
 								<ns0:g class="note" id="d1e138">
 									<ns0:use height="720px" width="720px" x="6310" y="810" ns1:href="#E0A4" />
@@ -94,21 +94,21 @@
 							</ns0:g>
 						</ns0:g>
 					</ns0:g>
-					<ns0:g class="tempo" id="tempo-0000000000031222">
+					<ns0:g class="tempo" id="tempo-0000000000021122">
 						<ns0:text font-size="0px" x="3864" y="720" />
 					</ns0:g>
-					<ns0:g class="barLineAttr" id="bline-0000000000019067">
+					<ns0:g class="barLineAttr" id="bline-0000000000016669">
 						<ns0:path d="M8177 1440 L8177 720" stroke="#000000" stroke-width="27" />
 					</ns0:g>
 				</ns0:g>
 				<ns0:g class="measure" id="d1e184">
-					<ns0:g class="staff" id="staff-0000000000011098">
+					<ns0:g class="staff" id="staff-0000000000027307">
 						<ns0:path d="M8190 720 L10880 720" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M8190 900 L10880 900" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M8190 1080 L10880 1080" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M8190 1260 L10880 1260" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M8190 1440 L10880 1440" stroke="#000000" stroke-width="13" />
-						<ns0:g class="layer" id="layer-0000000000028421">
+						<ns0:g class="layer" id="layer-0000000000025055">
 							<ns0:g class="note" id="d1e186">
 								<ns0:use height="720px" width="720px" x="8402" y="900" ns1:href="#E0A3" />
 								<ns0:g class="stem">
@@ -116,32 +116,32 @@
 								</ns0:g>
 							</ns0:g>
 							<ns0:g class="note" id="d1e200">
-								<ns0:use fill="yellow" height="720px" width="720px" x="9634" y="1080" ns1:href="#E0A3" />
+								<ns0:use height="720px" width="720px" x="9634" y="1080" ns1:href="#E0A3" />
 								<ns0:g class="stem">
 									<ns0:rect height="608" width="18" x="9634" y="1102" />
 								</ns0:g>
 							</ns0:g>
 						</ns0:g>
 					</ns0:g>
-					<ns0:g class="barLineAttr" id="bline-0000000000001551">
+					<ns0:g class="barLineAttr" id="bline-0000000000012547">
 						<ns0:path d="M10867 1440 L10867 720" stroke="#000000" stroke-width="27" />
 					</ns0:g>
 				</ns0:g>
 				<ns0:g class="measure" id="d1e214">
-					<ns0:g class="staff" id="staff-0000000000008795">
+					<ns0:g class="staff" id="staff-0000000000024156">
 						<ns0:path d="M10880 720 L14451 720" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M10880 900 L14451 900" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M10880 1080 L14451 1080" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M10880 1260 L14451 1260" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M10880 1440 L14451 1440" stroke="#000000" stroke-width="13" />
-						<ns0:g class="layer" id="layer-0000000000004816">
+						<ns0:g class="layer" id="layer-0000000000009757">
 							<ns0:g class="note" id="d1e216">
-								<ns0:use height="720px" width="720px" x="11092" y="1080" ns1:href="#E0A3" />
+								<ns0:use fill="yellow" height="720px" width="720px" x="11092" y="1080" ns1:href="#E0A3" />
 								<ns0:g class="stem">
 									<ns0:rect height="608" width="18" x="11092" y="1102" />
 								</ns0:g>
 							</ns0:g>
-							<ns0:g class="beam" id="beam-0000000000006698">
+							<ns0:g class="beam" id="beam-0000000000005702">
 								<ns0:polygon points="12532,451 14135,610 14135,700 12532,541 " />
 								<ns0:g class="note" id="d1e230">
 									<ns0:use height="720px" width="720px" x="12324" y="1080" ns1:href="#E0A4" />
@@ -170,30 +170,30 @@
 							</ns0:g>
 						</ns0:g>
 					</ns0:g>
-					<ns0:g class="barLineAttr" id="bline-0000000000003531">
+					<ns0:g class="barLineAttr" id="bline-0000000000017632">
 						<ns0:path d="M14438 1440 L14438 720" stroke="#000000" stroke-width="27" />
 					</ns0:g>
 				</ns0:g>
 				<ns0:g class="measure" id="d1e294">
-					<ns0:g class="staff" id="staff-0000000000023089">
+					<ns0:g class="staff" id="staff-0000000000000178">
 						<ns0:path d="M14451 720 L17911 720" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M14451 900 L17911 900" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M14451 1080 L17911 1080" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M14451 1260 L17911 1260" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M14451 1440 L17911 1440" stroke="#000000" stroke-width="13" />
-						<ns0:g class="layer" id="layer-0000000000019129">
+						<ns0:g class="layer" id="layer-0000000000006839">
 							<ns0:g class="note" id="d1e296">
 								<ns0:use height="720px" width="720px" x="14663" y="1440" ns1:href="#E0A4" />
 								<ns0:g class="stem">
 									<ns0:rect height="608" width="18" x="14871" y="810" />
-									<ns0:g class="flag" id="flag-0000000000004482">
+									<ns0:g class="flag" id="flag-0000000000012490">
 										<ns0:use height="720px" width="720px" x="14871" y="810" ns1:href="#E240" />
 									</ns0:g>
 								</ns0:g>
 							</ns0:g>
 							<ns0:g class="note" id="d1e310">
 								<ns0:use height="720px" width="720px" x="15245" y="1530" ns1:href="#E0A4" />
-								<ns0:g class="dots" id="dots-0000000000020435">
+								<ns0:g class="dots" id="dots-0000000000016950">
 									<ns0:ellipse cx="15561" cy="1530" rx="36" ry="36" />
 								</ns0:g>
 								<ns0:g class="stem">
@@ -214,62 +214,62 @@
 							</ns0:g>
 						</ns0:g>
 					</ns0:g>
-					<ns0:g class="barLineAttr" id="bline-0000000000028677">
+					<ns0:g class="barLineAttr" id="bline-0000000000008077">
 						<ns0:path d="M17898 1440 L17898 720" stroke="#000000" stroke-width="27" />
 					</ns0:g>
 				</ns0:g>
 				<ns0:g class="measure" id="d1e353">
-					<ns0:g class="staff" id="staff-0000000000031498">
+					<ns0:g class="staff" id="staff-0000000000022601">
 						<ns0:path d="M17911 720 L20002 720" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M17911 900 L20002 900" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M17911 1080 L20002 1080" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M17911 1260 L20002 1260" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M17911 1440 L20002 1440" stroke="#000000" stroke-width="13" />
-						<ns0:g class="layer" id="layer-0000000000030926">
+						<ns0:g class="layer" id="layer-0000000000001334">
 							<ns0:g class="note" id="d1e355">
 								<ns0:use height="720px" width="720px" x="18123" y="1170" ns1:href="#E0A2" />
 							</ns0:g>
 						</ns0:g>
 					</ns0:g>
-					<ns0:g class="barLineAttr" id="bline-0000000000019912">
+					<ns0:g class="barLineAttr" id="bline-0000000000031495">
 						<ns0:path d="M19989 1440 L19989 720" stroke="#000000" stroke-width="27" />
 					</ns0:g>
 				</ns0:g>
 			</ns0:g>
-			<ns0:g class="system" id="system-0000000000025528">
+			<ns0:g class="system" id="system-0000000000030222">
 				<ns0:g class="measure" id="d1e367">
-					<ns0:g class="mNum autogenerated" id="mnum-0000000000021537">
+					<ns0:g class="mNum autogenerated" id="mnum-0000000000019840">
 						<ns0:text font-size="0px" text-anchor="middle" x="0" y="2880">
-							<ns0:tspan class="text" id="text-0000000000004469">
+							<ns0:tspan class="text" id="text-0000000000008741">
 								<ns0:tspan class="text" font-size="324px">6</ns0:tspan>
 							</ns0:tspan>
 						</ns0:text>
 					</ns0:g>
-					<ns0:g class="staff" id="staff-0000000000024515">
+					<ns0:g class="staff" id="staff-0000000000007759">
 						<ns0:path d="M0 3150 L2713 3150" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M0 3330 L2713 3330" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M0 3510 L2713 3510" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M0 3690 L2713 3690" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M0 3870 L2713 3870" stroke="#000000" stroke-width="13" />
-						<ns0:g class="clef" id="clef-0000000000029358">
+						<ns0:g class="clef" id="clef-0000000000001819">
 							<ns0:use height="720px" width="720px" x="90" y="3690" ns1:href="#E050" />
 						</ns0:g>
-						<ns0:g class="layer" id="layer-0000000000025018">
+						<ns0:g class="layer" id="layer-0000000000008564">
 							<ns0:g class="note" id="d1e369">
 								<ns0:use height="720px" width="720px" x="1110" y="3780" ns1:href="#E0A2" />
-								<ns0:g class="accid" fill="red" id="accid-0000000000000038">
+								<ns0:g class="accid" fill="red" id="accid-0000000000016853">
 									<ns0:use height="720px" width="720px" x="915" y="3780" ns1:href="#E262" />
 								</ns0:g>
 							</ns0:g>
 						</ns0:g>
 					</ns0:g>
-					<ns0:g class="barLineAttr" id="bline-0000000000004054">
+					<ns0:g class="barLineAttr" id="bline-0000000000019843">
 						<ns0:path d="M2700 3870 L2700 3150" stroke="#000000" stroke-width="27" />
 					</ns0:g>
 				</ns0:g>
-				<ns0:g class="sb" id="sb-0000000000023709" />
+				<ns0:g class="sb" id="sb-0000000000003525" />
 				<ns0:g class="measure" id="d1e385">
-					<ns0:g class="staff" id="staff-0000000000001610">
+					<ns0:g class="staff" id="staff-0000000000019647">
 						<ns0:path d="M2713 3150 L5666 3150" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M2713 3330 L5666 3330" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M2713 3510 L5666 3510" stroke="#000000" stroke-width="13" />
@@ -278,7 +278,7 @@
 						<ns0:g class="ledgerLines below">
 							<ns0:path d="M4228 4050 L4544 4050" stroke="#000000" stroke-width="22" />
 						</ns0:g>
-						<ns0:g class="layer" id="layer-0000000000004207">
+						<ns0:g class="layer" id="layer-0000000000022657">
 							<ns0:g class="note" id="d1e391">
 								<ns0:use height="720px" width="720px" x="2893" y="3870" ns1:href="#E0A4" />
 								<ns0:g class="stem">
@@ -305,19 +305,19 @@
 							</ns0:g>
 						</ns0:g>
 					</ns0:g>
-					<ns0:g class="barLineAttr" id="bline-0000000000006273">
+					<ns0:g class="barLineAttr" id="bline-0000000000014316">
 						<ns0:path d="M5653 3870 L5653 3150" stroke="#000000" stroke-width="27" />
 					</ns0:g>
 				</ns0:g>
 				<ns0:g class="measure" id="d1e448">
-					<ns0:g class="staff" id="staff-0000000000028577">
+					<ns0:g class="staff" id="staff-0000000000021803">
 						<ns0:path d="M5666 3150 L9459 3150" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M5666 3330 L9459 3330" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M5666 3510 L9459 3510" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M5666 3690 L9459 3690" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M5666 3870 L9459 3870" stroke="#000000" stroke-width="13" />
-						<ns0:g class="layer" id="layer-0000000000029577">
-							<ns0:g class="beam" id="beam-0000000000030171">
+						<ns0:g class="layer" id="layer-0000000000000806">
+							<ns0:g class="beam" id="beam-0000000000025575">
 								<ns0:polygon points="6054,2935 7422,2989 7422,3079 6054,3025 " />
 								<ns0:g class="note" id="d1e450">
 									<ns0:use height="720px" width="720px" x="5846" y="3600" ns1:href="#E0A4" />
@@ -344,7 +344,7 @@
 									</ns0:g>
 								</ns0:g>
 							</ns0:g>
-							<ns0:g class="beam" id="beam-0000000000006251">
+							<ns0:g class="beam" id="beam-0000000000009488">
 								<ns0:polygon points="7854,3016 9222,3151 9222,3241 7854,3106 " />
 								<ns0:g class="note" id="d1e514">
 									<ns0:use height="720px" width="720px" x="7646" y="3690" ns1:href="#E0A4" />
@@ -373,12 +373,12 @@
 							</ns0:g>
 						</ns0:g>
 					</ns0:g>
-					<ns0:g class="barLineAttr" id="bline-0000000000009962">
+					<ns0:g class="barLineAttr" id="bline-0000000000014967">
 						<ns0:path d="M9446 3870 L9446 3150" stroke="#000000" stroke-width="27" />
 					</ns0:g>
 				</ns0:g>
 				<ns0:g class="measure" id="d1e578">
-					<ns0:g class="staff" id="staff-0000000000019650">
+					<ns0:g class="staff" id="staff-0000000000024278">
 						<ns0:path d="M9459 3150 L11752 3150" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M9459 3330 L11752 3330" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M9459 3510 L11752 3510" stroke="#000000" stroke-width="13" />
@@ -387,7 +387,7 @@
 						<ns0:g class="ledgerLines below">
 							<ns0:path d="M9594 4050 L9910 4050" stroke="#000000" stroke-width="22" />
 						</ns0:g>
-						<ns0:g class="layer" fill="green" id="layer-0000000000011192">
+						<ns0:g class="layer" fill="green" id="layer-0000000000020252">
 							<ns0:g class="note" id="d1e580">
 								<ns0:use height="720px" width="720px" x="9639" y="4140" ns1:href="#E0A3" />
 								<ns0:g class="stem">
@@ -402,12 +402,12 @@
 							</ns0:g>
 						</ns0:g>
 					</ns0:g>
-					<ns0:g class="barLineAttr" id="bline-0000000000020927">
+					<ns0:g class="barLineAttr" id="bline-0000000000025441">
 						<ns0:path d="M11739 3870 L11739 3150" stroke="#000000" stroke-width="27" />
 					</ns0:g>
 				</ns0:g>
 				<ns0:g class="measure" id="d1e608">
-					<ns0:g class="staff" id="staff-0000000000010563">
+					<ns0:g class="staff" id="staff-0000000000032593">
 						<ns0:path d="M11752 3150 L14045 3150" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M11752 3330 L14045 3330" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M11752 3510 L14045 3510" stroke="#000000" stroke-width="13" />
@@ -416,7 +416,7 @@
 						<ns0:g class="ledgerLines below">
 							<ns0:path d="M12937 4050 L13253 4050" stroke="#000000" stroke-width="22" />
 						</ns0:g>
-						<ns0:g class="layer" id="layer-0000000000029370">
+						<ns0:g class="layer" id="layer-0000000000029526">
 							<ns0:g class="note" id="d1e610">
 								<ns0:use height="720px" width="720px" x="11932" y="3870" ns1:href="#E0A3" />
 								<ns0:g class="stem">
@@ -431,12 +431,12 @@
 							</ns0:g>
 						</ns0:g>
 					</ns0:g>
-					<ns0:g class="barLineAttr" id="bline-0000000000018855">
+					<ns0:g class="barLineAttr" id="bline-0000000000027342">
 						<ns0:path d="M14032 3870 L14032 3150" stroke="#000000" stroke-width="27" />
 					</ns0:g>
 				</ns0:g>
 				<ns0:g class="measure" id="d1e638">
-					<ns0:g class="staff" id="staff-0000000000008511">
+					<ns0:g class="staff" id="staff-0000000000013462">
 						<ns0:path d="M14045 3150 L15860 3150" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M14045 3330 L15860 3330" stroke="#000000" stroke-width="13" />
 						<ns0:path d="M14045 3510 L15860 3510" stroke="#000000" stroke-width="13" />
@@ -446,23 +446,23 @@
 							<ns0:path d="M14180 4050 L14560 4050" stroke="#000000" stroke-width="22" />
 							<ns0:path d="M14180 4230 L14560 4230" stroke="#000000" stroke-width="22" />
 						</ns0:g>
-						<ns0:g class="layer" id="layer-0000000000014052">
+						<ns0:g class="layer" id="layer-0000000000032011">
 							<ns0:g class="note" id="d1e640">
 								<ns0:use height="720px" width="720px" x="14225" y="4320" ns1:href="#E0A2" />
 							</ns0:g>
 						</ns0:g>
 					</ns0:g>
-					<ns0:g class="barLineAttr" id="bline-0000000000012749">
+					<ns0:g class="barLineAttr" id="bline-0000000000017041">
 						<ns0:path d="M15698 3870 L15698 3150" stroke="#000000" stroke-width="27" />
 						<ns0:path d="M15815 3870 L15815 3150" stroke="#000000" stroke-width="90" />
 					</ns0:g>
 				</ns0:g>
-				<ns0:g class="boundaryEnd section-0000000000001763" id="bdend-0000000000018615" />
+				<ns0:g class="boundaryEnd section-0000000000015601" id="bdend-0000000000014942" />
 			</ns0:g>
-			<ns0:g class="pgHead autogenerated" id="pghead-0000000000022565" />
-			<ns0:g class="pgFoot autogenerated" id="pgfoot-0000000000016567">
-				<ns0:g class="fig" id="fig-0000000000028510">
-					<ns0:g class="svg" id="fig-0000000000006712" transform="translate(7750, 28099) scale(10, 10)">
+			<ns0:g class="pgHead autogenerated" id="pghead-0000000000010165" />
+			<ns0:g class="pgFoot autogenerated" id="pgfoot-0000000000029448">
+				<ns0:g class="fig" id="fig-0000000000026184">
+					<ns0:g class="svg" id="fig-0000000000009709" transform="translate(7750, 28099) scale(10, 10)">
 						<ns0:g>
 							<ns0:path d="M 17.11278,49.26451 V 10.367554 h 12.696511 c 3.288815,7.336676 6.71267,14.610456 10.127281,21.888976 3.419998,-7.484684 6.255515,-14.204887 9.58887,-21.909915 2.436207,0.103726 4.316952,0.08453 6.484294,-0.05808 V 49.264423 H 50.274275 C 50.145222,38.35639 50.016136,27.448368 49.887066,16.540329 45.003488,27.315459 39.967448,38.433564 35.083854,49.208695 34.678996,49.343717 34.426583,49.135619 34.021726,49.270644 29.46588,39.330716 24.910049,29.390805 20.354201,19.450876 20.224341,29.388756 20.09461,39.326619 19.964815,49.264497 H 17.11278 Z M 36.754144,39.324695 C 32.721221,30.512695 28.6883,21.700679 24.655394,12.888662 22.530527,12.750737 22.656775,12.71031 20.714356,12.813974 v 0.966497 c 4.612938,9.99784 9.609439,20.748709 13.87298,30.081745 0.722248,-1.512523 1.444528,-3.025014 2.166808,-4.537521 z m 25.738417,9.939815 c 0,-12.965651 0,-25.931305 0,-38.896956 10.084388,0 20.168791,0 30.253178,0 0,0.960416 0,1.920849 0,2.881265 -6.482825,0 -12.965652,0 -19.448478,0 0,4.802097 0,9.604178 0,14.406277 5.52241,0 11.044819,0 16.567229,0 0,0.960415 0,1.920832 0,2.881248 -5.52241,0 -11.044819,0 -16.567229,0 0,5.282306 0,10.564611 0,15.846917 6.963035,0 13.926068,0 20.889103,0 0,0.960416 0,1.920832 0,2.881249 -10.564597,0 -21.129207,0 -31.693803,0 z m 4.321874,-2.160937 c 0,-11.765131 0,-23.530263 0,-35.295394 -0.720312,0 -1.440625,0 -2.160937,0 0,11.765131 0,23.530263 0,35.295394 0.720312,0 1.440625,0 2.160937,0 z m 32.41413,2.160937 c 0,-12.965651 0,-25.931305 0,-38.896956 2.401045,0 4.802095,0 7.203135,0 0,12.965651 0,25.931305 0,38.896956 -2.40104,0 -4.80209,0 -7.203135,0 z m 2.881265,-2.160937 c 0,-11.765131 0,-23.530263 0,-35.295394 -0.72031,0 -1.44064,0 -2.160953,0 0,11.765131 0,23.530263 0,35.295394 0.720313,0 1.440643,0 2.160953,0 z" fill="#00000" />
 							<ns0:path d="m 346.3,6.7 c -3.1,0.5 -4.9,4.4 -2.7,6.8 1.2,1.4 2.7,2.4 4.1,3.5 -2.4,5.3 -7.7,8.3 -11.9,12.1 -3.7,2.8 -7,6.2 -9.7,9.9 -2.2,-0.8 -0.3,-6.8 -0.6,-9.5 0.1,-3.1 0.7,-6.4 2.9,-8.7 1.3,-1.9 3,-3.5 4.5,-5.2 1.2,-3.4 -3.2,-4.9 -5.8,-4.6 -7.3,-0.5 -14.6,2 -20,6.8 -5,4.6 -10,10.1 -11.5,17 -0.9,3.5 -0.2,7.5 2.8,9.9 2.5,2.8 7.4,2.9 9.8,-0.2 1.7,-2.3 3.2,-4.8 3.8,-7.6 -0.1,-2.6 -4.4,-2.3 -4.3,0.2 1.2,2.4 -0.9,4.7 -2.7,6.2 -1.7,0.9 -4.7,0.7 -4.8,-1.7 -1,-5.8 2.1,-11.3 5.2,-16.1 4,-5.8 9.8,-11.2 17.2,-11.8 1.6,0 8.1,-1.2 6.8,1.4 -2.8,2.8 -5.6,6.1 -6,10.3 -1.6,7.7 0.1,15.7 -2.3,23.2 -1.1,3.9 2,2.6 2.5,0.2 3.3,-7.4 8.9,-13.4 15.1,-18.5 4.2,-3.9 9.5,-7.1 11.9,-12.6 1.3,-3.6 1.2,-9 -2.7,-10.9 -0.6,-0.2 -1.2,-0.3 -1.8,-0.3 z m 66,14.5 c -2,0.8 -1.8,4.9 0.8,4.4 3.4,0.4 2.9,-6.2 -0.8,-4.4 z m 0.6,7.3 c -1.3,0.5 -7.6,0.5 -5.4,2.2 4,-0.3 0.7,4.5 0.6,6.7 -0.4,2.9 -2.4,5.9 -1.2,8.8 2.7,1.7 5.6,-0.8 6.8,-3.2 1.6,-1.4 -0.5,-3 -1.2,-0.9 -0.4,0.8 -2.4,3.5 -2.6,1.8 1.1,-5 2.7,-9.9 3.9,-14.9 l -0.1,-0.5 h -0.9 z m -65.1,0.2 c -6.5,1.6 -10.5,9.5 -8.2,15.7 2.1,3.4 7.4,2.9 10.1,0.4 2,-0.2 3.6,-5.3 1,-3.4 -1.4,2 -4,4.2 -6.5,2.8 -2.2,-1.9 -1.9,-5.7 1.7,-5.3 3.1,-0.9 6.9,-2.1 8.1,-5.5 0.9,-2.7 -1.6,-5.2 -4.3,-4.8 h -1.1 -0.7 z m 13.6,0 c -2.2,0 -8.5,1.8 -2.9,2.3 0.9,1.9 -1,4.9 -1.1,7.2 -0.5,2.9 -1.4,5.7 -1.7,8.7 3.7,0.7 3.8,-2.6 4.4,-5.3 0.9,-3.3 1.6,-7 4.1,-9.5 2.4,1.6 6.8,-0.7 3.7,-3.4 -2.9,-0.5 -4.8,2.4 -6.2,4.3 0,-1.2 2.4,-5 -0.2,-4.3 z m 15.8,0 c -6.4,1.3 -9.6,9.1 -7.7,14.9 1.9,4 7.7,3.9 11,1.7 4.1,-3 6,-8.9 4.4,-13.7 -1.3,-3 -4.8,-3.2 -7.6,-3 z m 17,0 c -2.3,0 -8.8,1.9 -3,2.4 0.4,2.5 -1,5.7 -1.4,8.4 -0.7,2.4 -1.8,7.5 2.1,7.2 3.8,-0.1 6.5,-3.5 8.5,-6.3 2,-3.2 4.5,-7 3.3,-10.9 -3.7,-3 -3.6,2.6 -3.1,5.1 -0.7,3.8 -2.7,7.9 -6.2,9.8 -3.6,0.6 -1,-4.3 -0.8,-6.1 0.6,-3.2 1.6,-6.3 1.9,-9.5 -0.4,0 -0.8,0 -1.1,0 z m 30.6,0 c -6.3,1.2 -9.5,8.9 -7.8,14.7 1.5,4 7.2,4.2 10.5,2.4 4.6,-2.8 6.6,-9.3 4.8,-14.3 -1.4,-2.8 -4.8,-3 -7.5,-2.8 z m -75.4,1.7 c 2.1,1.5 0.2,4.7 -1.6,5.7 -1.1,0.4 -5.5,3.4 -4.6,0.7 0.8,-2.7 2.2,-6.2 5.3,-6.6 l 0.9,0.1 z m 30.8,0 c 2.6,1.5 1.3,5.2 0.8,7.6 -0.8,2.7 -1.9,5.9 -4.7,7.1 -5.1,0.8 -4,-5.8 -2.8,-8.8 1,-2.8 3,-6.8 6.7,-5.8 z m 47.1,-0.1 c 2.9,0.7 2,4.7 1.5,6.8 -0.7,3 -1.8,6.7 -5,8 -4.7,0.8 -4,-5.1 -3,-7.9 0.9,-3 2.7,-7.3 6.5,-6.8 z m -88.1,5.9 c -0.3,1.3 0.9,-0.6 0,0 z m -1.1,2.4 c -0.2,0.5 0.5,-0.1 0,0 z m -1.3,4.5 c -0.3,1.3 0.8,-0.2 0,0 z" fill="#00000" />

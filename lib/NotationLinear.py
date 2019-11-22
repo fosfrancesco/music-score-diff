@@ -51,8 +51,8 @@ class AnnotatedNote:
         return size
 
     def __repr__(self):
-        "(pitches, notehead, dots, beaming, tuplets)"
-        out = "{},{},{},{},{}".format(self.pitches,self.note_head, self.dots, self.beamings, self.tuplets)
+        "(pitches, notehead, dots, beaming, tuplets,id)"
+        out = "{},{},{},{},{},{}".format(self.pitches,self.note_head, self.dots, self.beamings, self.tuplets,self.general_note.id)
         return out
 
     def __str__(self):

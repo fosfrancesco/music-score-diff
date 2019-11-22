@@ -77,6 +77,11 @@ def oplist2annotations(operations):
         elif op[0] == "delbeam":
             assert(type(op[1])==nlin.AnnotatedNote)
             annotations1.extend([{"id": id, "color": DEL_COLOR, "target":"beam"} for id in op[1].get_note_id()])
+        elif op[0] == "editbeam":
+            assert(type(op[1])==nlin.AnnotatedNote)
+            assert(type(op[2])==nlin.AnnotatedNote)
+            annotations2.extend([{"id": id, "color": SUB_COLOR, "target":"beam"} for id in op[2].get_note_id()])
+            annotations1.extend([{"id": id, "color": SUB_COLOR, "target":"beam"} for id in op[1].get_note_id()])
         #accident
         elif op[0] == "accidentins":
             assert(type(op[2])==nlin.AnnotatedNote)
@@ -105,6 +110,8 @@ def oplist2annotations(operations):
         elif op[0] == "instuplet":
             pass
         elif op[0] == "deltuplet":
+            pass
+        elif op[0] == "edittuplet":
             pass
         #ties TODO
         elif op[0] == "tieins":
