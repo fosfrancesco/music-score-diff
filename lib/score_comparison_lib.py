@@ -620,7 +620,7 @@ def op_list2json(op_list):
                             "reference_score2": None,
                             "info": None})
         #voices
-        if op[0] == "voiceins":
+        elif op[0] == "voiceins":
             assert(type(op[2]) == nlin.VoiceLinear)
             operations.append({"operation": "insvoice",
                             "reference_score1": None,

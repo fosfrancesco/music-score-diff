@@ -14,7 +14,7 @@ import lib.NotationLinear as nlin
 
 INS_COLOR = "green"
 DEL_COLOR = "red"
-SUB_COLOR = "yellow"
+SUB_COLOR = "blue"
 #dictionary of useful tags
 el_dict={
     "g": "{http://www.w3.org/2000/svg}g",
@@ -37,7 +37,7 @@ def oplist2annotations(operations):
             id_list = [id for voice in op[1] for id in voice.get_note_id()]
             annotations1.extend([{"id": id_list, "color": INS_COLOR, "target": "bar"}])
         #voices
-        if op[0] == "voiceins":
+        elif op[0] == "voiceins":
             assert(type(op[2]) == nlin.VoiceLinear)
             annotations2.extend([{"id": id, "color": INS_COLOR, "target": "note"} for id in op[2].get_note_id()])
         elif op[0] == "voicedel":
