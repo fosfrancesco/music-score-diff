@@ -9,8 +9,12 @@ import copy
 import re
 import subprocess
 import math
+from pathlib import Path
 
 import lib.NotationLinear as nlin
+
+RESOURCES_PATH = Path("C:/Users/fosca/Desktop/verovio/data" )
+MUSESCORE_PATH = Path('C:/Program Files/MuseScore 3/bin/MuseScore3.exe')
 
 INS_COLOR = "green"
 DEL_COLOR = "red"
@@ -127,13 +131,13 @@ def oplist2annotations(operations):
 
 def produce_annnot_svg(mei_file, annotations, out_path="annotated_score.svg"):
     #necessary for windows
-    m21.environment.set('musescoreDirectPNGPath', 'C:\\Program Files\\MuseScore 3\\bin\\MuseScore3.exe')
+    m21.environment.set('musescoreDirectPNGPath', MUSESCORE_PATH)
     # produce the svg string with Verovio
     tk = verovio.toolkit()
 #     tk.setOption("pageHeight", "500")
 #     tk.setOption("scale", "90")
 #     tk.setOption("ignoreLayout", "1")
-    tk.setResourcePath(r"C:\Users\fosca\Desktop\verovio\data" ) #necessary in Windows
+    tk.setResourcePath(RESOURCES_PATH) #necessary in Windows
     tk.loadFile(mei_file._str)
 
     #TODO: display of multiple pages
