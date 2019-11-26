@@ -10,11 +10,12 @@ import re
 import subprocess
 import math
 from pathlib import Path
+import os
 
 import lib.NotationLinear as nlin
 
-RESOURCES_PATH = Path("C:/Users/fosca/Desktop/verovio/data" )
-MUSESCORE_PATH = Path('C:/Program Files/MuseScore 3/bin/MuseScore3.exe')
+
+RESOURCES_PATH = None
 
 INS_COLOR = "green"
 DEL_COLOR = "red"
@@ -26,6 +27,10 @@ el_dict={
     "use" : "{http://www.w3.org/2000/svg}use",
     "path" : "{http://www.w3.org/2000/svg}path"
 }
+
+def setResourchesPath(path):
+    global RESOURCES_PATH 
+    RESOURCES_PATH = path
 
 def oplist2annotations(operations):
     annotations1 = [] #for the score1
@@ -130,15 +135,15 @@ def oplist2annotations(operations):
 
 
 def produce_annnot_svg(mei_file, annotations, out_path="annotated_score.svg"):
-    #necessary for windows
-    m21.environment.set('musescoreDirectPNGPath', MUSESCORE_PATH)
     # produce the svg string with Verovio
     tk = verovio.toolkit()
 #     tk.setOption("pageHeight", "500")
 #     tk.setOption("scale", "90")
 #     tk.setOption("ignoreLayout", "1")
-    tk.setResourcePath(RESOURCES_PATH) #necessary in Windows
-    tk.loadFile(mei_file._str)
+    global RESOURCES_PATH
+    if RESOURCES_PATH != None:
+        tk.setResourcePath(str(RESOURCES_PATH)) #set the correct folder of resourches
+    tk.loadFile(str(mei_file)) if isinstance(mei_file,Path) else tk.loadFile(mei_file)
 
     #TODO: display of multiple pages
     stringSVG = tk.renderToSVG() #this will produce just the first page. To update for longer scores

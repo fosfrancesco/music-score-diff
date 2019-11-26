@@ -5,6 +5,8 @@ import lib.m21utils as m21u
 import lib.NotationLinear as nlin
 import lib.score_comparison_lib as scl
 
+RESOURCES_PATH = Path("C:/Users/fosca/Desktop/verovio/data" )
+
 def test_annotation_production1():
     score1_path = Path("test_scores/monophonic_score_1a.mei")
     with open(score1_path, 'r') as f:
@@ -86,6 +88,7 @@ def test_annotation_production4():
     #compute the complete score diff
     op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
     ann1, ann2 = sv.oplist2annotations(op_list)
+    sv.setResourchesPath(Path(RESOURCES_PATH))
     sv.produce_annnot_svg(score1_path,ann1,out_path=Path("output/chord_score_2a.svg"))
     sv.produce_annnot_svg(score2_path,ann2,out_path=Path("output/chord_score_2b.svg"))
     assert(1==1)
@@ -108,6 +111,7 @@ def test_annotation_production4():
     #compute the complete score diff
     op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
     ann1, ann2 = sv.oplist2annotations(op_list)
+    sv.setResourchesPath(Path(RESOURCES_PATH))
     sv.produce_annnot_svg(score1_path,ann1,out_path=Path("output/chord_score_3a.svg"))
     sv.produce_annnot_svg(score2_path,ann2,out_path=Path("output/chord_score_3b.svg"))
     assert(1==1)
@@ -129,6 +133,7 @@ def test_annotation_production5():
     #compute the complete score diff
     op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
     ann1, ann2 = sv.oplist2annotations(op_list)
+    sv.setResourchesPath(Path(RESOURCES_PATH ))
     sv.produce_annnot_svg(score1_path,ann1,out_path=Path("output/tie_score_1a.svg"))
     sv.produce_annnot_svg(score2_path,ann2,out_path=Path("output/tie_score_1b.svg"))
     assert(1==1)
@@ -150,6 +155,7 @@ def test_annotation_production6():
     #compute the complete score diff
     op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
     ann1, ann2 = sv.oplist2annotations(op_list)
+    sv.setResourchesPath(Path(RESOURCES_PATH ))
     sv.produce_annnot_svg(score1_path,ann1,out_path=Path("output/tuplet_score_1a.svg"))
     sv.produce_annnot_svg(score2_path,ann2,out_path=Path("output/tuplet_score_1b.svg"))
     assert(1==1)
@@ -171,6 +177,7 @@ def test_annotation_production7():
     #compute the complete score diff
     op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
     ann1, ann2 = sv.oplist2annotations(op_list)
+    sv.setResourchesPath(Path(RESOURCES_PATH ))
     sv.produce_annnot_svg(score1_path,ann1,out_path=Path("output/polyphonic_score_1a.svg"))
     sv.produce_annnot_svg(score2_path,ann2,out_path=Path("output/polyphonic_score_1b.svg"))
     assert(1==1)
@@ -192,6 +199,7 @@ def test_annotation_production8():
     #compute the complete score diff
     op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
     ann1, ann2 = sv.oplist2annotations(op_list)
+    sv.setResourchesPath(Path(RESOURCES_PATH ))
     sv.produce_annnot_svg(score1_path,ann1,out_path=Path("output/tie_score_2a.svg"))
     sv.produce_annnot_svg(score2_path,ann2,out_path=Path("output/tie_score_2b.svg"))
     assert(1==1)
@@ -213,6 +221,7 @@ def test_annotation_production9():
     #compute the complete score diff
     op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
     ann1, ann2 = sv.oplist2annotations(op_list)
+    sv.setResourchesPath(Path(RESOURCES_PATH ))
     sv.produce_annnot_svg(score1_path,ann1,out_path=Path("output/polyphonic_score_2a.svg"))
     sv.produce_annnot_svg(score2_path,ann2,out_path=Path("output/polyphonic_score_2b.svg"))
     assert(1==1)
