@@ -51,7 +51,8 @@ class AnnotatedNote:
         return size
 
     def __repr__(self):
-        "(pitches, notehead, dots, beaming, tuplets,id)"
+        #repr consider also the id!
+        # (pitches, notehead, dots, beaming, tuplets,id)
         out = "{},{},{},{},{},{}".format(self.pitches,self.note_head, self.dots, self.beamings, self.tuplets,self.general_note.id)
         return out
 
@@ -93,9 +94,27 @@ class AnnotatedNote:
     def get_note_id(self):
         return [self.general_note.id]
 
+    def __eq__(self,other):
+        #equality does not consider the MEI id!
+        if not isinstance(other, AnnotatedNote):
+            return False
+        elif self.pitches!= other.pitches:
+            return False
+        elif self.note_head != other.note_head:
+            return False
+        elif self.dots != other.dots:
+            return False
+        elif self.beamings != other.beamings:
+            return False
+        elif self.tuplets != other.tuplets:
+            return False
+        else:
+            return True
 
-class VoiceLinear:
-    def __init__(self, voice, bar_reference = None, mei_id = None):
+
+
+class Voice:
+    def __init__(self, voice):
         """
         :param measure: m21 voice for one measure
         """
@@ -107,15 +126,16 @@ class VoiceLinear:
         self.annot_notes = []
         for i, n in enumerate(self.note_list):
                 self.annot_notes.append(AnnotatedNote(n,self.en_beam_list[i],self.tuplet_list[i]))
-        #set references for pointing at that specific measure
-        self.bar_reference = bar_reference
-        self.mei_id = mei_id
+        self.n_of_notes = len(self.annot_notes)
     
     def __eq__(self, other):
-        if not isinstance(other, VoiceLinear):
+        #equality does not consider MEI id!
+        if not isinstance(other, Voice):
             return False
-        else: 
-            return self.__repr__() == other.__repr__()
+        elif len(self.annot_notes)!= len(other.annot_notes): 
+            return False
+        else:
+            return all([an[0]==an[1] for an in zip(self.annot_notes,other.annot_notes)])
 
     def notation_size(self):
         return sum([an.notation_size() for an in self.annot_notes])
@@ -135,9 +155,72 @@ class VoiceLinear:
     def get_note_id(self):
         return [an.general_note.id for an in self.annot_notes]
 
+class Bar:
+    def __init__(self, measure):
+        """
+        :param measure: m21 measure
+        """
+        self.voices_list = [] 
+        if len(measure.voices) == 0:  # there is a single Voice ( == for the library there are no voices)
+            self.voices_list.append(Voice(measure))
+        else:  # there are multiple voices (or an array with just one voice)
+            for voice in measure.voices:
+                self.voices_list.append(Voice(voice))
+        self.n_of_voices = len(self.voices_list)
+    
+    def __eq__(self, other):
+        #equality does not consider MEI id!
+        if not isinstance(other, Bar):
+            return False
+        elif len(self.voices_list)!= len(other.voices_list): 
+            return False
+        else:
+            return all([v[0]==v[1] for v in zip(self.voices_list,other.voices_list)])
 
+    def notation_size(self):
+        return sum([v.notation_size() for v in self.voices_list])
 
-class ScoreLinear:
+    def __repr__(self):
+        return  (self.voices_list.__repr__())
+
+    def get_note_id(self):
+        notes_id = []
+        for v in self.voices_list:
+            notes_id.extend(v.get_note_id())
+        return notes_id
+
+class Part:
+    def __init__(self, part):
+        """
+        :param measure: m21 part
+        """
+        self.bar_list = [] 
+        for measure in part.getElementsByClass('Measure'):
+            self.bar_list.append(Bar(measure)) #create the bar objects
+        self.n_of_bars = len(self.bar_list)
+    
+    def __eq__(self, other):
+        #equality does not consider MEI id!
+        if not isinstance(other, Part):
+            return False
+        elif len(self.bar_list)!= len(other.bar_list): 
+            return False
+        else:
+            return all([b[0]==b[1] for b in zip(self.bar_list,other.bar_list)])
+
+    def notation_size(self):
+        return sum([b.notation_size() for b in self.bar_list])
+
+    def __repr__(self):
+        return  (self.bar_list.__repr__())
+
+    def get_note_id(self):
+        notes_id = []
+        for b in self.bar_list:
+            notes_id.extend(b.get_note_id())
+        return notes_id
+
+class Score:
     def __init__(self,score):
         """
         Take a music21 score and store it a sequence of Full Trees
@@ -147,23 +230,32 @@ class ScoreLinear:
         """
         self.part_list = [] 
         for part in score.parts.stream():
-            measures_list = [] 
-            for measure_index, measure in enumerate(part.getElementsByClass('Measure')):
-                voices_list = [] 
-                if len(measure.voices) == 0:  # there is a single Voice ( == for the library there are no voices)
-    #                print("Part {}, measure {}".format(part_index,measure_index))
-                    voices_list.append(VoiceLinear(measure,bar_reference=measure_index, mei_id=[note.id for note in m21u.get_notes(measure)]))
-                else:  # there are multiple voices (or an array with just one voice)
-                    for voice in measure.voices:
-    #                    print("Part {}, measure {}".format(part_index,measure_index))
-                        voices_list.append(VoiceLinear(voice, bar_reference=measure_index, mei_id=[note.id for note in m21u.get_notes(voice)]))
-                measures_list.append(voices_list) #add the list of voices to the list of measures
-            self.part_list.append(measures_list) #add the complete part to part_list
-        
+            self.part_list.append(Part(part)) #create and add the Part object to part_list
         self.n_of_parts = len(self.part_list)
+
+    def __eq__(self, other):
+        #equality does not consider MEI id!
+        if not isinstance(other, Score):
+            return False
+        elif len(self.part_list)!= len(other.part_list): 
+            return False
+        else:
+            return all([p[0]==p[1] for p in zip(self.part_list,other.part_list)])
+
+    def notation_size(self):
+        return sum([p.notation_size() for p in self.part_list])
+
+    def __repr__(self):
+        return  (self.part_list.__repr__())
+
+    def get_note_id(self):
+        notes_id = []
+        for p in self.part_list:
+            notes_id.extend(p.get_note_id())
+        return notes_id
 
     #return the sequences of measures for a specified part
     def measures_from_part(self,part_number):
         if part_number not in range(0,len(self.part_list)):
             raise Exception("parameter 'part_number' should be between 0 and {}".format(len(self.part_list)-1))
-        return self.part_list[part_number]
+        return self.part_list[part_number].bar_list

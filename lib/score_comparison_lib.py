@@ -1,31 +1,14 @@
 import json
 import operator
-import lib.NotationTree as nt
 import lib.NotationLinear as nlin
 import lib.m21utils as m21u
 import copy
 
 #memoizers to speed up the recursive computation
-def memoize_inside_bars_diff_tree(func):
-    mem = {}
-    def memoizer(original, compare_to):
-        key = str(original) + str(compare_to)
-        if key not in mem:
-            mem[key] = func(original, compare_to)
-        return copy.deepcopy(mem[key])
-    return memoizer
 def memoize_inside_bars_diff_lin(func):
     mem = {}
     def memoizer(original, compare_to):
-        key = str(original) + str(compare_to)
-        if key not in mem:
-            mem[key] = func(original, compare_to)
-        return copy.deepcopy(mem[key])
-    return memoizer
-def memoize_block_diff_tree(func):
-    mem = {}
-    def memoizer(original, compare_to):
-        key = str(original) + str(compare_to)
+        key = repr(original) + repr(compare_to)
         if key not in mem:
             mem[key] = func(original, compare_to)
         return copy.deepcopy(mem[key])
@@ -33,7 +16,7 @@ def memoize_block_diff_tree(func):
 def memoize_block_diff_lin(func):
     mem = {}
     def memoizer(original, compare_to):
-        key = str(original) + str(compare_to)
+        key = repr(original) + repr(compare_to)
         if key not in mem:
             mem[key] = func(original, compare_to)
         return copy.deepcopy(mem[key])
@@ -41,7 +24,7 @@ def memoize_block_diff_lin(func):
 def memoize_lcs_diff(func):
     mem = {}
     def memoizer(original, compare_to):
-        key = str(original) + str(compare_to)
+        key = repr(original) + repr(compare_to)
         if key not in mem:
             mem[key] = func(original, compare_to)
         return copy.deepcopy(mem[key])
@@ -49,7 +32,7 @@ def memoize_lcs_diff(func):
 def memoize_pitches_lev_diff(func):
     mem = {}
     def memoizer(original, compare_to, noteNode1, noteNode2, ids):
-        key = str(original) + str(compare_to) +str(noteNode1) + str(noteNode2) + str(ids)
+        key = repr(original) + repr(compare_to) + repr(noteNode1) + repr(noteNode2) + repr(ids)
         if key not in mem:
             mem[key] = func(original, compare_to,noteNode1, noteNode2,ids)
         return copy.deepcopy(mem[key])
@@ -57,7 +40,7 @@ def memoize_pitches_lev_diff(func):
 def memoize_beamtuplet_lev_diff(func):
     mem = {}
     def memoizer(original, compare_to, noteNode1, noteNode2, type):
-        key = str(original) + str(compare_to) +str(noteNode1) + str(noteNode2) + type
+        key = repr(original) + repr(compare_to) +repr(noteNode1) + repr(noteNode2) + type
         if key not in mem:
             mem[key] = func(original, compare_to,noteNode1, noteNode2,type)
         return copy.deepcopy(mem[key])
@@ -65,7 +48,7 @@ def memoize_beamtuplet_lev_diff(func):
 
 
 # algorithm in section 3.2 
-# INPUT: two lists of notationTree hashes (one part from the first score and one part from the second score)
+# INPUT: two lists of Bar (one list from one part of the first score and one list from one part of the second score)
 # OUTPUT: the allignment between the two lists
 @memoize_lcs_diff
 def lcs_diff (original, compare_to):
@@ -114,7 +97,7 @@ def lcs_diff (original, compare_to):
 # that will be used to proceed further
 def non_common_subsequences(original,compare_to):
     #get the list of operations
-    op_list, cost = lcs_diff(original,compare_to)
+    op_list, __ = lcs_diff(original,compare_to)
     #retrieve the non common subsequences
     non_common_subsequences= []
     non_common_subsequences.append({"original":[],"compare_to":[]})
@@ -131,57 +114,6 @@ def non_common_subsequences(original,compare_to):
     non_common_subsequences = [s for s in non_common_subsequences if s!={"original":[],"compare_to":[]} ]
     return non_common_subsequences
 
-
-@memoize_block_diff_tree
-def block_diff_tree (original, compare_to ):
-    if len(original) == 0 and len(compare_to) == 0:
-        return [], 0
-    elif (len(original) == 0):
-        cost = sum([tree.subtree_size() for voice in compare_to for tree in voice])
-        return [("blockins",original,compare_to,cost)], cost
-    elif (len(compare_to) == 0):
-        cost = sum([tree.subtree_size() for voice in original for tree in voice])
-        return [("blockdel",original,compare_to,cost)], cost
-    else: 
-        #compute the cost and the op_list for the many possibilities of recursion
-        cost= {}
-        op_list = {}
-        #del-bar
-        op_list["delbar"], cost["delbar"]= block_diff_tree(original[1:], compare_to) 
-        cost["delbar"]+= sum([voice.subtree_size() for voice in original[0]])
-        op_list["delbar"].append(("delbar",original[0], None, sum([voice.subtree_size() for voice in original[0]])))
-        #ins-bar
-        op_list["insbar"], cost["insbar"]= block_diff_tree(original, compare_to[1:])
-        cost["insbar"] += sum([voice.subtree_size() for voice in compare_to[0]])
-        op_list["insbar"].append(("insbar",None, compare_to[0], sum([voice.subtree_size() for voice in compare_to[0]])))
-        #edit-bar
-        op_list["editbar"], cost["editbar"]= block_diff_tree(original[1:], compare_to[1:])
-        if original[0] == compare_to[0]: #to avoid perform the inside_bars_diff_tree if it's not needed
-            inside_bar_op_list = []
-            inside_bar_cost = 0
-        else: 
-            #consider all possible voice couples (one from score1 and one from score2)
-            possible_couples = [(v1,v2) for v1 in original[0] for v2 in compare_to[0]]
-            #compute the cost for all couples
-            inside_bar_op_list_couples = []
-            inside_bar_cost_couples = []
-            for c in possible_couples:
-                inside_bar_op_list_temp, inside_bar_cost_temp = inside_bars_diff_tree(c[0].beams_tree.root.children, c[1].beams_tree.root.children) 
-                #############to update with also the tuplet trees##########################
-                ##########################################################################
-                inside_bar_op_list_couples.append(inside_bar_op_list_temp)
-                inside_bar_cost_couples.append(inside_bar_cost_temp)
-            #select the couple that yield the minimum cost
-            min_index = inside_bar_cost_couples.index(min(inside_bar_cost_couples))
-            inside_bar_op_list = inside_bar_op_list_couples[min_index]
-            inside_bar_cost = inside_bar_cost_couples[min_index]
-        cost["editbar"] += inside_bar_cost
-        op_list["editbar"].append(("editbar",original[0], compare_to[0], inside_bar_cost))
-        op_list["editbar"].extend(inside_bar_op_list)
-        #compute the minimum of the possibilities
-        min_key = min(cost, key=cost.get)
-        out = op_list[min_key], cost[min_key]
-        return out
 
 
 @memoize_pitches_lev_diff
@@ -235,87 +167,6 @@ def pitches_leveinsthein_diff(original, compare_to,noteNode1,noteNode2, ids):
         return out
 
 
-@memoize_inside_bars_diff_tree
-def inside_bars_diff_tree (original, compare_to):
-    if len(original) == 0 and len(compare_to) == 0:
-        return [("empty",original,compare_to,0)], 0
-    elif (len(original) == 0):
-        cost = sum([tree.subtree_size() for tree in compare_to])
-        return [("forestins",original,compare_to,cost)], cost
-    elif (len(compare_to) == 0):
-        cost = sum([tree.subtree_size() for tree in original])
-        return [("forestdel",original,compare_to,cost)], cost
-    else: 
-        #compute the cost and the op_list for the many possibilities of recursion
-        cost= {}
-        op_list = {}
-        op_list["del"], cost["del"]= inside_bars_diff_tree(original[1:], compare_to) 
-        cost["del"]+= original[0].subtree_size()
-        op_list["del"].append(("del",original[0], None, original[0].subtree_size()))
-        op_list["ins"], cost["ins"]= inside_bars_diff_tree(original, compare_to[1:])
-        cost["ins"] += compare_to[0].subtree_size()
-        op_list["ins"].append(("ins",None, compare_to[0], compare_to[0].subtree_size()))
-        if (original[0].not_atomic() and compare_to[0].atomic()) or (original[0].unary() and compare_to[0].not_unary()):
-            op_list["nodedel"], cost["nodedel"]= inside_bars_diff_tree([c for c in original[0].children]+original[1:], compare_to) 
-            cost["nodedel"] += 1
-            op_list["nodedel"].append(("nodedel",original[0], None, 1))
-        if (original[0].atomic() and compare_to[0].not_atomic()) or (original[0].not_unary() and compare_to[0].unary()):
-            op_list["nodeins"], cost["nodeins"]= inside_bars_diff_tree(original, [c for c in compare_to[0].children]+compare_to[1:]) 
-            cost["nodeins"] += 1
-            op_list["nodeins"].append(("nodeins",None, compare_to[0], 1))
-        if (original[0].not_atomic() and compare_to[0].not_atomic()): #desc
-            op_list["desc"], cost["desc"]= inside_bars_diff_tree([c for c in original[0].children]+original[1:], [c for c in compare_to[0].children]+compare_to[1:])
-            cost["desc"]  += 0 #to update for many tipes of arch
-            op_list["desc"].append(("desc",original[0], compare_to[0], 0))
-        if (original[0].atomic() and compare_to[0].atomic()): #leaf/sub
-            op_list["leaf"], cost["leaf"]= inside_bars_diff_tree(original[1:],compare_to[1:]) 
-            if original[0] == compare_to[0]: #avoid call another function if they are equal
-                leaf_op, leaf_cost = [], 0
-            else:
-                leaf_op, leaf_cost = note_note_diff(original[0],compare_to[0])
-            cost["leaf"] += leaf_cost 
-            op_list["leaf"].extend(leaf_op)
-        #compute the minimum of the possibilities
-        min_key = min(cost, key=cost.get)
-        out = op_list[min_key], cost[min_key]
-        return out
-
-
-def note_note_diff(noteNode1,noteNode2):
-    """compute the differences between two note notes (definition on the paper)
-    Each note node consist in a triple (pitches, notehead, dots) where pitches is a list
-    Arguments:
-        noteNode1 {[NoteNode]} -- original NoteNode
-        noteNode2 {[NoteNode]} -- compare_to NoteNode
-    """
-    cost = 0
-    op_list = []
-    nn1_info = noteNode1.music_notation_repr
-    nn2_info = noteNode2.music_notation_repr
-    #add for the pitches
-    #if they are equal
-    if nn1_info[0] == nn2_info[0]:
-        op_list_pitch, cost_pitch = [],0
-    else:
-        #pitches diff is computed using leveinshtein differences (they are already ordered)
-        op_list_pitch, cost_pitch = pitches_leveinsthein_diff(nn1_info[0], nn2_info[0],noteNode1,noteNode2)
-    op_list.extend(op_list_pitch)
-    cost += cost_pitch
-    #add for the notehead
-    if nn1_info[1] != nn2_info[1]: 
-        cost += 1
-        op_list.append(("headedit",noteNode1,noteNode2,1))
-    #add for the dots
-    dots_diff = abs(nn1_info[2]- nn2_info[2]) #add one for each dot
-    cost += dots_diff
-    if nn1_info[2] > nn2_info[2]:
-        op_list.append(("dotsdel",noteNode1,None,dots_diff))
-    elif nn1_info[2] < nn2_info[2]:
-        op_list.append(("dotsins",None,noteNode2,dots_diff))
-
-    return op_list, cost
-
-
 def pitches_diff(pitch1,pitch2,noteNode1,noteNode2,ids):
     """compute the differences between two pitch (definition from the paper).
     a pitch consist of a tuple: pitch name (letter+number), accidental, tie.
@@ -363,20 +214,19 @@ def pitches_diff(pitch1,pitch2,noteNode1,noteNode2,ids):
     return op_list, cost
 
 
-
 @memoize_block_diff_lin
 def block_diff_lin (original, compare_to ):
     if len(original) == 0 and len(compare_to) == 0:
         return [], 0
     elif (len(original) == 0):
         op_list, cost= block_diff_lin(original, compare_to[1:])
-        cost += sum([voice.notation_size() for voice in compare_to[0]])
-        op_list.append(("insbar",None, compare_to[0], sum([voice.notation_size() for voice in compare_to[0]])))
+        cost += compare_to[0].notation_size()
+        op_list.append(("insbar",None, compare_to[0], compare_to[0].notation_size()))
         return op_list, cost
     elif (len(compare_to) == 0):
         op_list, cost= block_diff_lin(original[1:], compare_to) 
-        cost+= sum([voice.notation_size() for voice in original[0]])
-        op_list.append(("delbar",original[0], None, sum([voice.notation_size() for voice in original[0]])))
+        cost+= original[0].notation_size()
+        op_list.append(("delbar",original[0], None, original[0].notation_size()))
         return op_list, cost
     else: 
         #compute the cost and the op_list for the many possibilities of recursion
@@ -384,12 +234,12 @@ def block_diff_lin (original, compare_to ):
         op_list = {}
         #del-bar
         op_list["delbar"], cost["delbar"]= block_diff_lin(original[1:], compare_to) 
-        cost["delbar"]+= sum([voice.notation_size() for voice in original[0]])
-        op_list["delbar"].append(("delbar",original[0], None, sum([voice.notation_size() for voice in original[0]])))
+        cost["delbar"]+= original[0].notation_size()
+        op_list["delbar"].append(("delbar",original[0], None, original[0].notation_size()))
         #ins-bar
         op_list["insbar"], cost["insbar"]= block_diff_lin(original, compare_to[1:])
-        cost["insbar"] += sum([voice.notation_size() for voice in compare_to[0]])
-        op_list["insbar"].append(("insbar",None, compare_to[0], sum([voice.notation_size() for voice in compare_to[0]])))
+        cost["insbar"] += compare_to[0].notation_size()
+        op_list["insbar"].append(("insbar",None, compare_to[0], compare_to[0].notation_size()))
         #edit-bar
         op_list["editbar"], cost["editbar"]= block_diff_lin(original[1:], compare_to[1:])
         if original[0] == compare_to[0]: #to avoid perform the inside_bars_diff_lin if it's not needed
@@ -397,7 +247,7 @@ def block_diff_lin (original, compare_to ):
             inside_bar_cost = 0
         else: 
             #run the voice coupling algorithm
-            inside_bar_op_list, inside_bar_cost = voices_coupling_recursive(original[0], compare_to[0])
+            inside_bar_op_list, inside_bar_cost = voices_coupling_recursive(original[0].voices_list, compare_to[0].voices_list)
         cost["editbar"] += inside_bar_cost
         op_list["editbar"].extend(inside_bar_op_list)
         #compute the minimum of the possibilities
@@ -544,8 +394,8 @@ def beamtuplet_leveinsthein_diff(original, compare_to,note1,note2,type):
 
 def voices_coupling_recursive(original, compare_to):
     """compare all the possible voices permutations, considering also deletion and insertion (equation on office lens)
-    original [list] -- a list of VoiceLinear
-    compare_to [list] -- a list of VoiceLinear
+    original [list] -- a list of Voice
+    compare_to [list] -- a list of Voice
     """
     if (len(original) == 0 and len(compare_to) == 0): #stop the recursion
         return [], 0
@@ -592,7 +442,7 @@ def complete_scorelin_diff(score_lin1,score_lin2):
     #iterate for all parts in the score
     for p_number in range(n_of_parts):
         #compute non-common-subseq
-        ncs = non_common_subsequences(score_lin1.part_list[p_number], score_lin2.part_list[p_number])
+        ncs = non_common_subsequences(score_lin1.part_list[p_number].bar_list, score_lin2.part_list[p_number].bar_list)
         #compute blockdiff
         for subseq in ncs:
             op_list_block, cost_block = block_diff_lin(subseq["original"],subseq["compare_to"])
@@ -606,28 +456,26 @@ def op_list2json(op_list):
     for op in op_list:
         #bar
         if op[0] == "insbar":
-            assert(type(op[2]) == list)
-            id_list = [id for voice in op[2] for id in voice.get_note_id()]
+            assert(type(op[2]) == nlin.Bar)
             operations.append({"operation": "insbar",
                             "reference_score1": None,
-                            "reference_score2": id_list,
+                            "reference_score2": op[2].get_note_id(),
                             "info": None})
         elif op[0] == "delbar":
-            assert(type(op[1]) == list)
-            id_list = [id for voice in op[1] for id in voice.get_note_id()]
+            assert(type(op[1]) == nlin.Bar)
             operations.append({"operation": "delbar",
-                            "reference_score1": id_list,
+                            "reference_score1": op[1].get_note_id(),
                             "reference_score2": None,
                             "info": None})
         #voices
         elif op[0] == "voiceins":
-            assert(type(op[2]) == nlin.VoiceLinear)
+            assert(type(op[2]) == nlin.Voice)
             operations.append({"operation": "insvoice",
                             "reference_score1": None,
                             "reference_score2": op[2].get_note_id(),
                             "info": None})
         elif op[0] == "voicedel":
-            assert(type(op[1]) == nlin.VoiceLinear)
+            assert(type(op[1]) == nlin.Voice)
             operations.append({"operation": "delvoice",
                             "reference_score1": op[1].get_note_id(),
                             "reference_score2": None,

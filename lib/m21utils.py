@@ -72,40 +72,6 @@ def pitch_size(pitch):
         size +=1
     return size
 
-def generalNote_to_string_with_pitch(gn):
-    """
-    Return the NoteString with pitch, notehead number and dots.
-    Does not consider the ties (because of music21 ties encoding).
-    Arguments:
-        gn {music21 general note} -- [description]
-    Returns:
-        String -- the noteString
-    """
-    out_string = ""
-    #add generalNote type (Rest or Note)
-    if gn.isRest:
-        out_string += "R"
-    elif gn.isChord:
-        pitches = [note2string(p) for p in gn.sortDiatonicAscending().notes]
-        for p in pitches:
-            out_string += p
-    elif gn.isNote:
-        out_string += note2string(gn)
-    else:
-        raise TypeError("The generalNote must be a Chord, a Rest or a Note")
-
-    #add notehead information (4,2,1,1/2, etc...). 4 means a black note, 2 white, 1 whole etc...
-    type_number= Fraction(duration.convertTypeToNumber(gn.duration.type))
-    if type_number >= 4:
-        out_string += "4"
-    else: 
-        out_string += str(type_number)
-    #add the dot
-    n_of_dots = gn.duration.dots
-    for _ in range(n_of_dots):
-        out_string+= "*"
-    return out_string
-
 def generalNote_info(gn):
     """
     Get a json of informations about a general note.

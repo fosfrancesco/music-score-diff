@@ -19,11 +19,12 @@ def test_annotation_production1():
         conv = m21.mei.MeiToM21Converter(mei_string)
         score2 = conv.run()
     #build ScoreTrees
-    score_lin1 = nlin.ScoreLinear(score1)
-    score_lin2 = nlin.ScoreLinear(score2)
+    score1 = nlin.Score(score1)
+    score2 = nlin.Score(score2)
     #compute the complete score diff
-    op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
+    op_list, cost=scl.complete_scorelin_diff(score1,score2)
     ann1, ann2 = sv.oplist2annotations(op_list)
+    sv.setResourchesPath(Path(RESOURCES_PATH))
     sv.produce_annnot_svg(score1_path,ann1,out_path=Path("output/monophonic_score_1a.svg"))
     sv.produce_annnot_svg(score2_path,ann2,out_path=Path("output/monophonic_score_1b.svg"))
     assert(1==1)
@@ -41,11 +42,12 @@ def test_annotation_production2():
         conv = m21.mei.MeiToM21Converter(mei_string)
         score2 = conv.run()
     #build ScoreTrees
-    score_lin1 = nlin.ScoreLinear(score1)
-    score_lin2 = nlin.ScoreLinear(score2)
+    score_lin1 = nlin.Score(score1)
+    score_lin2 = nlin.Score(score2)
     #compute the complete score diff
     op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
     ann1, ann2 = sv.oplist2annotations(op_list)
+    sv.setResourchesPath(Path(RESOURCES_PATH))
     sv.produce_annnot_svg(score1_path,ann1,out_path=Path("output/multivoice_score_1a.svg"))
     sv.produce_annnot_svg(score2_path,ann2,out_path=Path("output/multivoice_score_1b.svg"))
     assert(1==1)
@@ -62,11 +64,12 @@ def test_annotation_production3():
         conv = m21.mei.MeiToM21Converter(mei_string)
         score2 = conv.run()
     #build ScoreTrees
-    score_lin1 = nlin.ScoreLinear(score1)
-    score_lin2 = nlin.ScoreLinear(score2)
+    score_lin1 = nlin.Score(score1)
+    score_lin2 = nlin.Score(score2)
     #compute the complete score diff
     op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
     ann1, ann2 = sv.oplist2annotations(op_list)
+    sv.setResourchesPath(Path(RESOURCES_PATH))
     sv.produce_annnot_svg(score1_path,ann1,out_path=Path("output/chord_score_1a.svg"))
     sv.produce_annnot_svg(score2_path,ann2,out_path=Path("output/chord_score_1b.svg"))
     assert(1==1)
@@ -83,8 +86,8 @@ def test_annotation_production4():
         conv = m21.mei.MeiToM21Converter(mei_string)
         score2 = conv.run()
     #build ScoreTrees
-    score_lin1 = nlin.ScoreLinear(score1)
-    score_lin2 = nlin.ScoreLinear(score2)
+    score_lin1 = nlin.Score(score1)
+    score_lin2 = nlin.Score(score2)
     #compute the complete score diff
     op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
     ann1, ann2 = sv.oplist2annotations(op_list)
@@ -94,7 +97,7 @@ def test_annotation_production4():
     assert(1==1)
 
 
-def test_annotation_production4():
+def test_annotation_production5():
     score1_path = Path("test_scores/chord_score_3a.mei")
     with open(score1_path, 'r') as f:
         mei_string = f.read()
@@ -106,8 +109,8 @@ def test_annotation_production4():
         conv = m21.mei.MeiToM21Converter(mei_string)
         score2 = conv.run()
     #build ScoreTrees
-    score_lin1 = nlin.ScoreLinear(score1)
-    score_lin2 = nlin.ScoreLinear(score2)
+    score_lin1 = nlin.Score(score1)
+    score_lin2 = nlin.Score(score2)
     #compute the complete score diff
     op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
     ann1, ann2 = sv.oplist2annotations(op_list)
@@ -116,7 +119,7 @@ def test_annotation_production4():
     sv.produce_annnot_svg(score2_path,ann2,out_path=Path("output/chord_score_3b.svg"))
     assert(1==1)
 
-def test_annotation_production5():
+def test_annotation_production6():
     score1_path = Path("test_scores/tie_score_1a.mei")
     with open(score1_path, 'r') as f:
         mei_string = f.read()
@@ -128,8 +131,8 @@ def test_annotation_production5():
         conv = m21.mei.MeiToM21Converter(mei_string)
         score2 = conv.run()
     #build ScoreTrees
-    score_lin1 = nlin.ScoreLinear(score1)
-    score_lin2 = nlin.ScoreLinear(score2)
+    score_lin1 = nlin.Score(score1)
+    score_lin2 = nlin.Score(score2)
     #compute the complete score diff
     op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
     ann1, ann2 = sv.oplist2annotations(op_list)
@@ -138,7 +141,7 @@ def test_annotation_production5():
     sv.produce_annnot_svg(score2_path,ann2,out_path=Path("output/tie_score_1b.svg"))
     assert(1==1)
 
-def test_annotation_production6():
+def test_annotation_production7():
     score1_path = Path("test_scores/tuplet_score_1a.mei")
     with open(score1_path, 'r') as f:
         mei_string = f.read()
@@ -150,8 +153,8 @@ def test_annotation_production6():
         conv = m21.mei.MeiToM21Converter(mei_string)
         score2 = conv.run()
     #build ScoreTrees
-    score_lin1 = nlin.ScoreLinear(score1)
-    score_lin2 = nlin.ScoreLinear(score2)
+    score_lin1 = nlin.Score(score1)
+    score_lin2 = nlin.Score(score2)
     #compute the complete score diff
     op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
     ann1, ann2 = sv.oplist2annotations(op_list)
@@ -160,7 +163,7 @@ def test_annotation_production6():
     sv.produce_annnot_svg(score2_path,ann2,out_path=Path("output/tuplet_score_1b.svg"))
     assert(1==1)
 
-def test_annotation_production7():
+def test_annotation_production8():
     score1_path = Path("test_scores/polyphonic_score_1a.mei")
     with open(score1_path, 'r') as f:
         mei_string = f.read()
@@ -172,8 +175,8 @@ def test_annotation_production7():
         conv = m21.mei.MeiToM21Converter(mei_string)
         score2 = conv.run()
     #build ScoreTrees
-    score_lin1 = nlin.ScoreLinear(score1)
-    score_lin2 = nlin.ScoreLinear(score2)
+    score_lin1 = nlin.Score(score1)
+    score_lin2 = nlin.Score(score2)
     #compute the complete score diff
     op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
     ann1, ann2 = sv.oplist2annotations(op_list)
@@ -182,7 +185,7 @@ def test_annotation_production7():
     sv.produce_annnot_svg(score2_path,ann2,out_path=Path("output/polyphonic_score_1b.svg"))
     assert(1==1)
 
-def test_annotation_production8():
+def test_annotation_production9():
     score1_path = Path("test_scores/tie_score_2a.mei")
     with open(score1_path, 'r') as f:
         mei_string = f.read()
@@ -194,8 +197,8 @@ def test_annotation_production8():
         conv = m21.mei.MeiToM21Converter(mei_string)
         score2 = conv.run()
     #build ScoreTrees
-    score_lin1 = nlin.ScoreLinear(score1)
-    score_lin2 = nlin.ScoreLinear(score2)
+    score_lin1 = nlin.Score(score1)
+    score_lin2 = nlin.Score(score2)
     #compute the complete score diff
     op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
     ann1, ann2 = sv.oplist2annotations(op_list)
@@ -204,7 +207,7 @@ def test_annotation_production8():
     sv.produce_annnot_svg(score2_path,ann2,out_path=Path("output/tie_score_2b.svg"))
     assert(1==1)
 
-def test_annotation_production9():
+def test_annotation_production10():
     score1_path = Path("test_scores/polyphonic_score_2a.mei")
     with open(score1_path, 'r') as f:
         mei_string = f.read()
@@ -216,8 +219,8 @@ def test_annotation_production9():
         conv = m21.mei.MeiToM21Converter(mei_string)
         score2 = conv.run()
     #build ScoreTrees
-    score_lin1 = nlin.ScoreLinear(score1)
-    score_lin2 = nlin.ScoreLinear(score2)
+    score_lin1 = nlin.Score(score1)
+    score_lin2 = nlin.Score(score2)
     #compute the complete score diff
     op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
     ann1, ann2 = sv.oplist2annotations(op_list)
@@ -239,8 +242,8 @@ def test_json_production1():
         conv = m21.mei.MeiToM21Converter(mei_string)
         score2 = conv.run()
     #build ScoreTrees
-    score_lin1 = nlin.ScoreLinear(score1)
-    score_lin2 = nlin.ScoreLinear(score2)
+    score_lin1 = nlin.Score(score1)
+    score_lin2 = nlin.Score(score2)
     #compute the complete score diff
     op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
     operation_json = scl.op_list2json(op_list)
@@ -258,8 +261,8 @@ def test_json_production2():
         conv = m21.mei.MeiToM21Converter(mei_string)
         score2 = conv.run()
     #build ScoreTrees
-    score_lin1 = nlin.ScoreLinear(score1)
-    score_lin2 = nlin.ScoreLinear(score2)
+    score_lin1 = nlin.Score(score1)
+    score_lin2 = nlin.Score(score2)
     #compute the complete score diff
     op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
     operation_json = scl.op_list2json(op_list)

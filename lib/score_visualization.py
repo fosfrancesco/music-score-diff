@@ -38,19 +38,17 @@ def oplist2annotations(operations):
     for op in operations:
         #bar
         if op[0] == "insbar":
-            assert(type(op[2]) == list)
-            id_list = [id for voice in op[2] for id in voice.get_note_id()]
-            annotations2.extend([{"id": id_list, "color": INS_COLOR, "target": "bar"}])
+            assert(type(op[2]) == nlin.Bar)
+            annotations2.extend([{"id": op[2].get_note_id(), "color": INS_COLOR, "target": "bar"}])
         elif op[0] == "delbar":
-            assert(type(op[1]) == list)
-            id_list = [id for voice in op[1] for id in voice.get_note_id()]
-            annotations1.extend([{"id": id_list, "color": INS_COLOR, "target": "bar"}])
+            assert(type(op[1]) == nlin.Bar)
+            annotations1.extend([{"id": op[1].get_note_id(), "color": INS_COLOR, "target": "bar"}])
         #voices
         elif op[0] == "voiceins":
-            assert(type(op[2]) == nlin.VoiceLinear)
+            assert(type(op[2]) == nlin.Voice)
             annotations2.extend([{"id": id, "color": INS_COLOR, "target": "note"} for id in op[2].get_note_id()])
         elif op[0] == "voicedel":
-            assert(type(op[1]) == nlin.VoiceLinear)
+            assert(type(op[1]) == nlin.Voice)
             annotations1.extend([{"id": id, "color": DEL_COLOR, "target": "note"} for id in op[1].get_note_id()])
         #note
         elif op[0] == "noteins":
