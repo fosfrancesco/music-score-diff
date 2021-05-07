@@ -15,7 +15,7 @@
             },
             "envFile": "${workspaceRoot}/.env",
             "console": "integratedTerminal",
-            "pythonPath": "${config:python.pythonPath}",
+            "python": "${command:python.interpreterPath}",
         },
         
     ]
