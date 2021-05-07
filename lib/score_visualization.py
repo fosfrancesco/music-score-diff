@@ -324,24 +324,28 @@ def produce_annnot_svg(mei_file, annotations, out_path="annotated_score.svg"):
         tk.setResourcePath(str(RESOURCES_PATH))  # set the correct folder of resourches
     tk.loadFile(str(mei_file)) if isinstance(mei_file, Path) else tk.loadFile(mei_file)
 
-    # TODO: display of multiple pages
-    stringSVG = (
-        tk.renderToSVG()
-    )  # this will produce just the first page. To update for longer scores
-    svg_tree = ET.ElementTree(ET.fromstring(stringSVG))
-    # build the parent map
-    parent_map = {c: p for p in svg_tree.iter() for c in p}
-    # display the annotations
-    for ann in annotations:
-        if isinstance(ann["id"], list):  # if there are multiple elements to highlight
-            for e_id in ann["id"]:
-                element = svg_tree.find(".//{}[@id='{}']".format(el_dict["g"], e_id))
+    page_count = tk.GetPageCount()
+    for page_idx in range(0, page_count):
+        stringSVG = tk.renderToSVG(page_idx)
+
+        svg_tree = ET.ElementTree(ET.fromstring(stringSVG))
+        # build the parent map
+        parent_map = {c: p for p in svg_tree.iter() for c in p}
+        # display the annotations
+        for ann in annotations:
+            if isinstance(ann["id"], list):  # if there are multiple elements to highlight
+                for e_id in ann["id"]:
+                    element = svg_tree.find(".//{}[@id='{}']".format(el_dict["g"], e_id))
+                    element.set("fill", SUB_COLOR)
+            else:  # only one note
+                element = svg_tree.find(".//{}[@id='{}']".format(el_dict["g"], ann["id"]))
                 element.set("fill", SUB_COLOR)
-        else:  # only one note
-            element = svg_tree.find(".//{}[@id='{}']".format(el_dict["g"], ann["id"]))
-            element.set("fill", SUB_COLOR)
-    with open(out_path, "wb") as svg_file:
-        svg_tree.write(svg_file)
+
+        out_path_name, out_path_ext = os.path.splitext(out_path)
+        page_out_path = out_path_name + '_' + str(page_idx) + out_path_ext
+        with open(page_out_path, "wb") as svg_file:
+            svg_tree.write(svg_file)
+
     return True
 
 
