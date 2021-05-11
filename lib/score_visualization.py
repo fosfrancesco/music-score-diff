@@ -12,9 +12,9 @@ import lib.NotationLinear as nlin
 
 RESOURCES_PATH = None
 
-INS_COLOR = "green"
+INS_COLOR = "red" # "green"
 DEL_COLOR = "red"
-SUB_COLOR = "blue"
+SUB_COLOR = "red" # "blue"
 
 def setResourchesPath(path):
     global RESOURCES_PATH
@@ -27,12 +27,14 @@ def annotate_differences(operations):
         if op[0] == "insbar":
             assert type(op[2]) == nlin.Bar
             # color all the notes in the inserted score2 measure using INS_COLOR
+            op[2].measure.style.color = INS_COLOR # this apparently does nothing
             for el in op[2].measure.recurse().notesAndRests:
                 el.style.color = INS_COLOR
 
         elif op[0] == "delbar":
             assert type(op[1]) == nlin.Bar
             # color all the notes in the deleted score1 measure using DEL_COLOR
+            op[1].measure.style.color = DEL_COLOR # this apparently does nothing
             for el in op[1].measure.recurse().notesAndRests:
                 el.style.color = DEL_COLOR
 
@@ -40,12 +42,14 @@ def annotate_differences(operations):
         elif op[0] == "voiceins":
             assert type(op[2]) == nlin.Voice
             # color all the notes in the inserted score2 voice using INS_COLOR
+            op[2].voice.style.color = INS_COLOR # this apparently does nothing
             for el in op[2].voice.recurse().notesAndRests:
                 el.style.color = INS_COLOR
 
         elif op[0] == "voicedel":
             assert type(op[1]) == nlin.Voice
             # color all the notes in the deleted score1 voice using DEL_COLOR
+            op[1].voice.style.color = DEL_COLOR # this apparently does nothing
             for el in op[1].voice.recurse().notesAndRests:
                 el.style.color = DEL_COLOR
 
@@ -116,27 +120,31 @@ def annotate_differences(operations):
             assert type(op[2]) == nlin.AnnotatedNote
             # color the inserted beam in score2 using INS_COLOR
             note = op[2].general_note
+            note.style.color = INS_COLOR
             for beam in note.beams:
-                beam.style.color = INS_COLOR
+                beam.style.color = INS_COLOR # this apparently does nothing
 
         elif op[0] == "delbeam":
             assert type(op[1]) == nlin.AnnotatedNote
             # color the deleted beam in score1 using DEL_COLOR
             note = op[1].general_note
+            note.style.color = DEL_COLOR
             for beam in note.beams:
-                beam.style.color = DEL_COLOR
+                beam.style.color = DEL_COLOR # this apparently does nothing
 
         elif op[0] == "editbeam":
             assert type(op[1]) == nlin.AnnotatedNote
             assert type(op[2]) == nlin.AnnotatedNote
             # color the changed beam (in both scores) using SUB_COLOR
-            note = op[1].general_note
-            for beam in note.beams:
-                beam.style.color = SUB_COLOR
+            note1 = op[1].general_note
+            note1.style.color = SUB_COLOR
+            for beam in note1.beams:
+                beam.style.color = SUB_COLOR # this apparently does nothing
 
-            note = op[2].general_note
-            for beam in note.beams:
-                beam.style.color = SUB_COLOR
+            note2 = op[2].general_note
+            note2.style.color = SUB_COLOR
+            for beam in note2.beams:
+                beam.style.color = SUB_COLOR # this apparently does nothing
 
         # accident
         elif op[0] == "accidentins":
@@ -150,6 +158,7 @@ def annotate_differences(operations):
                 note = note.notes[idx]
             if note.pitch.accidental:
                 note.pitch.accidental.style.color = INS_COLOR
+            note.style.color = INS_COLOR
 
         elif op[0] == "accidentdel":
             assert type(op[1]) == nlin.AnnotatedNote
@@ -162,6 +171,7 @@ def annotate_differences(operations):
                 note = note.notes[idx]
             if note.pitch.accidental:
                 note.pitch.accidental.style.color = DEL_COLOR
+            note.style.color = DEL_COLOR
 
         elif op[0] == "accidentedit":
             assert type(op[1]) == nlin.AnnotatedNote
@@ -175,6 +185,7 @@ def annotate_differences(operations):
                 note1 = note1.notes[idx]
             if note1.pitch.accidental:
                 note1.pitch.accidental.style.color = SUB_COLOR
+            note1.style.color = SUB_COLOR
 
             note2 = op[2].general_note
             if 'Chord' in note2.classes:
@@ -183,6 +194,7 @@ def annotate_differences(operations):
                 note2 = note2.notes[idx]
             if note2.pitch.accidental:
                 note2.pitch.accidental.style.color = SUB_COLOR
+            note2.style.color = SUB_COLOR
 
         elif op[0] == "dotins":
             assert type(op[1]) == nlin.AnnotatedNote
