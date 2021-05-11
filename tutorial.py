@@ -29,14 +29,17 @@ score_lin2 = nlin.Score(score2)
 
 #compute the complete score diff
 op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
-#generate the list of annotations in json format
-operation_json = scl.op_list2json(op_list)
-#save them to a file
-with open(Path('output/operations_test.json'), 'w') as outfile:
-    json.dump(operation_json, outfile)
 
-#compute the annotations for the two scores
-ann1, ann2 = sv.oplist2annotations(op_list)
-#display the annotations on the scores (color the involved elements)
-sv.produce_annnot_svg(score1_path,ann1,out_path=Path("output/test1.svg"))
-sv.produce_annnot_svg(score2_path,ann2,out_path=Path("output/test2.svg"))
+#generate the list of annotations in json format
+# operation_json = scl.op_list2json(op_list)
+#save them to a file
+# with open(Path('output/operations_test.json'), 'w') as outfile:
+#     json.dump(operation_json, outfile)
+
+#ann1, ann2 = sv.oplist2annotations(op_list)
+#annotate the differences between the two scores (color the involved elements)
+sv.annotate_differences(op_list)
+
+#display the two (colored) scores
+score1.show('musicxml.png')
+score2.show('musicxml.png')

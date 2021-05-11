@@ -47,10 +47,10 @@ def memoize_beamtuplet_lev_diff(func):
     return memoizer
 
 
-# algorithm in section 3.2 
+# algorithm in section 3.2
 # INPUT: two lists of Bar (one list from one part of the first score and one list from one part of the second score)
 # OUTPUT: the allignment between the two lists
-@memoize_lcs_diff
+#@memoize_lcs_diff
 def lcs_diff (original, compare_to):
     if (len(original) == 0 and len(compare_to)== 0):
         cost = 0
@@ -70,23 +70,23 @@ def lcs_diff (original, compare_to):
             op_list.append(("originalstep",e,None,0))
         return op_list, cost
     elif original[0] == compare_to[0]:
-        op_list, cost = lcs_diff(original[1:], compare_to[1:]) 
+        op_list, cost = lcs_diff(original[1:], compare_to[1:])
         cost += 1
         op_list.append(("equal",original[0], compare_to[0], 1))
         return op_list, cost
-    else: 
+    else:
         #compute the cost and the op_list for the many possibilities of recursion
         cost= {}
         op_list = {}
         #original-step
-        op_list["originalstep"], cost["originalstep"]= lcs_diff(original[1:], compare_to) 
+        op_list["originalstep"], cost["originalstep"]= lcs_diff(original[1:], compare_to)
         cost["originalstep"]+= 0
         op_list["originalstep"].append(("originalstep",original[0], None, 0))
         #compare_to-step
         op_list["comparetostep"], cost["comparetostep"]= lcs_diff(original, compare_to[1:])
         cost["comparetostep"] += 0
         op_list["comparetostep"].append(("comparetostep",None, compare_to[0], 0))
-        
+
         #compute the maximum of the possibilities
         max_key = max(cost, key=cost.get)
         out = op_list[max_key], cost[max_key]
@@ -116,7 +116,7 @@ def non_common_subsequences(original,compare_to):
 
 
 
-@memoize_pitches_lev_diff
+#@memoize_pitches_lev_diff
 def pitches_leveinsthein_diff(original, compare_to,noteNode1,noteNode2, ids):
     """Compute the leveinsthein distance between two sequences of pitches
     Arguments:
@@ -140,12 +140,12 @@ def pitches_leveinsthein_diff(original, compare_to,noteNode1,noteNode2, ids):
         op_list.append(("delpitch",noteNode1,None,m21u.pitch_size(original[0]),ids))
         cost += m21u.pitch_size(original[0])
         return op_list, cost
-    else: 
+    else:
         #compute the cost and the op_list for the many possibilities of recursion
         cost= {}
         op_list = {}
         #del-pitch
-        op_list["delpitch"], cost["delpitch"]= pitches_leveinsthein_diff(original[1:], compare_to,noteNode1,noteNode2,(ids[0]+1,ids[1])) 
+        op_list["delpitch"], cost["delpitch"]= pitches_leveinsthein_diff(original[1:], compare_to,noteNode1,noteNode2,(ids[0]+1,ids[1]))
         cost["delpitch"]+= m21u.pitch_size(original[0])
         op_list["delpitch"].append(("delpitch",noteNode1, None, m21u.pitch_size(original[0]),ids))
         #ins-pitch
@@ -157,8 +157,8 @@ def pitches_leveinsthein_diff(original, compare_to,noteNode1,noteNode2, ids):
         if original[0] == compare_to[0]: #to avoid perform the pitch_diff
             pitch_diff_op_list = []
             pitch_diff_cost = 0
-        else: 
-            pitch_diff_op_list, pitch_diff_cost = pitches_diff(original[0], compare_to[0],noteNode1,noteNode2,(ids[0],ids[1])) 
+        else:
+            pitch_diff_op_list, pitch_diff_cost = pitches_diff(original[0], compare_to[0],noteNode1,noteNode2,(ids[0],ids[1]))
         cost["editpitch"] += pitch_diff_cost
         op_list["editpitch"].extend(pitch_diff_op_list)
         #compute the minimum of the possibilities
@@ -187,7 +187,7 @@ def pitches_diff(pitch1,pitch2,noteNode1,noteNode2,ids):
         # TODO: select the note in a more precise way in case of a chord
         #rest to note
         if  (pitch1[0][0] == "R") != (pitch2[0][0] == "R"): #xor
-            op_list.append(("pitchtypeedit",noteNode1,noteNode2,1,ids))       
+            op_list.append(("pitchtypeedit",noteNode1,noteNode2,1,ids))
         else: #they are two notes
             op_list.append(("pitchnameedit",noteNode1,noteNode2,1,ids))
     #add for the accidentals
@@ -207,14 +207,14 @@ def pitches_diff(pitch1,pitch2,noteNode1,noteNode2,ids):
         cost += 1
         if pitch1[2]:
             assert not pitch2[2]
-            op_list.append(("tiedel",noteNode1,None,1,ids))
+            op_list.append(("tiedel",noteNode1,noteNode2,1,ids))
         elif pitch2[2]:
             assert not pitch1[2]
-            op_list.append(("tieins",None,noteNode2,1,ids))
+            op_list.append(("tieins",noteNode1,noteNode2,1,ids))
     return op_list, cost
 
 
-@memoize_block_diff_lin
+#@memoize_block_diff_lin
 def block_diff_lin (original, compare_to ):
     if len(original) == 0 and len(compare_to) == 0:
         return [], 0
@@ -224,16 +224,16 @@ def block_diff_lin (original, compare_to ):
         op_list.append(("insbar",None, compare_to[0], compare_to[0].notation_size()))
         return op_list, cost
     elif (len(compare_to) == 0):
-        op_list, cost= block_diff_lin(original[1:], compare_to) 
+        op_list, cost= block_diff_lin(original[1:], compare_to)
         cost+= original[0].notation_size()
         op_list.append(("delbar",original[0], None, original[0].notation_size()))
         return op_list, cost
-    else: 
+    else:
         #compute the cost and the op_list for the many possibilities of recursion
         cost= {}
         op_list = {}
         #del-bar
-        op_list["delbar"], cost["delbar"]= block_diff_lin(original[1:], compare_to) 
+        op_list["delbar"], cost["delbar"]= block_diff_lin(original[1:], compare_to)
         cost["delbar"]+= original[0].notation_size()
         op_list["delbar"].append(("delbar",original[0], None, original[0].notation_size()))
         #ins-bar
@@ -245,7 +245,7 @@ def block_diff_lin (original, compare_to ):
         if original[0] == compare_to[0]: #to avoid perform the inside_bars_diff_lin if it's not needed
             inside_bar_op_list = []
             inside_bar_cost = 0
-        else: 
+        else:
             #run the voice coupling algorithm
             inside_bar_op_list, inside_bar_cost = voices_coupling_recursive(original[0].voices_list, compare_to[0].voices_list)
         cost["editbar"] += inside_bar_cost
@@ -255,7 +255,7 @@ def block_diff_lin (original, compare_to ):
         out = op_list[min_key], cost[min_key]
         return out
 
-@memoize_inside_bars_diff_lin
+#@memoize_inside_bars_diff_lin
 def inside_bars_diff_lin (original, compare_to):
     #original and compare to are two lists of annotatedNote
     if len(original) == 0 and len(compare_to) == 0:
@@ -272,12 +272,12 @@ def inside_bars_diff_lin (original, compare_to):
         op_list.append(("notedel",original[0],None,original[0].notation_size()))
         cost += original[0].notation_size()
         return op_list, cost
-    else: 
+    else:
         #compute the cost and the op_list for the many possibilities of recursion
         cost= {}
         op_list = {}
         #notedel
-        op_list["notedel"], cost["notedel"]= inside_bars_diff_lin(original[1:], compare_to) 
+        op_list["notedel"], cost["notedel"]= inside_bars_diff_lin(original[1:], compare_to)
         cost["notedel"]+= original[0].notation_size()
         op_list["notedel"].append(("notedel",original[0], None, original[0].notation_size()))
         #noteins
@@ -285,12 +285,12 @@ def inside_bars_diff_lin (original, compare_to):
         cost["noteins"] += compare_to[0].notation_size()
         op_list["noteins"].append(("noteins",None, compare_to[0], compare_to[0].notation_size()))
         #notesub
-        op_list["notesub"], cost["notesub"]= inside_bars_diff_lin(original[1:],compare_to[1:]) 
+        op_list["notesub"], cost["notesub"]= inside_bars_diff_lin(original[1:],compare_to[1:])
         if original[0] == compare_to[0]: #avoid call another function if they are equal
             notesub_op, notesub_cost = [], 0
         else:
             notesub_op, notesub_cost = annotated_note_diff(original[0],compare_to[0])
-        cost["notesub"] += notesub_cost 
+        cost["notesub"] += notesub_cost
         op_list["notesub"].extend(notesub_op)
         #compute the minimum of the possibilities
         min_key = min(cost, key=cost.get)
@@ -316,7 +316,7 @@ def annotated_note_diff(annNote1,annNote2):
     op_list.extend(op_list_pitch)
     cost += cost_pitch
     #add for the notehead
-    if annNote1.note_head != annNote2.note_head: 
+    if annNote1.note_head != annNote2.note_head:
         cost += 1
         op_list.append(("headedit",annNote1, annNote2,1))
     #add for the dots
@@ -324,9 +324,9 @@ def annotated_note_diff(annNote1,annNote2):
         dots_diff = abs(annNote1.dots- annNote2.dots) #add one for each dot
         cost += dots_diff
         if annNote1.dots > annNote2.dots:
-            op_list.append(("dotdel",annNote1,None,dots_diff))
+            op_list.append(("dotdel",annNote1,annNote2,dots_diff))
         else:
-            op_list.append(("dotins",None,annNote2,dots_diff))
+            op_list.append(("dotins",annNote1,annNote2,dots_diff))
     #add for the beamings
     if annNote1.beamings != annNote2.beamings:
         beam_op_list, beam_cost = beamtuplet_leveinsthein_diff(annNote1.beamings, annNote2.beamings,annNote1,annNote2,"beam")
@@ -341,7 +341,7 @@ def annotated_note_diff(annNote1,annNote2):
     return op_list, cost
 
 
-@memoize_beamtuplet_lev_diff
+#@memoize_beamtuplet_lev_diff
 def beamtuplet_leveinsthein_diff(original, compare_to,note1,note2,type):
     """Compute the leveinsthein distance between two sequences of beaming or tuples
     Arguments:
@@ -365,12 +365,12 @@ def beamtuplet_leveinsthein_diff(original, compare_to,note1,note2,type):
         op_list.append(("del"+type,note1,None,1))
         cost += 1
         return op_list, cost
-    else: 
+    else:
         #compute the cost and the op_list for the many possibilities of recursion
         cost= {}
         op_list = {}
         #del-pitch
-        op_list["del"+type], cost["del"+type]= beamtuplet_leveinsthein_diff(original[1:], compare_to,note1,note2,type) 
+        op_list["del"+type], cost["del"+type]= beamtuplet_leveinsthein_diff(original[1:], compare_to,note1,note2,type)
         cost["del"+type]+= 1
         op_list["del"+type].append(("del"+type,note1, None, 1))
         #ins-pitch
@@ -382,7 +382,7 @@ def beamtuplet_leveinsthein_diff(original, compare_to,note1,note2,type):
         if original[0] == compare_to[0]: #to avoid perform the pitch_diff
             beam_diff_op_list = []
             beam_diff_cost = 0
-        else: 
+        else:
             beam_diff_op_list, beam_diff_cost = [("edit"+type,note1, note2, 1)],1
         cost["edit"+type] += beam_diff_cost
         op_list["edit"+type].extend(beam_diff_op_list)
@@ -420,7 +420,7 @@ def voices_coupling_recursive(original, compare_to):
         op_list["voicedel"], cost["voicedel"] = voices_coupling_recursive(original[1:], compare_to)
         op_list["voicedel"].append(("voicedel",original[0], None,original[0].notation_size()))
         cost["voicedel"] += original[0].notation_size()
-        for i,c in enumerate(compare_to):   
+        for i,c in enumerate(compare_to):
             #substitution
             op_list["voicesub"+str(i)], cost["voicesub"+str(i)] = voices_coupling_recursive(original[1:], compare_to[:i] +  compare_to[i+1:])
             if compare_to[0] != original[0]: #add the cost of the sub and the operations from inside_bar_diff
@@ -459,12 +459,12 @@ def op_list2json(op_list):
             assert(type(op[2]) == nlin.Bar)
             operations.append({"operation": "insbar",
                             "reference_score1": None,
-                            "reference_score2": op[2].get_note_id(),
+                            "reference_score2": op[2],
                             "info": None})
         elif op[0] == "delbar":
             assert(type(op[1]) == nlin.Bar)
             operations.append({"operation": "delbar",
-                            "reference_score1": op[1].get_note_id(),
+                            "reference_score1": op[1],
                             "reference_score2": None,
                             "info": None})
         #voices
@@ -472,12 +472,12 @@ def op_list2json(op_list):
             assert(type(op[2]) == nlin.Voice)
             operations.append({"operation": "insvoice",
                             "reference_score1": None,
-                            "reference_score2": op[2].get_note_id(),
+                            "reference_score2": op[2],
                             "info": None})
         elif op[0] == "voicedel":
             assert(type(op[1]) == nlin.Voice)
             operations.append({"operation": "delvoice",
-                            "reference_score1": op[1].get_note_id(),
+                            "reference_score1": op[1],
                             "reference_score2": None,
                             "info": None})
         #note
@@ -485,12 +485,12 @@ def op_list2json(op_list):
             assert(type(op[2])==nlin.AnnotatedNote)
             operations.append({"operation": "insnote",
                             "reference_score1": None,
-                            "reference_score2": op[2].get_note_id(),
+                            "reference_score2": op[2],
                             "info": None})
         elif op[0] == "notedel":
             assert(type(op[1])==nlin.AnnotatedNote)
             operations.append({"operation": "delnote",
-                            "reference_score1": op[1].get_note_id(),
+                            "reference_score1": op[1],
                             "reference_score2": None,
                             "info": None})
         #pitch
@@ -499,80 +499,80 @@ def op_list2json(op_list):
             assert(type(op[2])==nlin.AnnotatedNote)
             assert(len(op)==5) #the indices must be there
             operations.append({"operation": "subpitchname",
-                            "reference_score1": op[1].get_note_id(),
-                            "reference_score2": op[2].get_note_id(),
+                            "reference_score1": op[1],
+                            "reference_score2": op[2],
                             "info": op[4]})
         elif op[0] == "inspitch":
             assert(type(op[2])==nlin.AnnotatedNote)
             assert(len(op)==5) #the indices must be there
             operations.append({"operation": "inspitch",
                             "reference_score1": None,
-                            "reference_score2": op[2].get_note_id(),
+                            "reference_score2": op[2],
                             "info": (None,op[4][1])})
         elif op[0] == "delpitch":
             assert(type(op[1])==nlin.AnnotatedNote)
             assert(len(op)==5) #the indices must be there
             operations.append({"operation": "delpitch",
-                            "reference_score1": op[1].get_note_id(),
+                            "reference_score1": op[1],
                             "reference_score2": None,
                             "info": (op[4][0],None)})
         elif op[0] == "headedit":
             assert(type(op[1])==nlin.AnnotatedNote)
             assert(type(op[2])==nlin.AnnotatedNote)
             operations.append({"operation": "subnotehead",
-                            "reference_score1": op[1].get_note_id(),
-                            "reference_score2": op[2].get_note_id(),
+                            "reference_score1": op[1],
+                            "reference_score2": op[2],
                             "info": None})
         #beam
         elif op[0] == "insbeam":
             assert(type(op[2])==nlin.AnnotatedNote)
             operations.append({"operation": "insbeam",
                             "reference_score1": None,
-                            "reference_score2": op[2].get_note_id(),
+                            "reference_score2": op[2],
                             "info": None})
         elif op[0] == "delbeam":
             assert(type(op[1])==nlin.AnnotatedNote)
             operations.append({"operation": "delbeam",
-                            "reference_score1": op[1].get_note_id(),
+                            "reference_score1": op[1],
                             "reference_score2": None,
                             "info": None})
         elif op[0] == "editbeam":
             assert(type(op[1])==nlin.AnnotatedNote)
             assert(type(op[2])==nlin.AnnotatedNote)
             operations.append({"operation": "subbeam",
-                            "reference_score1": op[1].get_note_id(),
-                            "reference_score2": op[2].get_note_id(),
+                            "reference_score1": op[1],
+                            "reference_score2": op[2],
                             "info": None})
         #accident
         elif op[0] == "accidentins":
             assert(type(op[2])==nlin.AnnotatedNote)
             operations.append({"operation": "insaccidental",
                             "reference_score1": None,
-                            "reference_score2": op[2].get_note_id(),
+                            "reference_score2": op[2],
                             "info": (None,op[4][1])})
         elif op[0] == "accidentdel":
             assert(type(op[1])==nlin.AnnotatedNote)
             operations.append({"operation": "delaccidental",
-                            "reference_score1": op[1].get_note_id(),
+                            "reference_score1": op[1],
                             "reference_score2": None,
                             "info": (op[4][0],None)})
         elif op[0] == "accidentedit":
             assert(type(op[1])==nlin.AnnotatedNote)
             assert(type(op[2])==nlin.AnnotatedNote)
             operations.append({"operation": "subaccidental",
-                            "reference_score1": op[1].get_note_id(),
-                            "reference_score2": op[2].get_note_id(),
+                            "reference_score1": op[1],
+                            "reference_score2": op[2],
                             "info": op[4]})
         elif op[0] == "dotins":
             assert(type(op[2])==nlin.AnnotatedNote)
             operations.append({"operation": "insdot",
                             "reference_score1": None,
-                            "reference_score2": op[2].get_note_id(),
-                            "info": None})               
+                            "reference_score2": op[2],
+                            "info": None})
         elif op[0] == "dotdel":
             assert(type(op[1])==nlin.AnnotatedNote)
             operations.append({"operation": "deldot",
-                            "reference_score1": op[1].get_note_id(),
+                            "reference_score1": op[1],
                             "reference_score2": None,
                             "info": None})
         #tuplets TODO
@@ -580,31 +580,31 @@ def op_list2json(op_list):
             assert(type(op[2])==nlin.AnnotatedNote)
             operations.append({"operation": "instuplet",
                             "reference_score1": None,
-                            "reference_score2": op[2].get_note_id(),
+                            "reference_score2": op[2],
                             "info": None})
         elif op[0] == "deltuplet":
             assert(type(op[1])==nlin.AnnotatedNote)
             operations.append({"operation": "deltuplet",
-                            "reference_score1": op[1].get_note_id(),
+                            "reference_score1": op[1],
                             "reference_score2": None,
                             "info": None})
         elif op[0] == "edittuplet":
             assert(type(op[1])==nlin.AnnotatedNote)
             assert(type(op[2])==nlin.AnnotatedNote)
             operations.append({"operation": "subtuplet",
-                            "reference_score1": op[1].get_note_id(),
-                            "reference_score2": op[2].get_note_id(),
+                            "reference_score1": op[1],
+                            "reference_score2": op[2],
                             "info": None})
         elif op[0] == "tieins":
             assert(type(op[2])==nlin.AnnotatedNote)
             operations.append({"operation": "instie",
                             "reference_score1": None,
-                            "reference_score2": op[2].get_note_id(),
+                            "reference_score2": op[2],
                             "info": (None,op[4][1])})
         elif op[0] == "tiedel":
             assert(type(op[1])==nlin.AnnotatedNote)
             operations.append({"operation": "deltie",
-                            "reference_score1": op[1].get_note_id(),
+                            "reference_score1": op[1],
                             "reference_score2": None,
                             "info": (op[4][0],None)})
         else:
@@ -613,11 +613,11 @@ def op_list2json(op_list):
 
 
 
-    
 
 
 
-    
+
+
 
 
 

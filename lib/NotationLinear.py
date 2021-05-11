@@ -27,14 +27,14 @@ class AnnotatedNote:
         type_number= Fraction(m21.duration.convertTypeToNumber(self.general_note.duration.type))
         if type_number >= 4:
             self.note_head = 4
-        else: 
+        else:
             self.note_head = type_number
         #dots
         self.dots = self.general_note.duration.dots
 
     def notation_size(self):
         """a measure of how much symbols are display in the score
-        
+
         Returns:
             [int] -- the notation size of the annotated note
         """
@@ -76,7 +76,7 @@ class AnnotatedNote:
             string+= "*"
         if len(self.beamings) > 0:# add for beaming
             string += "B"
-            for b in self.beamings: 
+            for b in self.beamings:
                 if b == "start": string += "sr"
                 elif b == "continue": string += "co"
                 elif b == "stop": string += "sp"
@@ -84,11 +84,11 @@ class AnnotatedNote:
                 else: raise Exception ("Incorrect beaming type: {}".format(b))
         if len(self.tuplets) > 0: # add for tuplets
             string += "T"
-            for t in self.tuplets: 
+            for t in self.tuplets:
                 if t == "start": string += "sr"
                 elif t == "continue": string += "co"
                 elif t == "stop": string += "sp"
-                else: raise Exception ("Incorrect tuplets type: {}".format(t))     
+                else: raise Exception ("Incorrect tuplets type: {}".format(t))
         return string
 
     def get_note_id(self):
@@ -118,6 +118,7 @@ class Voice:
         """
         :param measure: m21 voice for one measure
         """
+        self.voice = voice
         self.note_list = m21u.get_notes(voice)
         self.en_beam_list = m21u.get_enhance_beamings(self.note_list) #beams and type (type for note shorter than quarter notes)
         self.tuplet_list = m21u.get_tuplets_type(self.note_list) #corrected tuplets (with "start" and "continue")
@@ -127,12 +128,12 @@ class Voice:
         for i, n in enumerate(self.note_list):
                 self.annot_notes.append(AnnotatedNote(n,self.en_beam_list[i],self.tuplet_list[i]))
         self.n_of_notes = len(self.annot_notes)
-    
+
     def __eq__(self, other):
         #equality does not consider MEI id!
         if not isinstance(other, Voice):
             return False
-        elif len(self.annot_notes)!= len(other.annot_notes): 
+        elif len(self.annot_notes)!= len(other.annot_notes):
             return False
         else:
             return all([an[0]==an[1] for an in zip(self.annot_notes,other.annot_notes)])
@@ -160,19 +161,20 @@ class Bar:
         """
         :param measure: m21 measure
         """
-        self.voices_list = [] 
+        self.measure = measure
+        self.voices_list = []
         if len(measure.voices) == 0:  # there is a single Voice ( == for the library there are no voices)
             self.voices_list.append(Voice(measure))
         else:  # there are multiple voices (or an array with just one voice)
             for voice in measure.voices:
                 self.voices_list.append(Voice(voice))
         self.n_of_voices = len(self.voices_list)
-    
+
     def __eq__(self, other):
         #equality does not consider MEI id!
         if not isinstance(other, Bar):
             return False
-        elif len(self.voices_list)!= len(other.voices_list): 
+        elif len(self.voices_list)!= len(other.voices_list):
             return False
         else:
             return all([v[0]==v[1] for v in zip(self.voices_list,other.voices_list)])
@@ -194,16 +196,17 @@ class Part:
         """
         :param measure: m21 part
         """
-        self.bar_list = [] 
+        self.part = part
+        self.bar_list = []
         for measure in part.getElementsByClass('Measure'):
             self.bar_list.append(Bar(measure)) #create the bar objects
         self.n_of_bars = len(self.bar_list)
-    
+
     def __eq__(self, other):
         #equality does not consider MEI id!
         if not isinstance(other, Part):
             return False
-        elif len(self.bar_list)!= len(other.bar_list): 
+        elif len(self.bar_list)!= len(other.bar_list):
             return False
         else:
             return all([b[0]==b[1] for b in zip(self.bar_list,other.bar_list)])
@@ -228,7 +231,8 @@ class Score:
         Arguments:
             score {[music21 score]} a music21 score
         """
-        self.part_list = [] 
+        self.score = score
+        self.part_list = []
         for part in score.parts.stream():
             self.part_list.append(Part(part)) #create and add the Part object to part_list
         self.n_of_parts = len(self.part_list)
@@ -237,7 +241,7 @@ class Score:
         #equality does not consider MEI id!
         if not isinstance(other, Score):
             return False
-        elif len(self.part_list)!= len(other.part_list): 
+        elif len(self.part_list)!= len(other.part_list):
             return False
         else:
             return all([p[0]==p[1] for p in zip(self.part_list,other.part_list)])
