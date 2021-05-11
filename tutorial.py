@@ -41,5 +41,5 @@ op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
 sv.annotate_differences(op_list)
 
 #display the two (colored) scores
-score1.show('musicxml.png')
-score2.show('musicxml.png')
+score1.show('musicxml.pdf')
+score2.show('musicxml.pdf')
