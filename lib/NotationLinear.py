@@ -11,36 +11,29 @@ class AnnotatedNote:
         :param enhanced_beam_list a list with beaming informations
         :tuple_info: a list with tuple info
         """
-        self.general_note = general_note
+        self.general_note = general_note.id
         self.beamings = enhanced_beam_list
         self.tuplets = tuple_list
         ##compute the representaiton of NoteNode as in the paper
-        # pitches is a list  of elements, each one is (pitchposition, accidental, tie)
-        if self.general_note.isRest:
-            self.pitches = [
-                ("R", "None", False)
-            ]  # accidental and tie are automaticaly set for rests
-        elif self.general_note.isChord:
-            self.pitches = [
-                m21u.note2tuple(p)
-                for p in self.general_note.sortDiatonicAscending().notes
-            ]
-        elif self.general_note.isNote:
-            self.pitches = [m21u.note2tuple(self.general_note)]
+        #pitches is a list  of elements, each one is (pitchposition, accidental, tie)
+        if general_note.isRest:
+            self.pitches = [("R","None",False)] #accidental and tie are automaticaly set for rests
+        elif general_note.isChord:
+            self.pitches = [m21u.note2tuple(p) for p in general_note.sortDiatonicAscending().notes]
+        elif general_note.isNote:
+            self.pitches = [m21u.note2tuple(general_note)]
         else:
             raise TypeError("The generalNote must be a Chord, a Rest or a Note")
-        # note head
-        type_number = Fraction(
-            m21.duration.convertTypeToNumber(self.general_note.duration.type)
-        )
+        #note head
+        type_number= Fraction(m21.duration.convertTypeToNumber(general_note.duration.type))
         if type_number >= 4:
             self.note_head = 4
         else:
             self.note_head = type_number
-        # dots
-        self.dots = self.general_note.duration.dots
+        #dots
+        self.dots = general_note.duration.dots
         # articulations
-        self.articulations = self.general_note.articulations
+        self.articulations = general_note.articulations
 
     def notation_size(self):
         """a measure of how much symbols are display in the score
@@ -71,7 +64,7 @@ class AnnotatedNote:
             self.dots,
             self.beamings,
             self.tuplets,
-            self.general_note.id,
+            self.general_note,
             self.articulations,
         )
         return out
@@ -124,7 +117,7 @@ class AnnotatedNote:
         return string
 
     def get_note_id(self):
-        return [self.general_note.id]
+        return [self.general_note]
 
     def __eq__(self, other):
         # equality does not consider the MEI id!
@@ -151,7 +144,7 @@ class Voice:
         """
         :param measure: m21 voice for one measure
         """
-        self.voice = voice
+        self.voice = voice.id
         self.note_list = m21u.get_notes(voice)
         self.en_beam_list = m21u.get_enhance_beamings(
             self.note_list
@@ -195,7 +188,7 @@ class Voice:
         return string
 
     def get_note_id(self):
-        return [an.general_note.id for an in self.annot_notes]
+        return [an.general_note for an in self.annot_notes]
 
 
 class Bar:
@@ -203,7 +196,7 @@ class Bar:
         """
         :param measure: m21 measure
         """
-        self.measure = measure
+        self.measure = measure.id
         self.voices_list = []
         if (
             len(measure.voices) == 0
@@ -241,7 +234,7 @@ class Part:
         """
         :param measure: m21 part
         """
-        self.part = part
+        self.part = part.id
         self.bar_list = []
         for measure in part.getElementsByClass("Measure"):
             self.bar_list.append(Bar(measure))  # create the bar objects
@@ -277,7 +270,7 @@ class Score:
         Arguments:
             score {[music21 score]} a music21 score
         """
-        self.score = score
+        self.score = score.id
         self.part_list = []
         for part in score.parts.stream():
             self.part_list.append(

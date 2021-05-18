@@ -38,8 +38,23 @@ op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
 
 #ann1, ann2 = sv.oplist2annotations(op_list)
 #annotate the differences between the two scores (color the involved elements)
-sv.annotate_differences(op_list)
+sv.annotate_differences(score1, score2, op_list)
 
-#display the two (colored) scores
+#display the two (annotated) scores
+originalComposer1 = score1.metadata.composer
+if originalComposer1 is None:
+    originalComposer1 = 'score1'
+else:
+    originalComposer1 += ': score1'
+
+originalComposer2 = score2.metadata.composer
+if originalComposer2 is None:
+    originalComposer2 = 'score2'
+else:
+    originalComposer2 += ': score2'
+
+score1.metadata.composer = originalComposer1
+score2.metadata.composer = originalComposer2
+
 score1.show('musicxml.pdf')
 score2.show('musicxml.pdf')

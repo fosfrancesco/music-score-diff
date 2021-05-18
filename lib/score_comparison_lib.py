@@ -50,7 +50,7 @@ def memoize_beamtuplet_lev_diff(func):
 # algorithm in section 3.2
 # INPUT: two lists of Bar (one list from one part of the first score and one list from one part of the second score)
 # OUTPUT: the allignment between the two lists
-#@memoize_lcs_diff
+@memoize_lcs_diff
 def lcs_diff (original, compare_to):
     if (len(original) == 0 and len(compare_to)== 0):
         cost = 0
@@ -116,7 +116,7 @@ def non_common_subsequences(original,compare_to):
 
 
 
-#@memoize_pitches_lev_diff
+@memoize_pitches_lev_diff
 def pitches_leveinsthein_diff(original, compare_to,noteNode1,noteNode2, ids):
     """Compute the leveinsthein distance between two sequences of pitches
     Arguments:
@@ -214,7 +214,7 @@ def pitches_diff(pitch1,pitch2,noteNode1,noteNode2,ids):
     return op_list, cost
 
 
-#@memoize_block_diff_lin
+@memoize_block_diff_lin
 def block_diff_lin (original, compare_to ):
     if len(original) == 0 and len(compare_to) == 0:
         return [], 0
@@ -255,7 +255,7 @@ def block_diff_lin (original, compare_to ):
         out = op_list[min_key], cost[min_key]
         return out
 
-#@memoize_inside_bars_diff_lin
+@memoize_inside_bars_diff_lin
 def inside_bars_diff_lin (original, compare_to):
     #original and compare to are two lists of annotatedNote
     if len(original) == 0 and len(compare_to) == 0:
@@ -341,7 +341,7 @@ def annotated_note_diff(annNote1,annNote2):
     return op_list, cost
 
 
-#@memoize_beamtuplet_lev_diff
+@memoize_beamtuplet_lev_diff
 def beamtuplet_leveinsthein_diff(original, compare_to,note1,note2,type):
     """Compute the leveinsthein distance between two sequences of beaming or tuples
     Arguments:
