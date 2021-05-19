@@ -182,7 +182,7 @@ def test_pitches_diff2():
     op_list, cost = scl.pitches_diff(pitch1, pitch2, note1, note2, (0, 0))
     assert cost == 2
     assert len(op_list) == 2
-    assert ("accidentins", None, note2, 1, (0, 0)) in op_list
+    assert ("accidentins", note1, note2, 1, (0, 0)) in op_list
     assert ("pitchnameedit", note1, note2, 1, (0, 0)) in op_list
 
 
@@ -199,7 +199,7 @@ def test_pitches_diff3():
     op_list, cost = scl.pitches_diff(pitch1, pitch2, note1, note2, (0, 0))
     assert cost == 3
     assert len(op_list) == 3
-    assert ("accidentdel", note1, None, 1, (0, 0)) in op_list
+    assert ("accidentdel", note1, note2, 1, (0, 0)) in op_list
     assert ("pitchtypeedit", note1, note2, 1, (0, 0)) in op_list
     assert ("tiedel", note1, note2, 1, (0, 0)) in op_list
 
@@ -218,7 +218,7 @@ def test_pitches_diff4():
     op_list, cost = scl.pitches_diff(pitch1, pitch2, note1, note2, (0, 0))
     assert cost == 1
     assert len(op_list) == 1
-    assert ("accidentins", None, note2, 1, (0, 0)) in op_list
+    assert ("accidentins", note1, note2, 1, (0, 0)) in op_list
 
 
 def test_block_diff1():

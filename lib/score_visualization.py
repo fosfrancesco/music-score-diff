@@ -10,16 +10,9 @@ from collections.abc import Iterable
 import lib.NotationLinear as nlin
 
 
-RESOURCES_PATH = None
-
 INS_COLOR = "red"  # "green"
 DEL_COLOR = "red"
 SUB_COLOR = "red"  # "blue"
-
-
-def setResourchesPath(path):
-    global RESOURCES_PATH
-    RESOURCES_PATH = path
 
 
 def annotate_differences(score1, score2, operations):
@@ -127,6 +120,9 @@ def annotate_differences(score1, score2, operations):
                 idx = op[4][1]
                 note2 = note2.notes[idx]
             note2.style.color = INS_COLOR
+            textExp = m21.expressions.TextExpression("inserted note")
+            textExp.style.color = INS_COLOR
+            note2.activeSite.insert(note2.offset, textExp)
 
         elif op[0] == "delpitch":
             assert type(op[1]) == nlin.AnnotatedNote
@@ -138,6 +134,9 @@ def annotate_differences(score1, score2, operations):
                 idx = op[4][0]
                 note1 = note1.notes[idx]
             note1.style.color = DEL_COLOR
+            textExp = m21.expressions.TextExpression("deleted note")
+            textExp.style.color = DEL_COLOR
+            note1.activeSite.insert(note1.offset, textExp)
 
         elif op[0] == "headedit":
             assert type(op[1]) == nlin.AnnotatedNote
@@ -157,19 +156,29 @@ def annotate_differences(score1, score2, operations):
 
         # beam
         elif op[0] == "insbeam":
+            assert type(op[1]) == nlin.AnnotatedNote
             assert type(op[2]) == nlin.AnnotatedNote
-            # color the inserted beam in score2 using INS_COLOR
+            # color the modified note in both scores using INS_COLOR
+            note1 = score1.recurse().getElementById(op[1].general_note)
+            note1.style.color = INS_COLOR
+            for beam in note1.beams:
+                beam.style.color = INS_COLOR  # this apparently does nothing
+            textExp = m21.expressions.TextExpression("increased flags")
+            textExp.style.color = INS_COLOR
+            note1.activeSite.insert(note1.offset, textExp)
+
             note2 = score2.recurse().getElementById(op[2].general_note)
             note2.style.color = INS_COLOR
             for beam in note2.beams:
                 beam.style.color = INS_COLOR  # this apparently does nothing
             textExp = m21.expressions.TextExpression("increased flags")
-            textExp.style.color = SUB_COLOR
+            textExp.style.color = INS_COLOR
             note2.activeSite.insert(note2.offset, textExp)
 
         elif op[0] == "delbeam":
             assert type(op[1]) == nlin.AnnotatedNote
-            # color the deleted beam in score1 using DEL_COLOR
+            assert type(op[2]) == nlin.AnnotatedNote
+            # color the modified note in both scores using DEL_COLOR
             note1 = score1.recurse().getElementById(op[1].general_note)
             note1.style.color = DEL_COLOR
             for beam in note1.beams:
@@ -177,6 +186,14 @@ def annotate_differences(score1, score2, operations):
             textExp = m21.expressions.TextExpression("decreased flags")
             textExp.style.color = SUB_COLOR
             note1.activeSite.insert(note1.offset, textExp)
+
+            note2 = score2.recurse().getElementById(op[2].general_note)
+            note2.style.color = DEL_COLOR
+            for beam in note2.beams:
+                beam.style.color = DEL_COLOR  # this apparently does nothing
+            textExp = m21.expressions.TextExpression("decreased flags")
+            textExp.style.color = DEL_COLOR
+            note2.activeSite.insert(note2.offset, textExp)
 
         elif op[0] == "editbeam":
             assert type(op[1]) == nlin.AnnotatedNote
@@ -200,9 +217,22 @@ def annotate_differences(score1, score2, operations):
 
         # accident
         elif op[0] == "accidentins":
+            assert type(op[1]) == nlin.AnnotatedNote
             assert type(op[2]) == nlin.AnnotatedNote
             assert len(op) == 5  # the indices must be there
-            # color the inserted accidental in score2 using INS_COLOR
+            # color the modified note in both scores using INS_COLOR
+            note1 = score1.recurse().getElementById(op[1].general_note)
+            if "Chord" in note1.classes:
+                # color only the indexed note's accidental in the chord
+                idx = op[4][0]
+                note1 = note1.notes[idx]
+            if note1.pitch.accidental:
+                note1.pitch.accidental.style.color = INS_COLOR
+            note1.style.color = INS_COLOR
+            textExp = m21.expressions.TextExpression("inserted accidental")
+            textExp.style.color = INS_COLOR
+            note1.activeSite.insert(note1.offset, textExp)
+
             note2 = score2.recurse().getElementById(op[2].general_note)
             if "Chord" in note2.classes:
                 # color only the indexed note's accidental in the chord
@@ -212,13 +242,14 @@ def annotate_differences(score1, score2, operations):
                 note2.pitch.accidental.style.color = INS_COLOR
             note2.style.color = INS_COLOR
             textExp = m21.expressions.TextExpression("inserted accidental")
-            textExp.style.color = SUB_COLOR
+            textExp.style.color = INS_COLOR
             note2.activeSite.insert(note2.offset, textExp)
 
         elif op[0] == "accidentdel":
             assert type(op[1]) == nlin.AnnotatedNote
+            assert type(op[2]) == nlin.AnnotatedNote
             assert len(op) == 5  # the indices must be there
-            # color the deleted accidental in score1 using DEL_COLOR
+            # color the modified note in both scores using DEL_COLOR
             note1 = score1.recurse().getElementById(op[1].general_note)
             if "Chord" in note1.classes:
                 # color only the indexed note's accidental in the chord
@@ -228,8 +259,20 @@ def annotate_differences(score1, score2, operations):
                 note1.pitch.accidental.style.color = DEL_COLOR
             note1.style.color = DEL_COLOR
             textExp = m21.expressions.TextExpression("deleted accidental")
-            textExp.style.color = SUB_COLOR
+            textExp.style.color = DEL_COLOR
             note1.activeSite.insert(note1.offset, textExp)
+
+            note2 = score2.recurse().getElementById(op[2].general_note)
+            if "Chord" in note2.classes:
+                # color only the indexed note's accidental in the chord
+                idx = op[4][1]
+                note2 = note2.notes[idx]
+            if note2.pitch.accidental:
+                note2.pitch.accidental.style.color = DEL_COLOR
+            note2.style.color = DEL_COLOR
+            textExp = m21.expressions.TextExpression("deleted accidental")
+            textExp.style.color = DEL_COLOR
+            note2.activeSite.insert(note2.offset, textExp)
 
         elif op[0] == "accidentedit":
             assert type(op[1]) == nlin.AnnotatedNote
@@ -308,67 +351,89 @@ def annotate_differences(score1, score2, operations):
         elif op[0] == "edittuplet":
             pass
 
-        # ties TODO
+        # ties
         elif op[0] == "tieins":
             assert type(op[1]) == nlin.AnnotatedNote
             assert type(op[2]) == nlin.AnnotatedNote
             assert len(op) == 5  # the indices must be there
-            # In music21, ties are not colorable, so we will just pretend the note was
-            # modified.
-            # Color the modified note here in both scores, using SUB_COLOR
+            # Color the modified note here in both scores, using INS_COLOR
             note1 = score1.recurse().getElementById(op[1].general_note)
             if "Chord" in note1.classes:
                 # color just the indexed note in the chord
                 idx = op[4][0]
                 note1 = note1.notes[idx]
-            note1.style.color = SUB_COLOR
+            note1.style.color = INS_COLOR
+            textExp = m21.expressions.TextExpression("inserted tie")
+            textExp.style.color = INS_COLOR
+            note1.activeSite.insert(note1.offset, textExp)
 
             note2 = score2.recurse().getElementById(op[2].general_note)
             if "Chord" in note2.classes:
                 # color just the indexed note in the chord
                 idx = op[4][1]
                 note2 = note2.notes[idx]
-            note2.style.color = SUB_COLOR
+            note2.style.color = INS_COLOR
+            textExp = m21.expressions.TextExpression("inserted tie")
+            textExp.style.color = INS_COLOR
+            note2.activeSite.insert(note2.offset, textExp)
 
         elif op[0] == "tiedel":
             assert type(op[1]) == nlin.AnnotatedNote
             assert type(op[2]) == nlin.AnnotatedNote
             assert len(op) == 5  # the indices must be there
-            # In music21, ties are not colorable, so we will just pretend the note was
-            # modified.
-            # Color the modified note here in both scores, using SUB_COLOR
+            # Color the modified note in both scores, using DEL_COLOR
             note1 = score1.recurse().getElementById(op[1].general_note)
             if "Chord" in note1.classes:
                 # color just the indexed note in the chord
                 idx = op[4][0]
                 note1 = note1.notes[idx]
-            note1.style.color = SUB_COLOR
+            note1.style.color = DEL_COLOR
+            textExp = m21.expressions.TextExpression("deleted tie")
+            textExp.style.color = DEL_COLOR
+            note1.activeSite.insert(note1.offset, textExp)
 
             note2 = score2.recurse().getElementById(op[2].general_note)
             if "Chord" in note2.classes:
                 # color just the indexed note in the chord
                 idx = op[4][1]
                 note2 = note2.notes[idx]
-            note2.style.color = SUB_COLOR
+            note2.style.color = DEL_COLOR
+            textExp = m21.expressions.TextExpression("deleted tie")
+            textExp.style.color = DEL_COLOR
+            note2.activeSite.insert(note2.offset, textExp)
 
         # expressions
         elif op[0] == "insexpression":
+            assert type(op[1]) == nlin.AnnotatedNote
             assert type(op[2]) == nlin.AnnotatedNote
-            # color the inserted beam in score2 using INS_COLOR
+            # color the note in both scores using INS_COLOR
+            note1 = score1.recurse().getElementById(op[1].general_note)
+            note1.style.color = INS_COLOR
+            textExp = m21.expressions.TextExpression("inserted expression")
+            textExp.style.color = INS_COLOR
+            note1.activeSite.insert(note1.offset, textExp)
+
             note2 = score2.recurse().getElementById(op[2].general_note)
             note2.style.color = INS_COLOR
-            textExp = m21.expressions.TextExpression("ins expression")
-            textExp.style.color = SUB_COLOR
+            textExp = m21.expressions.TextExpression("inserted expression")
+            textExp.style.color = INS_COLOR
             note2.activeSite.insert(note2.offset, textExp)
 
         elif op[0] == "delexpression":
             assert type(op[1]) == nlin.AnnotatedNote
-            # color the deleted beam in score1 using DEL_COLOR
+            assert type(op[2]) == nlin.AnnotatedNote
+            # color the deleted expression in score1 using DEL_COLOR
             note1 = score1.recurse().getElementById(op[1].general_note)
             note1.style.color = DEL_COLOR
-            textExp = m21.expressions.TextExpression("del expression")
-            textExp.style.color = SUB_COLOR
+            textExp = m21.expressions.TextExpression("deleted expression")
+            textExp.style.color = DEL_COLOR
             note1.activeSite.insert(note1.offset, textExp)
+
+            note2 = score2.recurse().getElementById(op[2].general_note)
+            note2.style.color = DEL_COLOR
+            textExp = m21.expressions.TextExpression("deleted expression")
+            textExp.style.color = DEL_COLOR
+            note2.activeSite.insert(note2.offset, textExp)
 
         elif op[0] == "editexpression":
             assert type(op[1]) == nlin.AnnotatedNote
@@ -388,27 +453,41 @@ def annotate_differences(score1, score2, operations):
 
         # articulations
         elif op[0] == "insarticulation":
+            assert type(op[1]) == nlin.AnnotatedNote
             assert type(op[2]) == nlin.AnnotatedNote
-            # color the inserted beam in score2 using INS_COLOR
+            # color the modified note in both scores using INS_COLOR
+            note1 = score1.recurse().getElementById(op[1].general_note)
+            note1.style.color = INS_COLOR
+            textExp = m21.expressions.TextExpression("inserted articulation")
+            textExp.style.color = INS_COLOR
+            note1.activeSite.insert(note1.offset, textExp)
+
             note2 = score2.recurse().getElementById(op[2].general_note)
             note2.style.color = INS_COLOR
-            textExp = m21.expressions.TextExpression("ins articulation")
-            textExp.style.color = SUB_COLOR
+            textExp = m21.expressions.TextExpression("inserted articulation")
+            textExp.style.color = INS_COLOR
             note2.activeSite.insert(note2.offset, textExp)
 
         elif op[0] == "delarticulation":
             assert type(op[1]) == nlin.AnnotatedNote
-            # color the deleted beam in score1 using DEL_COLOR
+            assert type(op[2]) == nlin.AnnotatedNote
+            # color the modified note in both scores using DEL_COLOR
             note1 = score1.recurse().getElementById(op[1].general_note)
             note1.style.color = DEL_COLOR
-            textExp = m21.expressions.TextExpression("del articulation")
-            textExp.style.color = SUB_COLOR
+            textExp = m21.expressions.TextExpression("deleted articulation")
+            textExp.style.color = DEL_COLOR
             note1.activeSite.insert(note1.offset, textExp)
+
+            note2 = score2.recurse().getElementById(op[2].general_note)
+            note2.style.color = DEL_COLOR
+            textExp = m21.expressions.TextExpression("deleted articulation")
+            textExp.style.color = DEL_COLOR
+            note2.activeSite.insert(note2.offset, textExp)
 
         elif op[0] == "editarticulation":
             assert type(op[1]) == nlin.AnnotatedNote
             assert type(op[2]) == nlin.AnnotatedNote
-            # color the changed beam (in both scores) using SUB_COLOR
+            # color the modified note (in both scores) using SUB_COLOR
             note1 = score1.recurse().getElementById(op[1].general_note)
             note1.style.color = SUB_COLOR
             textExp = m21.expressions.TextExpression("changed articulation")
@@ -425,3 +504,23 @@ def annotate_differences(score1, score2, operations):
             print(
                 "Annotation type {} not yet supported for visualization".format(op[0])
             )
+
+def show_differences(score1: m21.stream.Score, score2: m21.stream.Score):
+    #display the two (annotated) scores
+    originalComposer1: str = score1.metadata.composer
+    if originalComposer1 is None:
+        originalComposer1 = 'score1'
+    else:
+        originalComposer1 = 'score1          ' + originalComposer1
+
+    originalComposer2: str = score2.metadata.composer
+    if originalComposer2 is None:
+        originalComposer2 = 'score2'
+    else:
+        originalComposer2 = 'score2          ' + originalComposer2
+
+    score1.metadata.composer = originalComposer1
+    score2.metadata.composer = originalComposer2
+
+    score1.show('musicxml.pdf')
+    score2.show('musicxml.pdf')

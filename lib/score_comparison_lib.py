@@ -179,7 +179,7 @@ def pitches_leveinsthein_diff(original, compare_to, noteNode1, noteNode2, ids):
             original, compare_to[1:], noteNode1, noteNode2, (ids[0], ids[1] + 1)
         )
         op_list.append(
-            ("inspitch", None, noteNode2, m21u.pitch_size(compare_to[0]), ids)
+            ("inspitch", noteNode1, noteNode2, m21u.pitch_size(compare_to[0]), ids)
         )
         cost += m21u.pitch_size(compare_to[0])
         return op_list, cost
@@ -188,7 +188,7 @@ def pitches_leveinsthein_diff(original, compare_to, noteNode1, noteNode2, ids):
         op_list, cost = pitches_leveinsthein_diff(
             original[1:], compare_to, noteNode1, noteNode2, (ids[0] + 1, ids[1])
         )
-        op_list.append(("delpitch", noteNode1, None, m21u.pitch_size(original[0]), ids))
+        op_list.append(("delpitch", noteNode1, noteNode2, m21u.pitch_size(original[0]), ids))
         cost += m21u.pitch_size(original[0])
         return op_list, cost
     else:
@@ -201,7 +201,7 @@ def pitches_leveinsthein_diff(original, compare_to, noteNode1, noteNode2, ids):
         )
         cost["delpitch"] += m21u.pitch_size(original[0])
         op_list["delpitch"].append(
-            ("delpitch", noteNode1, None, m21u.pitch_size(original[0]), ids)
+            ("delpitch", noteNode1, noteNode2, m21u.pitch_size(original[0]), ids)
         )
         # ins-pitch
         op_list["inspitch"], cost["inspitch"] = pitches_leveinsthein_diff(
@@ -209,7 +209,7 @@ def pitches_leveinsthein_diff(original, compare_to, noteNode1, noteNode2, ids):
         )
         cost["inspitch"] += m21u.pitch_size(compare_to[0])
         op_list["inspitch"].append(
-            ("inspitch", None, noteNode2, m21u.pitch_size(compare_to[0]), ids)
+            ("inspitch", noteNode1, noteNode2, m21u.pitch_size(compare_to[0]), ids)
         )
         # edit-pitch
         op_list["editpitch"], cost["editpitch"] = pitches_leveinsthein_diff(
@@ -258,10 +258,10 @@ def pitches_diff(pitch1, pitch2, noteNode1, noteNode2, ids):
         cost += 1
         if pitch1[1] == "None":
             assert pitch2[1] != "None"
-            op_list.append(("accidentins", None, noteNode2, 1, ids))
+            op_list.append(("accidentins", noteNode1, noteNode2, 1, ids))
         elif pitch2[1] == "None":
             assert pitch1[1] != "None"
-            op_list.append(("accidentdel", noteNode1, None, 1, ids))
+            op_list.append(("accidentdel", noteNode1, noteNode2, 1, ids))
         else:  # a different tipe of alteration is present
             op_list.append(("accidentedit", noteNode1, noteNode2, 1, ids))
     # add for the ties
@@ -474,14 +474,14 @@ def beamtuplet_leveinsthein_diff(original, compare_to, note1, note2, type):
         op_list, cost = beamtuplet_leveinsthein_diff(
             original, compare_to[1:], note1, note2, type
         )
-        op_list.append(("ins" + type, None, note2, 1))
+        op_list.append(("ins" + type, note1, note2, 1))
         cost += 1
         return op_list, cost
     elif len(compare_to) == 0:
         op_list, cost = beamtuplet_leveinsthein_diff(
             original[1:], compare_to, note1, note2, type
         )
-        op_list.append(("del" + type, note1, None, 1))
+        op_list.append(("del" + type, note1, note2, 1))
         cost += 1
         return op_list, cost
     else:
@@ -493,7 +493,7 @@ def beamtuplet_leveinsthein_diff(original, compare_to, note1, note2, type):
             original[1:], compare_to, note1, note2, type
         )
         cost["del" + type] += 1
-        op_list["del" + type].append(("del" + type, note1, None, 1))
+        op_list["del" + type].append(("del" + type, note1, note2, 1))
         # ins-pitch
         op_list["ins" + type], cost["ins" + type] = beamtuplet_leveinsthein_diff(
             original, compare_to[1:], note1, note2, type
@@ -521,8 +521,8 @@ def beamtuplet_leveinsthein_diff(original, compare_to, note1, note2, type):
 def generic_leveinsthein_diff(original, compare_to, note1, note2, type):
     """Compute the leveinsthein distance between two generic sequences of symbols (e.g., articulations)
     Arguments:
-        original {list} -- list of strings 
-        compare_to {list} -- list of strings 
+        original {list} -- list of strings
+        compare_to {list} -- list of strings
         note1 {AnnotatedNote} -- the note for referencing in the score
         note2 {AnnotatedNote} -- the note for referencing in the score
         type -- a string: e.g. "articulation" depending what we are comparing
@@ -533,14 +533,14 @@ def generic_leveinsthein_diff(original, compare_to, note1, note2, type):
         op_list, cost = generic_leveinsthein_diff(
             original, compare_to[1:], note1, note2, type
         )
-        op_list.append(("ins" + type, None, note2, 1))
+        op_list.append(("ins" + type, note1, note2, 1))
         cost += 1
         return op_list, cost
     elif len(compare_to) == 0:
         op_list, cost = generic_leveinsthein_diff(
             original[1:], compare_to, note1, note2, type
         )
-        op_list.append(("del" + type, note1, None, 1))
+        op_list.append(("del" + type, note1, note2, 1))
         cost += 1
         return op_list, cost
     else:
@@ -552,7 +552,7 @@ def generic_leveinsthein_diff(original, compare_to, note1, note2, type):
             original[1:], compare_to, note1, note2, type
         )
         cost["del" + type] += 1
-        op_list["del" + type].append(("del" + type, note1, None, 1))
+        op_list["del" + type].append(("del" + type, note1, note2, 1))
         # ins-pitch
         op_list["ins" + type], cost["ins" + type] = generic_leveinsthein_diff(
             original, compare_to[1:], note1, note2, type
@@ -732,29 +732,31 @@ def op_list2json(op_list):
                     "operation": "subpitchname",
                     "reference_score1": op[1],
                     "reference_score2": op[2],
-                    "info": op[4],
+                    "info": (op[4][0], op[4][1]),
                 }
             )
         elif op[0] == "inspitch":
+            assert type(op[1]) == nlin.AnnotatedNote
             assert type(op[2]) == nlin.AnnotatedNote
             assert len(op) == 5  # the indices must be there
             operations.append(
                 {
                     "operation": "inspitch",
-                    "reference_score1": None,
+                    "reference_score1": op[1],
                     "reference_score2": op[2],
-                    "info": (None, op[4][1]),
+                    "info": (op[4][0], op[4][1]),
                 }
             )
         elif op[0] == "delpitch":
             assert type(op[1]) == nlin.AnnotatedNote
+            assert type(op[2]) == nlin.AnnotatedNote
             assert len(op) == 5  # the indices must be there
             operations.append(
                 {
                     "operation": "delpitch",
                     "reference_score1": op[1],
-                    "reference_score2": None,
-                    "info": (op[4][0], None),
+                    "reference_score2": op[2],
+                    "info": (op[4][0], op[4][1]),
                 }
             )
         elif op[0] == "headedit":
@@ -770,22 +772,24 @@ def op_list2json(op_list):
             )
         # beam
         elif op[0] == "insbeam":
+            assert type(op[1]) == nlin.AnnotatedNote
             assert type(op[2]) == nlin.AnnotatedNote
             operations.append(
                 {
                     "operation": "insbeam",
-                    "reference_score1": None,
+                    "reference_score1": op[1],
                     "reference_score2": op[2],
                     "info": None,
                 }
             )
         elif op[0] == "delbeam":
             assert type(op[1]) == nlin.AnnotatedNote
+            assert type(op[2]) == nlin.AnnotatedNote
             operations.append(
                 {
                     "operation": "delbeam",
                     "reference_score1": op[1],
-                    "reference_score2": None,
+                    "reference_score2": op[2],
                     "info": None,
                 }
             )
@@ -802,74 +806,83 @@ def op_list2json(op_list):
             )
         # accident
         elif op[0] == "accidentins":
+            assert type(op[1]) == nlin.AnnotatedNote
             assert type(op[2]) == nlin.AnnotatedNote
+            assert len(op) == 5  # the indices must be there
             operations.append(
                 {
                     "operation": "insaccidental",
-                    "reference_score1": None,
+                    "reference_score1": op[1],
                     "reference_score2": op[2],
-                    "info": (None, op[4][1]),
+                    "info": (op[4][0], op[4][1]),
                 }
             )
         elif op[0] == "accidentdel":
             assert type(op[1]) == nlin.AnnotatedNote
+            assert type(op[2]) == nlin.AnnotatedNote
+            assert len(op) == 5  # the indices must be there
             operations.append(
                 {
                     "operation": "delaccidental",
                     "reference_score1": op[1],
-                    "reference_score2": None,
-                    "info": (op[4][0], None),
+                    "reference_score2": op[2],
+                    "info": (op[4][0], op[4][1]),
                 }
             )
         elif op[0] == "accidentedit":
             assert type(op[1]) == nlin.AnnotatedNote
             assert type(op[2]) == nlin.AnnotatedNote
+            assert len(op) == 5  # the indices must be there
             operations.append(
                 {
                     "operation": "subaccidental",
                     "reference_score1": op[1],
                     "reference_score2": op[2],
-                    "info": op[4],
+                    "info": (op[4][0], op[4][1]),
                 }
             )
         elif op[0] == "dotins":
+            assert type(op[1]) == nlin.AnnotatedNote
             assert type(op[2]) == nlin.AnnotatedNote
             operations.append(
                 {
                     "operation": "insdot",
-                    "reference_score1": None,
+                    "reference_score1": op[1],
                     "reference_score2": op[2],
                     "info": None,
                 }
             )
         elif op[0] == "dotdel":
             assert type(op[1]) == nlin.AnnotatedNote
+            assert type(op[2]) == nlin.AnnotatedNote
             operations.append(
                 {
                     "operation": "deldot",
                     "reference_score1": op[1],
-                    "reference_score2": None,
+                    "reference_score2": op[2],
                     "info": None,
                 }
             )
         # tuplets TODO
         elif op[0] == "instuplet":
+            assert type(op[1]) == nlin.AnnotatedNote
             assert type(op[2]) == nlin.AnnotatedNote
             operations.append(
                 {
                     "operation": "instuplet",
-                    "reference_score1": None,
+                    "reference_score1": op[1],
                     "reference_score2": op[2],
                     "info": None,
                 }
             )
         elif op[0] == "deltuplet":
             assert type(op[1]) == nlin.AnnotatedNote
+            assert type(op[2]) == nlin.AnnotatedNote
             operations.append(
                 {
                     "operation": "deltuplet",
                     "reference_score1": op[1],
-                    "reference_score2": None,
+                    "reference_score2": op[2],
                     "info": None,
                 }
             )
@@ -885,53 +898,49 @@ def op_list2json(op_list):
                 }
             )
         elif op[0] == "tieins":
+            assert type(op[1]) == nlin.AnnotatedNote
             assert type(op[2]) == nlin.AnnotatedNote
+            assert len(op) == 5  # the indices must be there
             operations.append(
                 {
                     "operation": "instie",
-                    "reference_score1": None,
+                    "reference_score1": op[1],
                     "reference_score2": op[2],
-                    "info": (None, op[4][1]),
+                    "info": (op[4][0], op[4][1]),
                 }
             )
         elif op[0] == "tiedel":
             assert type(op[1]) == nlin.AnnotatedNote
+            assert type(op[2]) == nlin.AnnotatedNote
+            assert len(op) == 5  # the indices must be there
             operations.append(
                 {
                     "operation": "deltie",
                     "reference_score1": op[1],
-                    "reference_score2": None,
-                    "info": (op[4][0], None),
-                }
-            )
-        elif op[0] == "tieins":
-            assert type(op[2]) == nlin.AnnotatedNote
-            operations.append(
-                {
-                    "operation": "instie",
-                    "reference_score1": None,
                     "reference_score2": op[2],
-                    "info": (None, op[4][1]),
+                    "info": (op[4][0], op[4][1]),
                 }
             )
         # expression
         elif op[0] == "insexpression":
+            assert type(op[1]) == nlin.AnnotatedNote
             assert type(op[2]) == nlin.AnnotatedNote
             operations.append(
                 {
                     "operation": "insexpression",
-                    "reference_score1": None,
+                    "reference_score1": op[1],
                     "reference_score2": op[2],
                     "info": None,
                 }
             )
         elif op[0] == "delexpression":
             assert type(op[1]) == nlin.AnnotatedNote
+            assert type(op[2]) == nlin.AnnotatedNote
             operations.append(
                 {
                     "operation": "delexpression",
                     "reference_score1": op[1],
-                    "reference_score2": None,
+                    "reference_score2": op[2],
                     "info": None,
                 }
             )
@@ -948,22 +957,24 @@ def op_list2json(op_list):
             )
         # articulation
         elif op[0] == "insarticulation":
+            assert type(op[1]) == nlin.AnnotatedNote
             assert type(op[2]) == nlin.AnnotatedNote
             operations.append(
                 {
                     "operation": "insarticulation",
-                    "reference_score1": None,
+                    "reference_score1": op[1],
                     "reference_score2": op[2],
                     "info": None,
                 }
             )
         elif op[0] == "delarticulation":
             assert type(op[1]) == nlin.AnnotatedNote
+            assert type(op[2]) == nlin.AnnotatedNote
             operations.append(
                 {
                     "operation": "delarticulation",
                     "reference_score1": op[1],
-                    "reference_score2": None,
+                    "reference_score2": op[2],
                     "info": None,
                 }
             )

@@ -24,6 +24,8 @@ def test_json_production1():
     op_list, cost = scl.complete_scorelin_diff(score_lin1, score_lin2)
     operation_json = scl.op_list2json(op_list)
     assert len(operation_json) == 1
+    sv.annotate_differences(score1, score2, op_list)
+    sv.show_differences(score1, score2)
 
 
 def test_json_production2():
@@ -44,6 +46,8 @@ def test_json_production2():
     op_list, cost = scl.complete_scorelin_diff(score_lin1, score_lin2)
     operation_json = scl.op_list2json(op_list)
     assert 1 == 1
+    sv.annotate_differences(score1, score2, op_list)
+    sv.show_differences(score1, score2)
 
 
 def test_json_production3():
@@ -58,4 +62,6 @@ def test_json_production3():
     op_list, cost = scl.complete_scorelin_diff(score_lin1, score_lin2)
     operation_json = scl.op_list2json(op_list)
     assert 1 == 1
+    sv.annotate_differences(score1, score2, op_list)
+    sv.show_differences(score1, score2)
 

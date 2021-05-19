@@ -20,9 +20,6 @@ with open(score2_path, 'r') as f:
     conv = m21.mei.MeiToM21Converter(mei_string)
     score2 = conv.run()
 
-#add the correct folder for resourches. Uncomment if needed
-# sv.setResourchesPath(Path("C:/Users/example/Desktop/verovio/data" ))
-
 #build the linear representation of the score
 score_lin1 = nlin.Score(score1)
 score_lin2 = nlin.Score(score2)
@@ -36,25 +33,7 @@ op_list, cost=scl.complete_scorelin_diff(score_lin1,score_lin2)
 # with open(Path('output/operations_test.json'), 'w') as outfile:
 #     json.dump(operation_json, outfile)
 
-#ann1, ann2 = sv.oplist2annotations(op_list)
 #annotate the differences between the two scores (color the involved elements)
 sv.annotate_differences(score1, score2, op_list)
 
-#display the two (annotated) scores
-originalComposer1 = score1.metadata.composer
-if originalComposer1 is None:
-    originalComposer1 = 'score1'
-else:
-    originalComposer1 += ': score1'
-
-originalComposer2 = score2.metadata.composer
-if originalComposer2 is None:
-    originalComposer2 = 'score2'
-else:
-    originalComposer2 += ': score2'
-
-score1.metadata.composer = originalComposer1
-score2.metadata.composer = originalComposer2
-
-score1.show('musicxml.pdf')
-score2.show('musicxml.pdf')
+sv.show_differences(score1, score2)
