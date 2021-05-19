@@ -351,6 +351,76 @@ def annotate_differences(score1, score2, operations):
                 note2 = note2.notes[idx]
             note2.style.color = SUB_COLOR
 
+        # expressions
+        elif op[0] == "insexpression":
+            assert type(op[2]) == nlin.AnnotatedNote
+            # color the inserted beam in score2 using INS_COLOR
+            note2 = score2.recurse().getElementById(op[2].general_note)
+            note2.style.color = INS_COLOR
+            textExp = m21.expressions.TextExpression("ins expression")
+            textExp.style.color = SUB_COLOR
+            note2.activeSite.insert(note2.offset, textExp)
+
+        elif op[0] == "delexpression":
+            assert type(op[1]) == nlin.AnnotatedNote
+            # color the deleted beam in score1 using DEL_COLOR
+            note1 = score1.recurse().getElementById(op[1].general_note)
+            note1.style.color = DEL_COLOR
+            textExp = m21.expressions.TextExpression("del expression")
+            textExp.style.color = SUB_COLOR
+            note1.activeSite.insert(note1.offset, textExp)
+
+        elif op[0] == "editexpression":
+            assert type(op[1]) == nlin.AnnotatedNote
+            assert type(op[2]) == nlin.AnnotatedNote
+            # color the changed beam (in both scores) using SUB_COLOR
+            note1 = score1.recurse().getElementById(op[1].general_note)
+            note1.style.color = SUB_COLOR
+            textExp = m21.expressions.TextExpression("changed expression")
+            textExp.style.color = SUB_COLOR
+            note1.activeSite.insert(note1.offset, textExp)
+
+            note2 = score2.recurse().getElementById(op[2].general_note)
+            note2.style.color = SUB_COLOR
+            textExp = m21.expressions.TextExpression("changed expression")
+            textExp.style.color = SUB_COLOR
+            note2.activeSite.insert(note2.offset, textExp)
+
+        # articulations
+        elif op[0] == "insarticulation":
+            assert type(op[2]) == nlin.AnnotatedNote
+            # color the inserted beam in score2 using INS_COLOR
+            note2 = score2.recurse().getElementById(op[2].general_note)
+            note2.style.color = INS_COLOR
+            textExp = m21.expressions.TextExpression("ins articulation")
+            textExp.style.color = SUB_COLOR
+            note2.activeSite.insert(note2.offset, textExp)
+
+        elif op[0] == "delarticulation":
+            assert type(op[1]) == nlin.AnnotatedNote
+            # color the deleted beam in score1 using DEL_COLOR
+            note1 = score1.recurse().getElementById(op[1].general_note)
+            note1.style.color = DEL_COLOR
+            textExp = m21.expressions.TextExpression("del articulation")
+            textExp.style.color = SUB_COLOR
+            note1.activeSite.insert(note1.offset, textExp)
+
+        elif op[0] == "editarticulation":
+            assert type(op[1]) == nlin.AnnotatedNote
+            assert type(op[2]) == nlin.AnnotatedNote
+            # color the changed beam (in both scores) using SUB_COLOR
+            note1 = score1.recurse().getElementById(op[1].general_note)
+            note1.style.color = SUB_COLOR
+            textExp = m21.expressions.TextExpression("changed articulation")
+            textExp.style.color = SUB_COLOR
+            note1.activeSite.insert(note1.offset, textExp)
+
+            note2 = score2.recurse().getElementById(op[2].general_note)
+            note2.style.color = SUB_COLOR
+            textExp = m21.expressions.TextExpression("changed articulation")
+            textExp.style.color = SUB_COLOR
+            note2.activeSite.insert(note2.offset, textExp)
+
         else:
             print(
                 "Annotation type {} not yet supported for visualization".format(op[0])

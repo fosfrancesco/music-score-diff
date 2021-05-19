@@ -904,6 +904,80 @@ def op_list2json(op_list):
                     "info": (op[4][0], None),
                 }
             )
+        elif op[0] == "tieins":
+            assert type(op[2]) == nlin.AnnotatedNote
+            operations.append(
+                {
+                    "operation": "instie",
+                    "reference_score1": None,
+                    "reference_score2": op[2],
+                    "info": (None, op[4][1]),
+                }
+            )
+        # expression
+        elif op[0] == "insexpression":
+            assert type(op[2]) == nlin.AnnotatedNote
+            operations.append(
+                {
+                    "operation": "insexpression",
+                    "reference_score1": None,
+                    "reference_score2": op[2],
+                    "info": None,
+                }
+            )
+        elif op[0] == "delexpression":
+            assert type(op[1]) == nlin.AnnotatedNote
+            operations.append(
+                {
+                    "operation": "delexpression",
+                    "reference_score1": op[1],
+                    "reference_score2": None,
+                    "info": None,
+                }
+            )
+        elif op[0] == "editexpression":
+            assert type(op[1]) == nlin.AnnotatedNote
+            assert type(op[2]) == nlin.AnnotatedNote
+            operations.append(
+                {
+                    "operation": "subexpression",
+                    "reference_score1": op[1],
+                    "reference_score2": op[2],
+                    "info": None,
+                }
+            )
+        # articulation
+        elif op[0] == "insarticulation":
+            assert type(op[2]) == nlin.AnnotatedNote
+            operations.append(
+                {
+                    "operation": "insarticulation",
+                    "reference_score1": None,
+                    "reference_score2": op[2],
+                    "info": None,
+                }
+            )
+        elif op[0] == "delarticulation":
+            assert type(op[1]) == nlin.AnnotatedNote
+            operations.append(
+                {
+                    "operation": "delarticulation",
+                    "reference_score1": op[1],
+                    "reference_score2": None,
+                    "info": None,
+                }
+            )
+        elif op[0] == "editarticulation":
+            assert type(op[1]) == nlin.AnnotatedNote
+            assert type(op[2]) == nlin.AnnotatedNote
+            operations.append(
+                {
+                    "operation": "subarticulation",
+                    "reference_score1": op[1],
+                    "reference_score2": op[2],
+                    "info": None,
+                }
+            )
         else:
             print(
                 "Annotation type {} not yet supported for visualization".format(op[0])

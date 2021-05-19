@@ -45,3 +45,17 @@ def test_json_production2():
     operation_json = scl.op_list2json(op_list)
     assert 1 == 1
 
+
+def test_json_production3():
+    score1_path = Path("test_scores/musicxml/articulation_score_1a.xml")
+    score1 = m21.converter.parse(str(score1_path))
+    score2_path = Path("test_scores/musicxml/articulation_score_1b.xml")
+    score2 = m21.converter.parse(str(score2_path))
+    # build ScoreTrees
+    score_lin1 = nlin.Score(score1)
+    score_lin2 = nlin.Score(score2)
+    # compute the complete score diff
+    op_list, cost = scl.complete_scorelin_diff(score_lin1, score_lin2)
+    operation_json = scl.op_list2json(op_list)
+    assert 1 == 1
+
