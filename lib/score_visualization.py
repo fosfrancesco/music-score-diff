@@ -22,7 +22,7 @@ def annotate_differences(score1, score2, operations):
             assert type(op[2]) == nlin.Bar
             # color all the notes in the inserted score2 measure using INS_COLOR
             measure2 = score2.recurse().getElementById(op[2].measure)
-            textExp = m21.TextExpression("inserted measure")
+            textExp = m21.expressions.TextExpression("inserted measure")
             textExp.style.color = INS_COLOR
             measure2.insert(0, textExp)
             measure2.style.color = INS_COLOR  # this apparently does nothing
@@ -90,7 +90,8 @@ def annotate_differences(score1, score2, operations):
             assert type(op[2]) == nlin.AnnotatedNote
             assert len(op) == 5  # the indices must be there
             # color the changed note (in both scores) using SUB_COLOR
-            note1 = score1.recurse().getElementById(op[1].general_note)
+            chord1 = score1.recurse().getElementById(op[1].general_note)
+            note1 = chord1
             if "Chord" in note1.classes:
                 # color just the indexed note in the chord
                 idx = op[4][0]
@@ -98,9 +99,14 @@ def annotate_differences(score1, score2, operations):
             note1.style.color = SUB_COLOR
             textExp = m21.expressions.TextExpression("changed pitch")
             textExp.style.color = SUB_COLOR
-            note1.activeSite.insert(note1.offset, textExp)
+            if note1.activeSite is not None:
+                note1.activeSite.insert(note1.offset, textExp)
+            else:
+                chord1.activeSite.insert(chord1.offset, textExp)
 
-            note2 = score2.recurse().getElementById(op[2].general_note)
+
+            chord2 = score2.recurse().getElementById(op[2].general_note)
+            note2 = chord2
             if "Chord" in note2.classes:
                 # color just the indexed note in the chord
                 idx = op[4][1]
@@ -108,13 +114,17 @@ def annotate_differences(score1, score2, operations):
             note2.style.color = SUB_COLOR
             textExp = m21.expressions.TextExpression("changed pitch")
             textExp.style.color = SUB_COLOR
-            note2.activeSite.insert(note2.offset, textExp)
+            if note2.activeSite is not None:
+                note2.activeSite.insert(note2.offset, textExp)
+            else:
+                chord2.activeSite.insert(chord2.offset, textExp)
 
         elif op[0] == "inspitch":
             assert type(op[2]) == nlin.AnnotatedNote
             assert len(op) == 5  # the indices must be there
             # color the inserted note in score2 using INS_COLOR
-            note2 = score2.recurse().getElementById(op[2].general_note)
+            chord2 = score2.recurse().getElementById(op[2].general_note)
+            note2 = chord2
             if "Chord" in note2.classes:
                 # color just the indexed note in the chord
                 idx = op[4][1]
@@ -122,13 +132,17 @@ def annotate_differences(score1, score2, operations):
             note2.style.color = INS_COLOR
             textExp = m21.expressions.TextExpression("inserted note")
             textExp.style.color = INS_COLOR
-            note2.activeSite.insert(note2.offset, textExp)
+            if note2.activeSite is not None:
+                note2.activeSite.insert(note2.offset, textExp)
+            else:
+                chord2.activeSite.insert(chord2.offset, textExp)
 
         elif op[0] == "delpitch":
             assert type(op[1]) == nlin.AnnotatedNote
             assert len(op) == 5  # the indices must be there
             # color the deleted note in score1 using DEL_COLOR
-            note1 = score1.recurse().getElementById(op[1].general_note)
+            chord1 = score1.recurse().getElementById(op[1].general_note)
+            note1 = chord1
             if "Chord" in note1.classes:
                 # color just the indexed note in the chord
                 idx = op[4][0]
@@ -136,7 +150,10 @@ def annotate_differences(score1, score2, operations):
             note1.style.color = DEL_COLOR
             textExp = m21.expressions.TextExpression("deleted note")
             textExp.style.color = DEL_COLOR
-            note1.activeSite.insert(note1.offset, textExp)
+            if note1.activeSite is not None:
+                note1.activeSite.insert(note1.offset, textExp)
+            else:
+                chord1.activeSite.insert(chord1.offset, textExp)
 
         elif op[0] == "headedit":
             assert type(op[1]) == nlin.AnnotatedNote
@@ -221,7 +238,8 @@ def annotate_differences(score1, score2, operations):
             assert type(op[2]) == nlin.AnnotatedNote
             assert len(op) == 5  # the indices must be there
             # color the modified note in both scores using INS_COLOR
-            note1 = score1.recurse().getElementById(op[1].general_note)
+            chord1 = score1.recurse().getElementById(op[1].general_note)
+            note1 = chord1
             if "Chord" in note1.classes:
                 # color only the indexed note's accidental in the chord
                 idx = op[4][0]
@@ -231,9 +249,13 @@ def annotate_differences(score1, score2, operations):
             note1.style.color = INS_COLOR
             textExp = m21.expressions.TextExpression("inserted accidental")
             textExp.style.color = INS_COLOR
-            note1.activeSite.insert(note1.offset, textExp)
+            if note1.activeSite is not None:
+                note1.activeSite.insert(note1.offset, textExp)
+            else:
+                chord1.activeSite.insert(chord1.offset, textExp)
 
-            note2 = score2.recurse().getElementById(op[2].general_note)
+            chord2 = score2.recurse().getElementById(op[2].general_note)
+            note2 = chord2
             if "Chord" in note2.classes:
                 # color only the indexed note's accidental in the chord
                 idx = op[4][1]
@@ -243,14 +265,18 @@ def annotate_differences(score1, score2, operations):
             note2.style.color = INS_COLOR
             textExp = m21.expressions.TextExpression("inserted accidental")
             textExp.style.color = INS_COLOR
-            note2.activeSite.insert(note2.offset, textExp)
+            if note2.activeSite is not None:
+                note2.activeSite.insert(note2.offset, textExp)
+            else:
+                chord2.activeSite.insert(chord2.offset, textExp)
 
         elif op[0] == "accidentdel":
             assert type(op[1]) == nlin.AnnotatedNote
             assert type(op[2]) == nlin.AnnotatedNote
             assert len(op) == 5  # the indices must be there
             # color the modified note in both scores using DEL_COLOR
-            note1 = score1.recurse().getElementById(op[1].general_note)
+            chord1 = score1.recurse().getElementById(op[1].general_note)
+            note1 = chord1
             if "Chord" in note1.classes:
                 # color only the indexed note's accidental in the chord
                 idx = op[4][0]
@@ -260,9 +286,13 @@ def annotate_differences(score1, score2, operations):
             note1.style.color = DEL_COLOR
             textExp = m21.expressions.TextExpression("deleted accidental")
             textExp.style.color = DEL_COLOR
-            note1.activeSite.insert(note1.offset, textExp)
+            if note1.activeSite is not None:
+                note1.activeSite.insert(note1.offset, textExp)
+            else:
+                chord1.activeSite.insert(chord1.offset, textExp)
 
-            note2 = score2.recurse().getElementById(op[2].general_note)
+            chord2 = score2.recurse().getElementById(op[2].general_note)
+            note2 = chord2
             if "Chord" in note2.classes:
                 # color only the indexed note's accidental in the chord
                 idx = op[4][1]
@@ -272,14 +302,18 @@ def annotate_differences(score1, score2, operations):
             note2.style.color = DEL_COLOR
             textExp = m21.expressions.TextExpression("deleted accidental")
             textExp.style.color = DEL_COLOR
-            note2.activeSite.insert(note2.offset, textExp)
+            if note2.activeSite is not None:
+                note2.activeSite.insert(note2.offset, textExp)
+            else:
+                chord2.activeSite.insert(chord2.offset, textExp)
 
         elif op[0] == "accidentedit":
             assert type(op[1]) == nlin.AnnotatedNote
             assert type(op[2]) == nlin.AnnotatedNote
             assert len(op) == 5  # the indices must be there
             # color the changed accidental (in both scores) using SUB_COLOR
-            note1 = score1.recurse().getElementById(op[1].general_note)
+            chord1 = score1.recurse().getElementById(op[1].general_note)
+            note1 = chord1
             if "Chord" in note1.classes:
                 # color just the indexed note in the chord
                 idx = op[4][0]
@@ -289,9 +323,13 @@ def annotate_differences(score1, score2, operations):
             note1.style.color = SUB_COLOR
             textExp = m21.expressions.TextExpression("changed accidental")
             textExp.style.color = SUB_COLOR
-            note1.activeSite.insert(note1.offset, textExp)
+            if note1.activeSite is not None:
+                note1.activeSite.insert(note1.offset, textExp)
+            else:
+                chord1.activeSite.insert(chord1.offset, textExp)
 
-            note2 = score2.recurse().getElementById(op[2].general_note)
+            chord2 = score2.recurse().getElementById(op[2].general_note)
+            note2 = chord2
             if "Chord" in note2.classes:
                 # color just the indexed note in the chord
                 idx = op[4][1]
@@ -301,7 +339,10 @@ def annotate_differences(score1, score2, operations):
             note2.style.color = SUB_COLOR
             textExp = m21.expressions.TextExpression("changed accidental")
             textExp.style.color = SUB_COLOR
-            note2.activeSite.insert(note2.offset, textExp)
+            if note2.activeSite is not None:
+                note2.activeSite.insert(note2.offset, textExp)
+            else:
+                chord2.activeSite.insert(chord2.offset, textExp)
 
         elif op[0] == "dotins":
             assert type(op[1]) == nlin.AnnotatedNote
@@ -357,7 +398,8 @@ def annotate_differences(score1, score2, operations):
             assert type(op[2]) == nlin.AnnotatedNote
             assert len(op) == 5  # the indices must be there
             # Color the modified note here in both scores, using INS_COLOR
-            note1 = score1.recurse().getElementById(op[1].general_note)
+            chord1 = score1.recurse().getElementById(op[1].general_note)
+            note1 = chord1
             if "Chord" in note1.classes:
                 # color just the indexed note in the chord
                 idx = op[4][0]
@@ -365,9 +407,13 @@ def annotate_differences(score1, score2, operations):
             note1.style.color = INS_COLOR
             textExp = m21.expressions.TextExpression("inserted tie")
             textExp.style.color = INS_COLOR
-            note1.activeSite.insert(note1.offset, textExp)
+            if note1.activeSite is not None:
+                note1.activeSite.insert(note1.offset, textExp)
+            else:
+                chord1.activeSite.insert(chord1.offset, textExp)
 
-            note2 = score2.recurse().getElementById(op[2].general_note)
+            chord2 = score2.recurse().getElementById(op[2].general_note)
+            note2 = chord2
             if "Chord" in note2.classes:
                 # color just the indexed note in the chord
                 idx = op[4][1]
@@ -375,14 +421,18 @@ def annotate_differences(score1, score2, operations):
             note2.style.color = INS_COLOR
             textExp = m21.expressions.TextExpression("inserted tie")
             textExp.style.color = INS_COLOR
-            note2.activeSite.insert(note2.offset, textExp)
+            if note2.activeSite is not None:
+                note2.activeSite.insert(note2.offset, textExp)
+            else:
+                chord2.activeSite.insert(chord2.offset, textExp)
 
         elif op[0] == "tiedel":
             assert type(op[1]) == nlin.AnnotatedNote
             assert type(op[2]) == nlin.AnnotatedNote
             assert len(op) == 5  # the indices must be there
             # Color the modified note in both scores, using DEL_COLOR
-            note1 = score1.recurse().getElementById(op[1].general_note)
+            chord1 = score1.recurse().getElementById(op[1].general_note)
+            note1 = chord1
             if "Chord" in note1.classes:
                 # color just the indexed note in the chord
                 idx = op[4][0]
@@ -390,9 +440,13 @@ def annotate_differences(score1, score2, operations):
             note1.style.color = DEL_COLOR
             textExp = m21.expressions.TextExpression("deleted tie")
             textExp.style.color = DEL_COLOR
-            note1.activeSite.insert(note1.offset, textExp)
+            if note1.activeSite is not None:
+                note1.activeSite.insert(note1.offset, textExp)
+            else:
+                chord1.activeSite.insert(chord1.offset, textExp)
 
-            note2 = score2.recurse().getElementById(op[2].general_note)
+            chord2 = score2.recurse().getElementById(op[2].general_note)
+            note2 = chord2
             if "Chord" in note2.classes:
                 # color just the indexed note in the chord
                 idx = op[4][1]
@@ -400,7 +454,10 @@ def annotate_differences(score1, score2, operations):
             note2.style.color = DEL_COLOR
             textExp = m21.expressions.TextExpression("deleted tie")
             textExp.style.color = DEL_COLOR
-            note2.activeSite.insert(note2.offset, textExp)
+            if note2.activeSite is not None:
+                note2.activeSite.insert(note2.offset, textExp)
+            else:
+                chord2.activeSite.insert(chord2.offset, textExp)
 
         # expressions
         elif op[0] == "insexpression":
