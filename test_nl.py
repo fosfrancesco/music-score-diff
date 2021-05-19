@@ -193,9 +193,9 @@ def test_equality_all1():
     v2 = s2.part_list[0].bar_list[0].voices_list[0]
     # change the ids
     for an in v1.annot_notes:
-        an.general_note.id = 344
+        an.general_note = 344
     for an in v2.annot_notes:
-        an.general_note.id = 345
+        an.general_note = 345
     assert v1 == v2
     assert repr(v1) == repr(v1)
     assert repr(v2) == repr(v2)

@@ -12,9 +12,10 @@ import lib.NotationLinear as nlin
 
 RESOURCES_PATH = None
 
-INS_COLOR = "red" # "green"
+INS_COLOR = "red"  # "green"
 DEL_COLOR = "red"
-SUB_COLOR = "red" # "blue"
+SUB_COLOR = "red"  # "blue"
+
 
 def setResourchesPath(path):
     global RESOURCES_PATH
@@ -31,7 +32,7 @@ def annotate_differences(score1, score2, operations):
             textExp = m21.TextExpression("inserted measure")
             textExp.style.color = INS_COLOR
             measure2.insert(0, textExp)
-            measure2.style.color = INS_COLOR # this apparently does nothing
+            measure2.style.color = INS_COLOR  # this apparently does nothing
             for el in measure2.recurse().notesAndRests:
                 el.style.color = INS_COLOR
 
@@ -42,7 +43,7 @@ def annotate_differences(score1, score2, operations):
             textExp = m21.expressions.TextExpression("deleted measure")
             textExp.style.color = DEL_COLOR
             measure1.insert(0, textExp)
-            measure1.style.color = DEL_COLOR # this apparently does nothing
+            measure1.style.color = DEL_COLOR  # this apparently does nothing
             for el in measure1.recurse().notesAndRests:
                 el.style.color = DEL_COLOR
 
@@ -55,7 +56,7 @@ def annotate_differences(score1, score2, operations):
             textExp.style.color = INS_COLOR
             voice2.insert(0, textExp)
 
-            voice2.style.color = INS_COLOR # this apparently does nothing
+            voice2.style.color = INS_COLOR  # this apparently does nothing
             for el in voice2.recurse().notesAndRests:
                 el.style.color = INS_COLOR
 
@@ -67,7 +68,7 @@ def annotate_differences(score1, score2, operations):
             textExp.style.color = DEL_COLOR
             voice1.insert(0, textExp)
 
-            voice1.style.color = DEL_COLOR # this apparently does nothing
+            voice1.style.color = DEL_COLOR  # this apparently does nothing
             for el in voice1.recurse().notesAndRests:
                 el.style.color = DEL_COLOR
 
@@ -97,7 +98,7 @@ def annotate_differences(score1, score2, operations):
             assert len(op) == 5  # the indices must be there
             # color the changed note (in both scores) using SUB_COLOR
             note1 = score1.recurse().getElementById(op[1].general_note)
-            if 'Chord' in note1.classes:
+            if "Chord" in note1.classes:
                 # color just the indexed note in the chord
                 idx = op[4][0]
                 note1 = note1.notes[idx]
@@ -107,7 +108,7 @@ def annotate_differences(score1, score2, operations):
             note1.activeSite.insert(note1.offset, textExp)
 
             note2 = score2.recurse().getElementById(op[2].general_note)
-            if 'Chord' in note2.classes:
+            if "Chord" in note2.classes:
                 # color just the indexed note in the chord
                 idx = op[4][1]
                 note2 = note2.notes[idx]
@@ -116,13 +117,12 @@ def annotate_differences(score1, score2, operations):
             textExp.style.color = SUB_COLOR
             note2.activeSite.insert(note2.offset, textExp)
 
-
         elif op[0] == "inspitch":
             assert type(op[2]) == nlin.AnnotatedNote
             assert len(op) == 5  # the indices must be there
             # color the inserted note in score2 using INS_COLOR
             note2 = score2.recurse().getElementById(op[2].general_note)
-            if 'Chord' in note2.classes:
+            if "Chord" in note2.classes:
                 # color just the indexed note in the chord
                 idx = op[4][1]
                 note2 = note2.notes[idx]
@@ -133,7 +133,7 @@ def annotate_differences(score1, score2, operations):
             assert len(op) == 5  # the indices must be there
             # color the deleted note in score1 using DEL_COLOR
             note1 = score1.recurse().getElementById(op[1].general_note)
-            if 'Chord' in note1.classes:
+            if "Chord" in note1.classes:
                 # color just the indexed note in the chord
                 idx = op[4][0]
                 note1 = note1.notes[idx]
@@ -162,7 +162,7 @@ def annotate_differences(score1, score2, operations):
             note2 = score2.recurse().getElementById(op[2].general_note)
             note2.style.color = INS_COLOR
             for beam in note2.beams:
-                beam.style.color = INS_COLOR # this apparently does nothing
+                beam.style.color = INS_COLOR  # this apparently does nothing
             textExp = m21.expressions.TextExpression("increased flags")
             textExp.style.color = SUB_COLOR
             note2.activeSite.insert(note2.offset, textExp)
@@ -173,7 +173,7 @@ def annotate_differences(score1, score2, operations):
             note1 = score1.recurse().getElementById(op[1].general_note)
             note1.style.color = DEL_COLOR
             for beam in note1.beams:
-                beam.style.color = DEL_COLOR # this apparently does nothing
+                beam.style.color = DEL_COLOR  # this apparently does nothing
             textExp = m21.expressions.TextExpression("decreased flags")
             textExp.style.color = SUB_COLOR
             note1.activeSite.insert(note1.offset, textExp)
@@ -185,7 +185,7 @@ def annotate_differences(score1, score2, operations):
             note1 = score1.recurse().getElementById(op[1].general_note)
             note1.style.color = SUB_COLOR
             for beam in note1.beams:
-                beam.style.color = SUB_COLOR # this apparently does nothing
+                beam.style.color = SUB_COLOR  # this apparently does nothing
             textExp = m21.expressions.TextExpression("changed flags")
             textExp.style.color = SUB_COLOR
             note1.activeSite.insert(note1.offset, textExp)
@@ -193,7 +193,7 @@ def annotate_differences(score1, score2, operations):
             note2 = score2.recurse().getElementById(op[2].general_note)
             note2.style.color = SUB_COLOR
             for beam in note2.beams:
-                beam.style.color = SUB_COLOR # this apparently does nothing
+                beam.style.color = SUB_COLOR  # this apparently does nothing
             textExp = m21.expressions.TextExpression("changed flags")
             textExp.style.color = SUB_COLOR
             note2.activeSite.insert(note2.offset, textExp)
@@ -204,7 +204,7 @@ def annotate_differences(score1, score2, operations):
             assert len(op) == 5  # the indices must be there
             # color the inserted accidental in score2 using INS_COLOR
             note2 = score2.recurse().getElementById(op[2].general_note)
-            if 'Chord' in note2.classes:
+            if "Chord" in note2.classes:
                 # color only the indexed note's accidental in the chord
                 idx = op[4][1]
                 note2 = note2.notes[idx]
@@ -220,7 +220,7 @@ def annotate_differences(score1, score2, operations):
             assert len(op) == 5  # the indices must be there
             # color the deleted accidental in score1 using DEL_COLOR
             note1 = score1.recurse().getElementById(op[1].general_note)
-            if 'Chord' in note1.classes:
+            if "Chord" in note1.classes:
                 # color only the indexed note's accidental in the chord
                 idx = op[4][0]
                 note1 = note1.notes[idx]
@@ -237,7 +237,7 @@ def annotate_differences(score1, score2, operations):
             assert len(op) == 5  # the indices must be there
             # color the changed accidental (in both scores) using SUB_COLOR
             note1 = score1.recurse().getElementById(op[1].general_note)
-            if 'Chord' in note1.classes:
+            if "Chord" in note1.classes:
                 # color just the indexed note in the chord
                 idx = op[4][0]
                 note1 = note1.notes[idx]
@@ -249,7 +249,7 @@ def annotate_differences(score1, score2, operations):
             note1.activeSite.insert(note1.offset, textExp)
 
             note2 = score2.recurse().getElementById(op[2].general_note)
-            if 'Chord' in note2.classes:
+            if "Chord" in note2.classes:
                 # color just the indexed note in the chord
                 idx = op[4][1]
                 note2 = note2.notes[idx]
@@ -317,14 +317,14 @@ def annotate_differences(score1, score2, operations):
             # modified.
             # Color the modified note here in both scores, using SUB_COLOR
             note1 = score1.recurse().getElementById(op[1].general_note)
-            if 'Chord' in note1.classes:
+            if "Chord" in note1.classes:
                 # color just the indexed note in the chord
                 idx = op[4][0]
                 note1 = note1.notes[idx]
             note1.style.color = SUB_COLOR
 
             note2 = score2.recurse().getElementById(op[2].general_note)
-            if 'Chord' in note2.classes:
+            if "Chord" in note2.classes:
                 # color just the indexed note in the chord
                 idx = op[4][1]
                 note2 = note2.notes[idx]
@@ -338,14 +338,14 @@ def annotate_differences(score1, score2, operations):
             # modified.
             # Color the modified note here in both scores, using SUB_COLOR
             note1 = score1.recurse().getElementById(op[1].general_note)
-            if 'Chord' in note1.classes:
+            if "Chord" in note1.classes:
                 # color just the indexed note in the chord
                 idx = op[4][0]
                 note1 = note1.notes[idx]
             note1.style.color = SUB_COLOR
 
             note2 = score2.recurse().getElementById(op[2].general_note)
-            if 'Chord' in note2.classes:
+            if "Chord" in note2.classes:
                 # color just the indexed note in the chord
                 idx = op[4][1]
                 note2 = note2.notes[idx]

@@ -159,8 +159,8 @@ def test_pitches_diff1():
     n1 = m21.note.Note(nameWithOctave="D#5", quarterLength=1)
     n2 = m21.note.Note(nameWithOctave="D--5", quarterLength=1)
     # create AnnotatedNotes
-    note1 = nlin.AnnotatedNote(n1, [], [], [])
-    note2 = nlin.AnnotatedNote(n2, [], [], [])
+    note1 = nlin.AnnotatedNote(n1, [], [])
+    note2 = nlin.AnnotatedNote(n2, [], [])
     # pitches to compare
     pitch1 = note1.pitches[0]
     pitch2 = note2.pitches[0]
@@ -173,8 +173,8 @@ def test_pitches_diff1():
 def test_pitches_diff2():
     n1 = m21.note.Note(nameWithOctave="E5", quarterLength=2)
     n2 = m21.note.Note(nameWithOctave="D--5", quarterLength=1)
-    note1 = nlin.AnnotatedNote(n1, [], [], [])
-    note2 = nlin.AnnotatedNote(n2, [], [], [])
+    note1 = nlin.AnnotatedNote(n1, [], [])
+    note2 = nlin.AnnotatedNote(n2, [], [])
     # pitches to compare
     pitch1 = note1.pitches[0]
     pitch2 = note2.pitches[0]
@@ -190,8 +190,8 @@ def test_pitches_diff3():
     n1 = m21.note.Note(nameWithOctave="D--5", quarterLength=2)
     n1.tie = m21.tie.Tie("stop")
     n2 = m21.note.Rest(quarterLength=0.5)
-    note1 = nlin.AnnotatedNote(n1, [], [], [])
-    note2 = nlin.AnnotatedNote(n2, [], [], [])
+    note1 = nlin.AnnotatedNote(n1, [], [])
+    note2 = nlin.AnnotatedNote(n2, [], [])
     # pitches to compare
     pitch1 = note1.pitches[0]
     pitch2 = note2.pitches[0]
@@ -201,7 +201,7 @@ def test_pitches_diff3():
     assert len(op_list) == 3
     assert ("accidentdel", note1, None, 1, (0, 0)) in op_list
     assert ("pitchtypeedit", note1, note2, 1, (0, 0)) in op_list
-    assert ("tiedel", note1, None, 1, (0, 0)) in op_list
+    assert ("tiedel", note1, note2, 1, (0, 0)) in op_list
 
 
 def test_pitches_diff4():
@@ -209,8 +209,8 @@ def test_pitches_diff4():
     n1.tie = m21.tie.Tie("stop")
     n2 = m21.note.Note(nameWithOctave="D#5", quarterLength=3)
     n2.tie = m21.tie.Tie("stop")
-    note1 = nlin.AnnotatedNote(n1, [], [], [])
-    note2 = nlin.AnnotatedNote(n2, [], [], [])
+    note1 = nlin.AnnotatedNote(n1, [], [])
+    note2 = nlin.AnnotatedNote(n2, [], [])
     # pitches to compare
     pitch1 = note1.pitches[0]
     pitch2 = note2.pitches[0]
@@ -279,3 +279,15 @@ def test_complete_scorelin_diff1():
     op_list, cost = scl.complete_scorelin_diff(score_lin1, score_lin2)
     assert cost == 8
 
+
+def test_musicxml_articulation_diff1():
+    score1_path = Path("test_scores/musicxml/articulation_score_1a.xml")
+    score1 = m21.converter.parse(str(score1_path))
+    score2_path = Path("test_scores/musicxml/articulation_score_1b.xml")
+    score2 = m21.converter.parse(str(score2_path))
+    # build ScoreTrees
+    score_lin1 = nlin.Score(score1)
+    score_lin2 = nlin.Score(score2)
+    # compute the complete score diff
+    op_list, cost = scl.complete_scorelin_diff(score_lin1, score_lin2)
+    assert cost == 10

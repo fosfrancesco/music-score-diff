@@ -15,25 +15,33 @@ class AnnotatedNote:
         self.beamings = enhanced_beam_list
         self.tuplets = tuple_list
         ##compute the representaiton of NoteNode as in the paper
-        #pitches is a list  of elements, each one is (pitchposition, accidental, tie)
+        # pitches is a list  of elements, each one is (pitchposition, accidental, tie)
         if general_note.isRest:
-            self.pitches = [("R","None",False)] #accidental and tie are automaticaly set for rests
+            self.pitches = [
+                ("R", "None", False)
+            ]  # accidental and tie are automaticaly set for rests
         elif general_note.isChord:
-            self.pitches = [m21u.note2tuple(p) for p in general_note.sortDiatonicAscending().notes]
+            self.pitches = [
+                m21u.note2tuple(p) for p in general_note.sortDiatonicAscending().notes
+            ]
         elif general_note.isNote:
             self.pitches = [m21u.note2tuple(general_note)]
         else:
             raise TypeError("The generalNote must be a Chord, a Rest or a Note")
-        #note head
-        type_number= Fraction(m21.duration.convertTypeToNumber(general_note.duration.type))
+        # note head
+        type_number = Fraction(
+            m21.duration.convertTypeToNumber(general_note.duration.type)
+        )
         if type_number >= 4:
             self.note_head = 4
         else:
             self.note_head = type_number
-        #dots
+        # dots
         self.dots = general_note.duration.dots
         # articulations
-        self.articulations = general_note.articulations
+        self.articulations = [a.name for a in general_note.articulations]
+        # expressions
+        self.expressions = [a.name for a in general_note.expressions]
 
     def notation_size(self):
         """a measure of how much symbols are display in the score
@@ -53,6 +61,8 @@ class AnnotatedNote:
         size += len(self.tuplets)
         # add for the articulations
         size += len(self.articulations)
+        # add for the expressions
+        size += len(self.expressions)
         return size
 
     def __repr__(self):
@@ -66,6 +76,7 @@ class AnnotatedNote:
             self.tuplets,
             self.general_note,
             self.articulations,
+            self.expressions,
         )
         return out
 
@@ -114,6 +125,9 @@ class AnnotatedNote:
         if len(self.articulations) > 0:  # add for articulations
             for a in self.articulations:
                 string += a
+        if len(self.expressions) > 0:  # add for articulations
+            for e in self.expressions:
+                string += e
         return string
 
     def get_note_id(self):
@@ -134,6 +148,8 @@ class AnnotatedNote:
         elif self.tuplets != other.tuplets:
             return False
         elif self.articulations != other.articulations:
+            return False
+        elif self.expressions != other.expressions:
             return False
         else:
             return True
