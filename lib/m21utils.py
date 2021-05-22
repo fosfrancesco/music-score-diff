@@ -31,7 +31,7 @@ def generalNote_to_string(gn):
     type_number= Fraction(duration.convertTypeToNumber(gn.duration.type))
     if type_number >= 4:
         out_string += "4"
-    else: 
+    else:
         out_string += str(type_number)
     #add the dot
     n_of_dots = gn.duration.dots
@@ -41,13 +41,27 @@ def generalNote_to_string(gn):
 
 
 def note2tuple(note):
-    #pitch name and octave
-    note_pitch = note.pitch.name[0] + str(note.pitch.octave)
-    #if it has an accident. Problem: what if it is hidden?
+    #pitch name (including accidental and octave)
+    note_pitch = note.pitch.nameWithOctave
+
+    # note_accidental is accidental.name (+ '.' + accidental.displayType, if displayType != 'normal')
     if note.pitch.accidental == None:
-        note_accidental = "None"
-    else: 
+        # accidental==None is the same as accidental.name = 'natural',
+        # with accidental.displayType = 'normal'
+        note_accidental = 'natural'
+    else:
         note_accidental = note.pitch.accidental.name
+        if note.pitch.accidental.displayType != 'normal':
+            # if the music21 accidental is marked to be displayed differently than normal
+            # (where normal means "if it is the first in measure (and not in key), or is
+            # needed to contradict a previous accidental, etc"), then include that information.
+            # Valid displayTypes (besides 'normal') are:
+            #         "always", "never", "unless-repeated" (show always unless
+            #         the immediately preceding note is the same), "even-tied"
+            #         (stronger than always: shows even if it is tied to the
+            #         previous note)
+            note_accidental += '.' + note.pitch.accidental.displayType
+
     #add tie information
     if note.tie is not None and ( note.tie.type == "stop" or note.tie.type == "continue"):
         note_tie = True
@@ -57,7 +71,7 @@ def note2tuple(note):
 
 
 def pitch_size(pitch):
-    """Compute the size of a pitch. 
+    """Compute the size of a pitch.
     Arguments:
         pitch {[triple]} -- a triple (pitchname,accidental,tie)
     """
@@ -65,8 +79,7 @@ def pitch_size(pitch):
     #add for the pitchname
     size +=1
     #add for the accidental
-    if pitch[1] != "None":
-        size+=1
+    size+=1
     #add for the tie
     if pitch[2]:
         size +=1
@@ -98,7 +111,7 @@ def generalNote_info(gn):
     type_number= Fraction(duration.convertTypeToNumber(gn.duration.type))
     if type_number >= 4:
         note_head = "4"
-    else: 
+    else:
         note_head = str(type_number)
 
     gn_info ={
@@ -261,7 +274,7 @@ def get_notes(measure, allowGraceNotes= False):
 
 def get_notes_and_gracenotes(measure):
     """
-    :param measure: a music21 measure 
+    :param measure: a music21 measure
     :return: a list of notes, including grace notes, inside the measure
     """
     return [n for n in measure.getElementsByClass('GeneralNote')]
@@ -272,7 +285,7 @@ def note_to_string(note):
         _str = 'R'
     else:
         _str = 'N'
-    return _str 
+    return _str
 
 def safe_get(list, idx):
     if idx < len(list) and idx >= 0:
