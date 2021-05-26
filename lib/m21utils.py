@@ -41,26 +41,21 @@ def generalNote_to_string(gn):
 
 
 def note2tuple(note):
-    #pitch name (including accidental and octave)
-    note_pitch = note.pitch.nameWithOctave
+    #pitch name (including octave, but not accidental)
+    note_pitch = note.pitch.step + str(note.pitch.octave)
 
-    # note_accidental is accidental.name (+ '.' + accidental.displayType, if displayType != 'normal')
-    if note.pitch.accidental == None:
-        # accidental==None is the same as accidental.name = 'natural',
-        # with accidental.displayType = 'normal'
-        note_accidental = 'natural'
+    # note_accidental is only set to non-'None' if the accidental will
+    # be visible in the printed score.
+    note_accidental = 'None'
+    if note.pitch.accidental is None:
+        pass
+    elif note.pitch.accidental.displayStatus is not None:
+        if note.pitch.accidental.displayStatus:
+            note_accidental = note.pitch.accidental.name
     else:
+        # note.pitch.accidental.displayStatus was not set (assuming accidental is visible)
+        # This can happen in unit tests, for example; anything where a Score is not involved.
         note_accidental = note.pitch.accidental.name
-        if note.pitch.accidental.displayType != 'normal':
-            # if the music21 accidental is marked to be displayed differently than normal
-            # (where normal means "if it is the first in measure (and not in key), or is
-            # needed to contradict a previous accidental, etc"), then include that information.
-            # Valid displayTypes (besides 'normal') are:
-            #         "always", "never", "unless-repeated" (show always unless
-            #         the immediately preceding note is the same), "even-tied"
-            #         (stronger than always: shows even if it is tied to the
-            #         previous note)
-            note_accidental += '.' + note.pitch.accidental.displayType
 
     #add tie information
     if note.tie is not None and ( note.tie.type == "stop" or note.tie.type == "continue"):

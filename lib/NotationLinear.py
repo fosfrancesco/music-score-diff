@@ -286,6 +286,9 @@ class Score:
         Arguments:
             score {[music21 score]} a music21 score
         """
+        # Have music21 run through the score, marking whether or not each accidental will
+        # actually be displayed. We will use this info later, when comparing notation.
+        score.makeAccidentals(inPlace=True)
         self.score = score.id
         self.part_list = []
         for part in score.parts.stream():
