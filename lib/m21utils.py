@@ -53,9 +53,28 @@ def note2tuple(note):
         if note.pitch.accidental.displayStatus:
             note_accidental = note.pitch.accidental.name
     else:
-        # note.pitch.accidental.displayStatus was not set (assuming accidental is visible)
-        # This can happen in unit tests, for example; anything where a Score is not involved.
-        note_accidental = note.pitch.accidental.name
+        # note.pitch.accidental.displayStatus was not set.
+        # This can happen when there are no measures in the test data.
+        # We will guess, based on displayType.
+        # displayType can be 'normal', 'always', 'never', 'unless-repeated', 'even-tied'
+        print('accidental.displayStatus unknown, so we will guess based on displayType')
+        displayType = note.pitch.accidental.displayType
+        if displayType is None:
+            displayType = 'normal'
+
+        if displayType == 'always' or displayType == 'even-tied':
+            note_accidental = note.pitch.accidental.name
+        elif displayType == 'never':
+            note_accidental = 'None'
+        elif displayType == 'normal':
+            # Complete guess: the accidental will be displayed
+            # This will be wrong if this is not the first such note in the measure.
+            note_accidental = note.pitch.accidental.name
+        elif displayType == 'unless-repeated':
+            # Guess that the note is not repeated
+            note_accidental = note.pitch.accidental.name
+
+    # TODO: we should append editorial style info to note_accidental here ('paren', etc)
 
     #add tie information
     if note.tie is not None and ( note.tie.type == "stop" or note.tie.type == "continue"):

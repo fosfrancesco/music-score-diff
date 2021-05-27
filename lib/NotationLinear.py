@@ -68,7 +68,7 @@ class AnnotatedNote:
     def __repr__(self):
         # repr consider also the id!
         # (pitches, notehead, dots, beaming, tuplets,id)
-        out = "{},{},{},{},{},{},{}".format(
+        out = "{},{},{},{},{},{},{},{}".format(
             self.pitches,
             self.note_head,
             self.dots,
@@ -212,6 +212,10 @@ class Bar:
         """
         :param measure: m21 measure
         """
+        # Have music21 run through the measure, marking whether or not each accidental will
+        # actually be displayed. We will use this info later, when comparing notation.
+        measure.makeAccidentals(inPlace=True, searchKeySignatureByContext=True)
+
         self.measure = measure.id
         self.voices_list = []
         if (
@@ -248,7 +252,7 @@ class Bar:
 class Part:
     def __init__(self, part):
         """
-        :param measure: m21 part
+        :param part: m21 part
         """
         self.part = part.id
         self.bar_list = []
@@ -286,9 +290,6 @@ class Score:
         Arguments:
             score {[music21 score]} a music21 score
         """
-        # Have music21 run through the score, marking whether or not each accidental will
-        # actually be displayed. We will use this info later, when comparing notation.
-        score.makeAccidentals(inPlace=True)
         self.score = score.id
         self.part_list = []
         for part in score.parts.stream():
