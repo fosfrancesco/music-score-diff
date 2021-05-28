@@ -17,7 +17,9 @@ def test_annotNote2():
     n1.id = 344
     # create annotated note
     anote = nlin.AnnotatedNote(n1, ["start"], ["start"])
-    assert anote.__repr__() == "[('E5', 'sharp', False)],4,0,['start'],['start'],344,[],[]"
+    assert (
+        anote.__repr__() == "[('E5', 'sharp', False)],4,0,['start'],['start'],344,[],[]"
+    )
     assert str(anote) == "[E5sharp]4BsrTsr"
 
 
@@ -36,7 +38,7 @@ def test_annotNote_size1():
     n1.tie = m21.tie.Tie("stop")
     # create annotated note
     anote = nlin.AnnotatedNote(n1, [], [])
-    assert anote.notation_size() == 3
+    assert anote.notation_size() == 2
 
 
 def test_annotNote_size2():
@@ -52,7 +54,7 @@ def test_noteNode_size3():
     n1 = m21.chord.Chord(["D", "F#", "A"], duration=d)
     # create annotated note
     anote = nlin.AnnotatedNote(n1, [], [])
-    assert anote.notation_size() == 9
+    assert anote.notation_size() == 7
 
 
 def test_noteNode_size4():
@@ -64,7 +66,24 @@ def test_noteNode_size4():
     chord = m21.chord.Chord([n1, n2, n3], duration=d)
     # create annotated note
     anote = nlin.AnnotatedNote(chord, [], [])
-    assert anote.notation_size() == 13
+    assert anote.notation_size() == 12
+
+
+def test_noteNode_size5():
+    score2_path = Path("test_scores/monophonic_score_1b.mei")
+    with open(score2_path, "r") as f:
+        mei_string = f.read()
+        conv = m21.mei.MeiToM21Converter(mei_string)
+        score2 = conv.run()
+    score_lin2 = nlin.Score(score2)
+    assert (
+        score_lin2.part_list[0]
+        .bar_list[6]
+        .voices_list[0]
+        .annot_notes[2]
+        .notation_size()
+        == 2
+    )
 
 
 def test_scorelin1():
@@ -120,7 +139,7 @@ def test_generalnotes1():
     # number of voices for each measure in part 0
     for m in score_lin1.part_list[0].bar_list:
         assert len(m.voices_list) == 1
-    assert score_lin1.part_list[0].bar_list[0].voices_list[0].notation_size() == 24
+    assert score_lin1.part_list[0].bar_list[0].voices_list[0].notation_size() == 14
 
 
 def test_ties1():
@@ -141,7 +160,7 @@ def test_ties1():
         assert len(m.voices_list) == 1
     expected_tree_repr = "[[E4]4Bsr,[E4T]4Bcosr,[D4]4Bspsp,[C4,E4]4Bsr,[C4T]4Bcosr,[D4]4Bspsp,[E4,G4,C5]4,[E4]4Bsr,[F4]4Bsp]"
     assert str(score_lin1.part_list[0].bar_list[0].voices_list[0]) == expected_tree_repr
-    assert score_lin1.part_list[0].bar_list[0].voices_list[0].notation_size() == 38
+    assert score_lin1.part_list[0].bar_list[0].voices_list[0].notation_size() == 26
 
 
 def test_equality_an1():
