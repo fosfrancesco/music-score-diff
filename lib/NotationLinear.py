@@ -40,8 +40,12 @@ class AnnotatedNote:
         self.dots = general_note.duration.dots
         # articulations
         self.articulations = [a.name for a in general_note.articulations]
+        if self.articulations:
+            self.articulations.sort()
         # expressions
         self.expressions = [a.name for a in general_note.expressions]
+        if self.expressions:
+            self.expressions.sort()
 
     def notation_size(self):
         """a measure of how much symbols are display in the score
