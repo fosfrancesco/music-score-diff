@@ -47,6 +47,9 @@ class AnnotatedNote:
         if self.expressions:
             self.expressions.sort()
 
+        # no-id static representation for faster comparison
+        self.precomputed_str = self.__str__()
+
     def notation_size(self):
         """a measure of how much symbols are display in the score
 
@@ -70,9 +73,8 @@ class AnnotatedNote:
         return size
 
     def __repr__(self):
-        # repr consider also the id!
-        # (pitches, notehead, dots, beaming, tuplets,id)
-        out = "{},{},{},{},{},{},{},{}".format(
+        # does consider the MEI id!
+        return "{},{},{},{},{},{},{},{}".format(
             self.pitches,
             self.note_head,
             self.dots,
@@ -82,12 +84,11 @@ class AnnotatedNote:
             self.articulations,
             self.expressions,
         )
-        return out
 
     def __str__(self):
         """
         Returns:
-            str -- the representation of notehead with ties and dots, beamings and tuplets
+            str -- the representation of the Annotated note. Does not consider MEI id
         """
         string = "["
         for p in self.pitches:  # add for pitches
@@ -139,24 +140,26 @@ class AnnotatedNote:
 
     def __eq__(self, other):
         # equality does not consider the MEI id!
-        if not isinstance(other, AnnotatedNote):
-            return False
-        elif self.pitches != other.pitches:
-            return False
-        elif self.note_head != other.note_head:
-            return False
-        elif self.dots != other.dots:
-            return False
-        elif self.beamings != other.beamings:
-            return False
-        elif self.tuplets != other.tuplets:
-            return False
-        elif self.articulations != other.articulations:
-            return False
-        elif self.expressions != other.expressions:
-            return False
-        else:
-            return True
+        return self.precomputed_str == other.precomputed_str
+
+        # if not isinstance(other, AnnotatedNote):
+        #     return False
+        # elif self.pitches != other.pitches:
+        #     return False
+        # elif self.note_head != other.note_head:
+        #     return False
+        # elif self.dots != other.dots:
+        #     return False
+        # elif self.beamings != other.beamings:
+        #     return False
+        # elif self.tuplets != other.tuplets:
+        #     return False
+        # elif self.articulations != other.articulations:
+        #     return False
+        # elif self.expressions != other.expressions:
+        #     return False
+        # else:
+        #     return True
 
 
 class Voice:
@@ -180,6 +183,7 @@ class Voice:
                 AnnotatedNote(n, self.en_beam_list[i], self.tuplet_list[i])
             )
         self.n_of_notes = len(self.annot_notes)
+        self.precomputed_str = self.__str__()
 
     def __eq__(self, other):
         # equality does not consider MEI id!
@@ -188,9 +192,10 @@ class Voice:
         elif len(self.annot_notes) != len(other.annot_notes):
             return False
         else:
-            return all(
-                [an[0] == an[1] for an in zip(self.annot_notes, other.annot_notes)]
-            )
+            return self.precomputed_str == other.precomputed_str
+            # return all(
+            #     [an[0] == an[1] for an in zip(self.annot_notes, other.annot_notes)]
+            # )
 
     def notation_size(self):
         return sum([an.notation_size() for an in self.annot_notes])
@@ -231,6 +236,12 @@ class Bar:
                 self.voices_list.append(Voice(voice))
         self.n_of_voices = len(self.voices_list)
 
+        # precomputed str to speed up the computation. String itself start to be long, so it is hashed
+        self.precomputed_str = hash(self.__str__())
+
+    def __str__(self):
+        return str([str(v) for v in self.voices_list])
+
     def __eq__(self, other):
         # equality does not consider MEI id!
         if not isinstance(other, Bar):
@@ -238,7 +249,8 @@ class Bar:
         elif len(self.voices_list) != len(other.voices_list):
             return False
         else:
-            return all([v[0] == v[1] for v in zip(self.voices_list, other.voices_list)])
+            return self.precomputed_str == other.precomputed_str
+            # return all([v[0] == v[1] for v in zip(self.voices_list, other.voices_list)])
 
     def notation_size(self):
         return sum([v.notation_size() for v in self.voices_list])
@@ -263,6 +275,11 @@ class Part:
         for measure in part.getElementsByClass("Measure"):
             self.bar_list.append(Bar(measure))  # create the bar objects
         self.n_of_bars = len(self.bar_list)
+        # precomputed str to speed up the computation. String itself start to be long, so it is hashed
+        self.precomputed_str = hash(self.__str__())
+
+    def __str__(self):
+        return str([str(b) for b in self.bar_list])
 
     def __eq__(self, other):
         # equality does not consider MEI id!

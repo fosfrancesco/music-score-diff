@@ -3,6 +3,7 @@ import operator
 import lib.NotationLinear as nlin
 import lib.m21utils as m21u
 import copy
+from numba import njit
 
 # memoizers to speed up the recursive computation
 def memoize_inside_bars_diff_lin(func):
@@ -188,7 +189,9 @@ def pitches_leveinsthein_diff(original, compare_to, noteNode1, noteNode2, ids):
         op_list, cost = pitches_leveinsthein_diff(
             original[1:], compare_to, noteNode1, noteNode2, (ids[0] + 1, ids[1])
         )
-        op_list.append(("delpitch", noteNode1, noteNode2, m21u.pitch_size(original[0]), ids))
+        op_list.append(
+            ("delpitch", noteNode1, noteNode2, m21u.pitch_size(original[0]), ids)
+        )
         cost += m21u.pitch_size(original[0])
         return op_list, cost
     else:
