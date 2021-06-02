@@ -1,9 +1,9 @@
-import json
-import operator
 import lib.NotationLinear as nlin
 import lib.m21utils as m21u
 import copy
-from numba import njit
+from numba import njit, jit, types
+from functools import lru_cache
+import numpy as np
 
 # memoizers to speed up the recursive computation
 def memoize_inside_bars_diff_lin(func):
@@ -34,10 +34,10 @@ def memoize_lcs_diff(func):
     mem = {}
 
     def memoizer(original, compare_to):
-        key = repr(original) + repr(compare_to)
+        key = str(hash(str(original))) + str(hash(str(compare_to)))
         if key not in mem:
             mem[key] = func(original, compare_to)
-        return copy.deepcopy(mem[key])
+        return mem[key]
 
     return memoizer
 
@@ -91,7 +91,7 @@ def memoize_generic_lev_diff(func):
 # algorithm in section 3.2
 # INPUT: two lists of Bar (one list from one part of the first score and one list from one part of the second score)
 # OUTPUT: the allignment between the two lists
-@memoize_lcs_diff
+# @memoize_lcs_diff
 def lcs_diff(original, compare_to):
     if len(original) == 0 and len(compare_to) == 0:
         cost = 0
@@ -117,49 +117,171 @@ def lcs_diff(original, compare_to):
         return op_list, cost
     else:
         # compute the cost and the op_list for the many possibilities of recursion
-        cost = {}
+        cost_dict = {}
         op_list = {}
         # original-step
-        op_list["originalstep"], cost["originalstep"] = lcs_diff(
+        op_list["originalstep"], cost_dict["originalstep"] = lcs_diff(
             original[1:], compare_to
         )
-        cost["originalstep"] += 0
+        cost_dict["originalstep"] += 0
         op_list["originalstep"].append(("originalstep", original[0], None, 0))
         # compare_to-step
-        op_list["comparetostep"], cost["comparetostep"] = lcs_diff(
+        op_list["comparetostep"], cost_dict["comparetostep"] = lcs_diff(
             original, compare_to[1:]
         )
-        cost["comparetostep"] += 0
+        cost_dict["comparetostep"] += 0
         op_list["comparetostep"].append(("comparetostep", None, compare_to[0], 0))
 
         # compute the maximum of the possibilities
-        max_key = max(cost, key=cost.get)
-        out = op_list[max_key], cost[max_key]
+        max_key = max(cost_dict, key=cost_dict.get)
+        out = op_list[max_key], cost_dict[max_key]
         return out
+
+
+@memoize_lcs_diff
+@jit(
+    types.Tuple((types.int64[:, :], types.int64))(types.int64[:, :], types.int64[:, :]),
+    nopython=True,
+)
+def lcs_diff_jit(original, compare_to):
+    if len(original) == 0 and len(compare_to) == 0:
+        cost = 0
+        op_list = np.zeros((0, 4), dtype=np.int64)
+        return op_list, cost
+    elif len(original) == 0:  # add compareto steps till the end
+        cost = 0
+        # iterate on the rest instead of go recursively (for performances)
+        op_list = np.zeros((0, 4), dtype=np.int64)
+        for e in compare_to[::-1]:  # reverse to simulate the recurstion
+            op_list = np.append(
+                op_list, np.array([1, -1, e[1], 0]).reshape(1, 4), axis=0
+            )
+        return op_list, cost
+    elif len(compare_to) == 0:  # add original steps till the end
+        cost = 0
+        op_list = np.zeros((0, 4), dtype=np.int64)
+        # iterate on the rest instead of go recursively (for performances)
+        for e in original[::-1]:  # reverse to simulate the recurstion
+            op_list = np.append(
+                op_list, np.array([0, e[1], -1, 0]).reshape(1, 4), axis=0
+            )
+        return op_list, cost
+    elif (
+        original[0, 0] == compare_to[0, 0]
+    ):  # compare the precomputed_str (no ids). index 2 for "equal" step
+        op_list, cost = lcs_diff_jit(original[1:], compare_to[1:])
+        cost += 1
+        op_list = np.append(
+            op_list,
+            np.array([2, original[0, 1], compare_to[0, 1], 1]).reshape(1, 4),
+            axis=0,
+        )
+        return op_list, cost
+    else:
+        # compute the cost and the op_list for the many possibilities of recursion
+        # index 0 is for original_step, index 1 is for  comparetostep
+        cost_original = 0
+        cost_compare = 0
+        op_list_original = np.zeros((0, 4), dtype=np.int64)
+        op_list_compare = np.zeros((0, 4), dtype=np.int64)
+        # original-step
+        op_list_original, cost_original = lcs_diff_jit(original[1:], compare_to)
+        cost_original += 0
+        op_list_original = np.append(
+            op_list_original, np.array([0, original[0, 1], -1, 0]).reshape(1, 4), axis=0
+        )
+        # compare_to-step
+        op_list_compare, cost_compare = lcs_diff_jit(original, compare_to[1:])
+        cost_compare += 0
+        op_list_compare = np.append(
+            op_list_compare,
+            np.array([1, -1, compare_to[0, 1], 0]).reshape(1, 4),
+            axis=0,
+        )
+
+        # compute the maximum of the possibilities, 0 is for original_step, index 1 is for  comparetostep
+        if cost_original > cost_compare:
+            return op_list_original, cost_original
+        else:
+            return op_list_compare, cost_compare
 
 
 # get the list of non common subsequence from the algorithm lcs_diff
 # that will be used to proceed further
 def non_common_subsequences(original, compare_to):
+    ### Both original and compare_to are list of lists, or numpy arrays with 2 columns.
+    ### This is necessary because bars need two representation at the same time.
+    ### One without the id (for comparison), and one with the id (to retrieve the bar at the end)
     # get the list of operations
-    op_list, __ = lcs_diff(original, compare_to)
+    op_list, __ = lcs_diff_jit(
+        np.array(original, dtype=np.int64), np.array(compare_to, dtype=np.int64)
+    )
     # retrieve the non common subsequences
     non_common_subsequences = []
     non_common_subsequences.append({"original": [], "compare_to": []})
     ind = 0
     for op in op_list[::-1]:
-        if op[0] == "equal":
+        if op[0] == 2:  # equal
             non_common_subsequences.append({"original": [], "compare_to": []})
             ind += 1
-        elif op[0] == "originalstep":
+        elif op[0] == 0:  # original step
             non_common_subsequences[ind]["original"].append(op[1])
-        elif op[0] == "comparetostep":
+        elif op[0] == 1:  # compare to step
             non_common_subsequences[ind]["compare_to"].append(op[2])
     # remove the empty dict from the list
     non_common_subsequences = [
         s for s in non_common_subsequences if s != {"original": [], "compare_to": []}
     ]
     return non_common_subsequences
+
+
+def non_common_subsequences_of_measures(original_m, compare_to_m):
+    # Take the hash for each measure to run faster comparison
+    # We need to hashes: one that is independent of the IDs (precomputed_str, for comparison),
+    # and one that contains the IDs (precomputed_repr, to retrieve the correct measure after computation)
+    original_int = [[o.precomputed_str, o.precomputed_repr] for o in original_m]
+    compare_to_int = [[c.precomputed_str, c.precomputed_repr] for c in compare_to_m]
+    ncs = non_common_subsequences(original_int, compare_to_int)
+    # retrieve the original pointers to measures
+    new_out = []
+    for e in ncs:
+        new_out.append({})
+        for k in e.keys():
+            new_out[-1][k] = []
+            for repr_hash in e[k]:
+                if k == "original":
+                    new_out[-1][k].append(
+                        next(m for m in original_m if m.precomputed_repr == repr_hash)
+                    )
+                else:
+                    new_out[-1][k].append(
+                        next(m for m in compare_to_m if m.precomputed_repr == repr_hash)
+                    )
+
+    return new_out
+
+
+# old function without numba
+# def non_common_subsequences(original, compare_to):
+#     # get the list of operations
+#     op_list, __ = lcs_diff_jit(original, compare_to)
+#     # retrieve the non common subsequences
+#     non_common_subsequences = []
+#     non_common_subsequences.append({"original": [], "compare_to": []})
+#     ind = 0
+#     for op in op_list[::-1]:
+#         if op[0] == "equal":
+#             non_common_subsequences.append({"original": [], "compare_to": []})
+#             ind += 1
+#         elif op[0] == "originalstep":
+#             non_common_subsequences[ind]["original"].append(op[1])
+#         elif op[0] == "comparetostep":
+#             non_common_subsequences[ind]["compare_to"].append(op[2])
+#     # remove the empty dict from the list
+#     non_common_subsequences = [
+#         s for s in non_common_subsequences if s != {"original": [], "compare_to": []}
+#     ]
+#     return non_common_subsequences
 
 
 @memoize_pitches_lev_diff
@@ -645,7 +767,7 @@ def complete_scorelin_diff(score_lin1, score_lin2):
     # iterate for all parts in the score
     for p_number in range(n_of_parts):
         # compute non-common-subseq
-        ncs = non_common_subsequences(
+        ncs = non_common_subsequences_of_measures(
             score_lin1.part_list[p_number].bar_list,
             score_lin2.part_list[p_number].bar_list,
         )

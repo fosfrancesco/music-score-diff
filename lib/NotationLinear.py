@@ -47,7 +47,7 @@ class AnnotatedNote:
         if self.expressions:
             self.expressions.sort()
 
-        # no-id static representation for faster comparison
+        # precomputed representations for faster comparison
         self.precomputed_str = self.__str__()
 
     def notation_size(self):
@@ -236,8 +236,9 @@ class Bar:
                 self.voices_list.append(Voice(voice))
         self.n_of_voices = len(self.voices_list)
 
-        # precomputed str to speed up the computation. String itself start to be long, so it is hashed
+        # precomputed values to speed up the computation. As they start to be long, they are hashed
         self.precomputed_str = hash(self.__str__())
+        self.precomputed_repr = hash(self.__repr__())
 
     def __str__(self):
         return str([str(v) for v in self.voices_list])
