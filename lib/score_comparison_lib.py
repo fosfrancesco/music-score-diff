@@ -4,6 +4,8 @@ import copy
 from numba import njit, jit, types
 from functools import lru_cache
 import numpy as np
+from typing import List, Dict, Any, Tuple
+from collections import namedtuple
 
 # memoizers to speed up the recursive computation
 def memoize_inside_bars_diff_lin(func):
@@ -88,11 +90,78 @@ def memoize_generic_lev_diff(func):
     return memoizer
 
 
+# See frontier in myers_diff
+Frontier = namedtuple("Frontier", ["x", "history"])
+
+
+def myers_diff(a_lines, b_lines):
+    # Myers algorithm for LCS of bars (instead of the recursive algorithm in section 3.2)
+    # This marks the farthest-right point along each diagonal in the edit
+    # graph, along with the history that got it there
+    frontier = {1: Frontier(0, [])}
+
+    a_max = len(a_lines)
+    b_max = len(b_lines)
+    for d in range(0, a_max + b_max + 1):
+        for k in range(-d, d + 1, 2):
+            # This determines whether our next search point will be going down
+            # in the edit graph, or to the right.
+            #
+            # The intuition for this is that we should go down if we're on the
+            # left edge (k == -d) to make sure that the left edge is fully
+            # explored.
+            #
+            # If we aren't on the top (k != d), then only go down if going down
+            # would take us to territory that hasn't sufficiently been explored
+            # yet.
+            go_down = k == -d or (k != d and frontier[k - 1].x < frontier[k + 1].x)
+
+            # Figure out the starting point of this iteration. The diagonal
+            # offsets come from the geometry of the edit grid - if you're going
+            # down, your diagonal is lower, and if you're going right, your
+            # diagonal is higher.
+            if go_down:
+                old_x, history = frontier[k + 1]
+                x = old_x
+            else:
+                old_x, history = frontier[k - 1]
+                x = old_x + 1
+
+            # We want to avoid modifying the old history, since some other step
+            # may decide to use it.
+            history = history[:]
+            y = x - k
+
+            # We start at the invalid point (0, 0) - we should only start building
+            # up history when we move off of it.
+            if 1 <= y <= b_max and go_down:
+                history.append((1, b_lines[y - 1][1]))  # add comparetostep
+            elif 1 <= x <= a_max:
+                history.append((0, a_lines[x - 1][1]))  # add originalstep
+
+            # Chew up as many diagonal moves as we can - these correspond to common lines,
+            # and they're considered "free" by the algorithm because we want to maximize
+            # the number of these in the output.
+            while x < a_max and y < b_max and a_lines[x][0] == b_lines[y][0]:
+                x += 1
+                y += 1
+                history.append((2, a_lines[x - 1][1]))  # add equal step
+
+            if x >= a_max and y >= b_max:
+                # If we're here, then we've traversed through the bottom-left corner,
+                # and are done.
+                return history
+            else:
+                frontier[k] = Frontier(x, history)
+
+    assert False, "Could not find edit script"
+
+
 # algorithm in section 3.2
 # INPUT: two lists of Bar (one list from one part of the first score and one list from one part of the second score)
 # OUTPUT: the allignment between the two lists
 # @memoize_lcs_diff
-def lcs_diff(original, compare_to):
+def lcs_diff(original: List[nlin.Bar], compare_to: List[nlin.Bar]) -> Tuple[Any, int]:
     if len(original) == 0 and len(compare_to) == 0:
         cost = 0
         return [], cost
@@ -133,7 +202,7 @@ def lcs_diff(original, compare_to):
         op_list["comparetostep"].append(("comparetostep", None, compare_to[0], 0))
 
         # compute the maximum of the possibilities
-        max_key = max(cost_dict, key=cost_dict.get)
+        max_key = max(cost_dict, key=lambda k: cost_dict[k])
         out = op_list[max_key], cost_dict[max_key]
         return out
 
@@ -235,13 +304,40 @@ def non_common_subsequences(original, compare_to):
     return non_common_subsequences
 
 
+def non_common_subsequences_myers(original, compare_to):
+    ### Both original and compare_to are list of lists, or numpy arrays with 2 columns.
+    ### This is necessary because bars need two representation at the same time.
+    ### One without the id (for comparison), and one with the id (to retrieve the bar at the end)
+    # get the list of operations
+    op_list = myers_diff(
+        np.array(original, dtype=np.int64), np.array(compare_to, dtype=np.int64)
+    )[::-1]
+    # retrieve the non common subsequences
+    non_common_subsequences = []
+    non_common_subsequences.append({"original": [], "compare_to": []})
+    ind = 0
+    for op in op_list[::-1]:
+        if op[0] == 2:  # equal
+            non_common_subsequences.append({"original": [], "compare_to": []})
+            ind += 1
+        elif op[0] == 0:  # original step
+            non_common_subsequences[ind]["original"].append(op[1])
+        elif op[0] == 1:  # compare to step
+            non_common_subsequences[ind]["compare_to"].append(op[1])
+    # remove the empty dict from the list
+    non_common_subsequences = [
+        s for s in non_common_subsequences if s != {"original": [], "compare_to": []}
+    ]
+    return non_common_subsequences
+
+
 def non_common_subsequences_of_measures(original_m, compare_to_m):
     # Take the hash for each measure to run faster comparison
     # We need to hashes: one that is independent of the IDs (precomputed_str, for comparison),
     # and one that contains the IDs (precomputed_repr, to retrieve the correct measure after computation)
     original_int = [[o.precomputed_str, o.precomputed_repr] for o in original_m]
     compare_to_int = [[c.precomputed_str, c.precomputed_repr] for c in compare_to_m]
-    ncs = non_common_subsequences(original_int, compare_to_int)
+    ncs = non_common_subsequences_myers(original_int, compare_to_int)
     # retrieve the original pointers to measures
     new_out = []
     for e in ncs:
@@ -318,26 +414,26 @@ def pitches_leveinsthein_diff(original, compare_to, noteNode1, noteNode2, ids):
         return op_list, cost
     else:
         # compute the cost and the op_list for the many possibilities of recursion
-        cost = {}
-        op_list = {}
+        cost_dict = {}
+        op_list_dict = {}
         # del-pitch
-        op_list["delpitch"], cost["delpitch"] = pitches_leveinsthein_diff(
+        op_list_dict["delpitch"], cost_dict["delpitch"] = pitches_leveinsthein_diff(
             original[1:], compare_to, noteNode1, noteNode2, (ids[0] + 1, ids[1])
         )
-        cost["delpitch"] += m21u.pitch_size(original[0])
-        op_list["delpitch"].append(
+        cost_dict["delpitch"] += m21u.pitch_size(original[0])
+        op_list_dict["delpitch"].append(
             ("delpitch", noteNode1, noteNode2, m21u.pitch_size(original[0]), ids)
         )
         # ins-pitch
-        op_list["inspitch"], cost["inspitch"] = pitches_leveinsthein_diff(
+        op_list_dict["inspitch"], cost_dict["inspitch"] = pitches_leveinsthein_diff(
             original, compare_to[1:], noteNode1, noteNode2, (ids[0], ids[1] + 1)
         )
-        cost["inspitch"] += m21u.pitch_size(compare_to[0])
-        op_list["inspitch"].append(
+        cost_dict["inspitch"] += m21u.pitch_size(compare_to[0])
+        op_list_dict["inspitch"].append(
             ("inspitch", noteNode1, noteNode2, m21u.pitch_size(compare_to[0]), ids)
         )
         # edit-pitch
-        op_list["editpitch"], cost["editpitch"] = pitches_leveinsthein_diff(
+        op_list_dict["editpitch"], cost_dict["editpitch"] = pitches_leveinsthein_diff(
             original[1:], compare_to[1:], noteNode1, noteNode2, (ids[0] + 1, ids[1] + 1)
         )
         if original[0] == compare_to[0]:  # to avoid perform the pitch_diff
@@ -347,11 +443,11 @@ def pitches_leveinsthein_diff(original, compare_to, noteNode1, noteNode2, ids):
             pitch_diff_op_list, pitch_diff_cost = pitches_diff(
                 original[0], compare_to[0], noteNode1, noteNode2, (ids[0], ids[1])
             )
-        cost["editpitch"] += pitch_diff_cost
-        op_list["editpitch"].extend(pitch_diff_op_list)
+        cost_dict["editpitch"] += pitch_diff_cost
+        op_list_dict["editpitch"].extend(pitch_diff_op_list)
         # compute the minimum of the possibilities
-        min_key = min(cost, key=cost.get)
-        out = op_list[min_key], cost[min_key]
+        min_key = min(cost_dict, key=lambda k: cost_dict[k])
+        out = op_list_dict[min_key], cost_dict[min_key]
         return out
 
 
@@ -418,22 +514,26 @@ def block_diff_lin(original, compare_to):
         return op_list, cost
     else:
         # compute the cost and the op_list for the many possibilities of recursion
-        cost = {}
-        op_list = {}
+        cost_dict = {}
+        op_list_dict = {}
         # del-bar
-        op_list["delbar"], cost["delbar"] = block_diff_lin(original[1:], compare_to)
-        cost["delbar"] += original[0].notation_size()
-        op_list["delbar"].append(
+        op_list_dict["delbar"], cost_dict["delbar"] = block_diff_lin(
+            original[1:], compare_to
+        )
+        cost_dict["delbar"] += original[0].notation_size()
+        op_list_dict["delbar"].append(
             ("delbar", original[0], None, original[0].notation_size())
         )
         # ins-bar
-        op_list["insbar"], cost["insbar"] = block_diff_lin(original, compare_to[1:])
-        cost["insbar"] += compare_to[0].notation_size()
-        op_list["insbar"].append(
+        op_list_dict["insbar"], cost_dict["insbar"] = block_diff_lin(
+            original, compare_to[1:]
+        )
+        cost_dict["insbar"] += compare_to[0].notation_size()
+        op_list_dict["insbar"].append(
             ("insbar", None, compare_to[0], compare_to[0].notation_size())
         )
         # edit-bar
-        op_list["editbar"], cost["editbar"] = block_diff_lin(
+        op_list_dict["editbar"], cost_dict["editbar"] = block_diff_lin(
             original[1:], compare_to[1:]
         )
         if (
@@ -446,11 +546,11 @@ def block_diff_lin(original, compare_to):
             inside_bar_op_list, inside_bar_cost = voices_coupling_recursive(
                 original[0].voices_list, compare_to[0].voices_list
             )
-        cost["editbar"] += inside_bar_cost
-        op_list["editbar"].extend(inside_bar_op_list)
+        cost_dict["editbar"] += inside_bar_cost
+        op_list_dict["editbar"].extend(inside_bar_op_list)
         # compute the minimum of the possibilities
-        min_key = min(cost, key=cost.get)
-        out = op_list[min_key], cost[min_key]
+        min_key = min(cost_dict, key=lambda k: cost_dict[k])
+        out = op_list_dict[min_key], cost_dict[min_key]
         return out
 
 
@@ -704,7 +804,7 @@ def generic_leveinsthein_diff(original, compare_to, note1, note2, type):
         return out
 
 
-def voices_coupling_recursive(original, compare_to):
+def voices_coupling_recursive(original: List, compare_to):
     """compare all the possible voices permutations, considering also deletion and insertion (equation on office lens)
     original [list] -- a list of Voice
     compare_to [list] -- a list of Voice

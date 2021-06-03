@@ -41,21 +41,49 @@ def test_non_common_subsequences3():
     assert non_common_subsequences == expected_result
 
 
-# def test_non_common_subsequences4():
-#     original = []
-#     compare_to = [0, 1, 2]
-#     non_common_subsequences = scl.non_common_subsequences(original, compare_to)
-#     expected_result = [{"original": [], "compare_to": [0, 1, 2]}]
-#     assert non_common_subsequences == expected_result
+def test_non_common_subsequences_myers1():
+    original = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    compare_to = [0, 0, 2, 3, 4, 5, 6, 4, 5, 9, 10]
+    # since repr and str of integers are the same thing, we just duplicate the values in a new column
+    original = [[e, e] for e in original]
+    compare_to = [[e, e] for e in compare_to]
+    non_common_subsequences = scl.non_common_subsequences_myers(original, compare_to)
+    expected_result = [
+        {"original": [1], "compare_to": [0, 0]},
+        {"original": [7, 8], "compare_to": [4, 5]},
+    ]
+    assert non_common_subsequences == expected_result
 
 
-def test_non_common_subsequences5():
+def test_non_common_subsequences_myers2():
+    original = [0, 1, 2, 3]
+    compare_to = [5, 7, 8, 6, 3]
+    # since repr and str of integers are the same thing, we just duplicate the values in a new column
+    original = [[e, e] for e in original]
+    compare_to = [[e, e] for e in compare_to]
+    non_common_subsequences = scl.non_common_subsequences_myers(original, compare_to)
+    expected_result = [{"original": [0, 1, 2], "compare_to": [5, 7, 8, 6]}]
+    assert non_common_subsequences == expected_result
+
+
+def test_non_common_subsequences_myers3():
+    original = [0, 1, 2, 3, 4]
+    compare_to = [0, 1, 2]
+    # since repr and str of integers are the same thing, we just duplicate the values in a new column
+    original = [[e, e] for e in original]
+    compare_to = [[e, e] for e in compare_to]
+    non_common_subsequences = scl.non_common_subsequences_myers(original, compare_to)
+    expected_result = [{"original": [3, 4], "compare_to": []}]
+    assert non_common_subsequences == expected_result
+
+
+def test_non_common_subsequences_myers4():
     original = [0, 1, 2]
     compare_to = [0, 1, 2]
     # since repr and str of integers are the same thing, we just duplicate the values in a new column
     original = [[e, e] for e in original]
     compare_to = [[e, e] for e in compare_to]
-    non_common_subsequences = scl.non_common_subsequences(original, compare_to)
+    non_common_subsequences = scl.non_common_subsequences_myers(original, compare_to)
     # keep just one integer for easy comparison
     for s in non_common_subsequences:
         for k in s.keys():
@@ -64,7 +92,7 @@ def test_non_common_subsequences5():
     assert non_common_subsequences == expected_result
 
 
-def test_non_common_subsequences6():
+def test_non_common_subsequences_bars1():
     # import scores
     score1_path = Path("test_scores/polyphonic_score_1a.mei")
     with open(score1_path, "r") as f:
@@ -87,7 +115,7 @@ def test_non_common_subsequences6():
     assert len(ncs) == 2
 
 
-def test_non_common_subsequences7():
+def test_non_common_subsequences_bars2():
     # import scores
     score1_path = Path("test_scores/monophonic_score_1a.mei")
     with open(score1_path, "r") as f:
@@ -129,7 +157,7 @@ def test_non_common_subsequences7():
     assert non_common_subsequences[1] == expected_non_common2
 
 
-def test_non_common_subsequences8():
+def test_non_common_subsequences_bars3():
     # import scores
     score1_path = Path("test_scores/monophonic_score_1a.mei")
     with open(score1_path, "r") as f:
