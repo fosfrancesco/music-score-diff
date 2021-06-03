@@ -90,14 +90,11 @@ def memoize_generic_lev_diff(func):
     return memoizer
 
 
-# See frontier in myers_diff
-Frontier = namedtuple("Frontier", ["x", "history"])
-
-
 def myers_diff(a_lines, b_lines):
     # Myers algorithm for LCS of bars (instead of the recursive algorithm in section 3.2)
     # This marks the farthest-right point along each diagonal in the edit
     # graph, along with the history that got it there
+    Frontier = namedtuple("Frontier", ["x", "history"])
     frontier = {1: Frontier(0, [])}
 
     a_max = len(a_lines)
@@ -150,7 +147,7 @@ def myers_diff(a_lines, b_lines):
             if x >= a_max and y >= b_max:
                 # If we're here, then we've traversed through the bottom-left corner,
                 # and are done.
-                return history
+                return np.array(history)
             else:
                 frontier[k] = Frontier(x, history)
 
