@@ -71,7 +71,12 @@ def annotate_differences(score1, score2, operations):
             # color the inserted score2 general note (note, chord, or rest) using INS_COLOR
             note2 = score2.recurse().getElementById(op[2].general_note)
             note2.style.color = INS_COLOR
-            textExp = m21.expressions.TextExpression("inserted note")
+            if "Rest" in note2.classes:
+                textExp = m21.expressions.TextExpression("inserted rest")
+            elif "Chord" in note2.classes:
+                textExp = m21.expressions.TextExpression("inserted chord")
+            else:
+                textExp = m21.expressions.TextExpression("inserted note")
             textExp.style.color = SUB_COLOR
             note2.activeSite.insert(note2.offset, textExp)
 
@@ -80,7 +85,12 @@ def annotate_differences(score1, score2, operations):
             # color the deleted score1 general note (note, chord, or rest) using DEL_COLOR
             note1 = score1.recurse().getElementById(op[1].general_note)
             note1.style.color = DEL_COLOR
-            textExp = m21.expressions.TextExpression("deleted note")
+            if "Rest" in note1.classes:
+                textExp = m21.expressions.TextExpression("deleted rest")
+            elif "Chord" in note1.classes:
+                textExp = m21.expressions.TextExpression("deleted chord")
+            else:
+                textExp = m21.expressions.TextExpression("deleted note")
             textExp.style.color = SUB_COLOR
             note1.activeSite.insert(note1.offset, textExp)
 
@@ -130,7 +140,10 @@ def annotate_differences(score1, score2, operations):
                 idx = op[4][1]
                 note2 = note2.notes[idx]
             note2.style.color = INS_COLOR
-            textExp = m21.expressions.TextExpression("inserted note")
+            if "Rest" in note2.classes:
+                textExp = m21.expressions.TextExpression("inserted rest")
+            else:
+                textExp = m21.expressions.TextExpression("inserted note")
             textExp.style.color = INS_COLOR
             if note2.activeSite is not None:
                 note2.activeSite.insert(note2.offset, textExp)
@@ -148,7 +161,10 @@ def annotate_differences(score1, score2, operations):
                 idx = op[4][0]
                 note1 = note1.notes[idx]
             note1.style.color = DEL_COLOR
-            textExp = m21.expressions.TextExpression("deleted note")
+            if "Rest" in note1.classes:
+                textExp = m21.expressions.TextExpression("deleted rest")
+            else:
+                textExp = m21.expressions.TextExpression("deleted note")
             textExp.style.color = DEL_COLOR
             if note1.activeSite is not None:
                 note1.activeSite.insert(note1.offset, textExp)
@@ -579,5 +595,5 @@ def show_differences(score1: m21.stream.Score, score2: m21.stream.Score):
     score1.metadata.composer = originalComposer1
     score2.metadata.composer = originalComposer2
 
-    score1.show('musicxml.pdf')
-    score2.show('musicxml.pdf')
+    score1.show('musicxml.pdf', makeNotation=False)
+    score2.show('musicxml.pdf', makeNotation=False)
