@@ -316,25 +316,30 @@ def get_tuplets_type(note_list):
 def get_notes(measure, allowGraceNotes=False):
     """
     :param measure: a music21 measure
-    :return: a list of notes, eventually excluding grace notes, inside the measure
+    :return: a list of (visible) notes, eventually excluding grace notes, inside the measure
     """
+    out = []
     if allowGraceNotes:
-        return [n for n in measure.getElementsByClass("GeneralNote")]
+        for n in measure.getElementsByClass('GeneralNote'):
+            if n.style.hideObjectOnPrint == False:
+                out.append(n)
     else:
-        return [
-            n
-            for n in measure.getElementsByClass("GeneralNote")
-            if n.duration.quarterLength != 0
-        ]
+        for n in measure.getElementsByClass('GeneralNote'):
+            if n.style.hideObjectOnPrint == False and n.duration.quarterLength != 0:
+                out.append(n)
+    return out
 
 
 def get_notes_and_gracenotes(measure):
     """
     :param measure: a music21 measure
-    :return: a list of notes, including grace notes, inside the measure
+    :return: a list of visible notes, including grace notes, inside the measure
     """
-    return [n for n in measure.getElementsByClass("GeneralNote")]
-
+    out = []
+    for n in measure.getElementsByClass('GeneralNote'):
+        if n.style.hideObjectOnPrint == False:
+            out.append(n)
+    return out
 
 def note_to_string(note):
     if note.isRest:

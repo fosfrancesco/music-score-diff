@@ -169,19 +169,26 @@ class Voice:
         """
         self.voice = voice.id
         self.note_list = m21u.get_notes(voice)
-        self.en_beam_list = m21u.get_enhance_beamings(
-            self.note_list
-        )  # beams and type (type for note shorter than quarter notes)
-        self.tuplet_list = m21u.get_tuplets_type(
-            self.note_list
-        )  # corrected tuplets (with "start" and "continue")
-        self.tuple_info = m21u.get_tuplets_info(self.note_list)
-        # create a list of notes with beaming and tuplets information attached
-        self.annot_notes = []
-        for i, n in enumerate(self.note_list):
-            self.annot_notes.append(
-                AnnotatedNote(n, self.en_beam_list[i], self.tuplet_list[i])
-            )
+        if not self.note_list:
+            self.en_beam_list = []
+            self.tuplet_list = []
+            self.tuple_info = []
+            self.annot_notes = []
+        else:
+            self.en_beam_list = m21u.get_enhance_beamings(
+                self.note_list
+            )  # beams and type (type for note shorter than quarter notes)
+            self.tuplet_list = m21u.get_tuplets_type(
+                self.note_list
+            )  # corrected tuplets (with "start" and "continue")
+            self.tuple_info = m21u.get_tuplets_info(self.note_list)
+            # create a list of notes with beaming and tuplets information attached
+            self.annot_notes = []
+            for i, n in enumerate(self.note_list):
+                self.annot_notes.append(
+                    AnnotatedNote(n, self.en_beam_list[i], self.tuplet_list[i])
+                )
+
         self.n_of_notes = len(self.annot_notes)
         self.precomputed_str = self.__str__()
 
@@ -208,7 +215,10 @@ class Voice:
         for an in self.annot_notes:
             string += str(an)
             string += ","
-        string = string[:-1]  # delete the last comma
+
+        if string[-1] == ",":
+            string = string[:-1] # delete the last comma
+
         string += "]"
         return string
 
@@ -230,10 +240,14 @@ class Bar:
         if (
             len(measure.voices) == 0
         ):  # there is a single Voice ( == for the library there are no voices)
-            self.voices_list.append(Voice(measure))
+            ann_voice = Voice(measure)
+            if ann_voice.n_of_notes > 0:
+                self.voices_list.append(ann_voice)
         else:  # there are multiple voices (or an array with just one voice)
             for voice in measure.voices:
-                self.voices_list.append(Voice(voice))
+                ann_voice = Voice(voice)
+                if ann_voice.n_of_notes > 0:
+                    self.voices_list.append(Voice(voice))
         self.n_of_voices = len(self.voices_list)
 
         # precomputed values to speed up the computation. As they start to be long, they are hashed
@@ -274,7 +288,9 @@ class Part:
         self.part = part.id
         self.bar_list = []
         for measure in part.getElementsByClass("Measure"):
-            self.bar_list.append(Bar(measure))  # create the bar objects
+            ann_bar = Bar(measure)  # create the bar objects
+            if ann_bar.n_of_voices > 0:
+                self.bar_list.append(ann_bar)
         self.n_of_bars = len(self.bar_list)
         # precomputed str to speed up the computation. String itself start to be long, so it is hashed
         self.precomputed_str = hash(self.__str__())
@@ -315,9 +331,10 @@ class Score:
         self.score = score.id
         self.part_list = []
         for part in score.parts.stream():
-            self.part_list.append(
-                Part(part)
-            )  # create and add the Part object to part_list
+            # create and add the Part object to part_list
+            ann_part = Part(part)
+            if ann_part.n_of_bars > 0:
+                self.part_list.append(ann_part)
         self.n_of_parts = len(self.part_list)
 
     def __eq__(self, other):
