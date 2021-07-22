@@ -1,7 +1,7 @@
 # music-score-diff
 A tool to compute and visualize the differences between two music scores in MEI format.
 
-The supported differences are:
+<!-- The supported differences are:
 
 1. Bar level:
 - "insbar": bar insertion 
@@ -31,6 +31,6 @@ The supported differences are:
 6. Tuplet level: 
 - "instuplet" : tuplet insertion
 - "deltuplet" : tuplet deletion
-- "subtuplet" : tuplet substitution (e.g. a "continue" tuplet with a "end" beam) 
+- "subtuplet" : tuplet substitution (e.g. a "continue" tuplet with a "end" beam)  -->
 
 
