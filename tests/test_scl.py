@@ -5,40 +5,40 @@ import music21 as m21
 from collections import Counter
 
 
-def test_non_common_subsequences1():
-    original = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    compare_to = [0, 0, 2, 3, 4, 5, 6, 4, 5, 9, 10]
-    # since repr and str of integers are the same thing, we just duplicate the values in a new column
-    original = [[e, e] for e in original]
-    compare_to = [[e, e] for e in compare_to]
-    non_common_subsequences = scl.non_common_subsequences(original, compare_to)
-    expected_result = [
-        {"original": [1], "compare_to": [0, 0]},
-        {"original": [7, 8], "compare_to": [4, 5]},
-    ]
-    assert non_common_subsequences == expected_result
+# def test_non_common_subsequences1():
+#     original = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+#     compare_to = [0, 0, 2, 3, 4, 5, 6, 4, 5, 9, 10]
+#     # since repr and str of integers are the same thing, we just duplicate the values in a new column
+#     original = [[e, e] for e in original]
+#     compare_to = [[e, e] for e in compare_to]
+#     non_common_subsequences = scl.non_common_subsequences(original, compare_to)
+#     expected_result = [
+#         {"original": [1], "compare_to": [0, 0]},
+#         {"original": [7, 8], "compare_to": [4, 5]},
+#     ]
+#     assert non_common_subsequences == expected_result
 
 
-def test_non_common_subsequences2():
-    original = [0, 1, 2, 3]
-    compare_to = [5, 7, 8, 6, 3]
-    # since repr and str of integers are the same thing, we just duplicate the values in a new column
-    original = [[e, e] for e in original]
-    compare_to = [[e, e] for e in compare_to]
-    non_common_subsequences = scl.non_common_subsequences(original, compare_to)
-    expected_result = [{"original": [0, 1, 2], "compare_to": [5, 7, 8, 6]}]
-    assert non_common_subsequences == expected_result
+# def test_non_common_subsequences2():
+#     original = [0, 1, 2, 3]
+#     compare_to = [5, 7, 8, 6, 3]
+#     # since repr and str of integers are the same thing, we just duplicate the values in a new column
+#     original = [[e, e] for e in original]
+#     compare_to = [[e, e] for e in compare_to]
+#     non_common_subsequences = scl.non_common_subsequences(original, compare_to)
+#     expected_result = [{"original": [0, 1, 2], "compare_to": [5, 7, 8, 6]}]
+#     assert non_common_subsequences == expected_result
 
 
-def test_non_common_subsequences3():
-    original = [0, 1, 2, 3, 4]
-    compare_to = [0, 1, 2]
-    # since repr and str of integers are the same thing, we just duplicate the values in a new column
-    original = [[e, e] for e in original]
-    compare_to = [[e, e] for e in compare_to]
-    non_common_subsequences = scl.non_common_subsequences(original, compare_to)
-    expected_result = [{"original": [3, 4], "compare_to": []}]
-    assert non_common_subsequences == expected_result
+# def test_non_common_subsequences3():
+#     original = [0, 1, 2, 3, 4]
+#     compare_to = [0, 1, 2]
+#     # since repr and str of integers are the same thing, we just duplicate the values in a new column
+#     original = [[e, e] for e in original]
+#     compare_to = [[e, e] for e in compare_to]
+#     non_common_subsequences = scl.non_common_subsequences(original, compare_to)
+#     expected_result = [{"original": [3, 4], "compare_to": []}]
+#     assert non_common_subsequences == expected_result
 
 
 def test_non_common_subsequences_myers1():

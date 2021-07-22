@@ -114,7 +114,6 @@ def annotate_differences(score1, score2, operations):
             else:
                 chord1.activeSite.insert(chord1.offset, textExp)
 
-
             chord2 = score2.recurse().getElementById(op[2].general_note)
             note2 = chord2
             if "Chord" in note2.classes:
@@ -578,22 +577,24 @@ def annotate_differences(score1, score2, operations):
                 "Annotation type {} not yet supported for visualization".format(op[0])
             )
 
+
 def show_differences(score1: m21.stream.Score, score2: m21.stream.Score):
-    #display the two (annotated) scores
+    # display the two (annotated) scores
     originalComposer1: str = score1.metadata.composer
     if originalComposer1 is None:
-        originalComposer1 = 'score1'
+        originalComposer1 = "score1"
     else:
-        originalComposer1 = 'score1          ' + originalComposer1
+        originalComposer1 = "score1          " + originalComposer1
 
     originalComposer2: str = score2.metadata.composer
     if originalComposer2 is None:
-        originalComposer2 = 'score2'
+        originalComposer2 = "score2"
     else:
-        originalComposer2 = 'score2          ' + originalComposer2
+        originalComposer2 = "score2          " + originalComposer2
 
     score1.metadata.composer = originalComposer1
     score2.metadata.composer = originalComposer2
 
-    score1.show('musicxml.pdf', makeNotation=False)
-    score2.show('musicxml.pdf', makeNotation=False)
+    score1.show(Path("temp_files/score1_temp.pdf"), makeNotation=False)
+    score2.show(Path("temp_files/score2_temp.pdf"), makeNotation=False)
+
