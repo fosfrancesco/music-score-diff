@@ -595,6 +595,5 @@ def show_differences(score1: m21.stream.Score, score2: m21.stream.Score):
     score1.metadata.composer = originalComposer1
     score2.metadata.composer = originalComposer2
 
-    score1.show(Path("temp_files/score1_temp.pdf"), makeNotation=False)
-    score2.show(Path("temp_files/score2_temp.pdf"), makeNotation=False)
-
+    score1.show('musicxml.pdf', makeNotation=False)
+    score2.show('musicxml.pdf', makeNotation=False)
