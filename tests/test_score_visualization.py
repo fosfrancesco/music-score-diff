@@ -7,12 +7,12 @@ import lib.score_comparison_lib as scl
 
 
 def test_json_production1():
-    score1_path = Path("test_scores/tie_score_2a.mei")
+    score1_path = Path("tests/test_scores/tie_score_2a.mei")
     with open(score1_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
         score1 = conv.run()
-    score2_path = Path("test_scores/tie_score_2b.mei")
+    score2_path = Path("tests/test_scores/tie_score_2b.mei")
     with open(score2_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
@@ -29,12 +29,12 @@ def test_json_production1():
 
 
 def test_json_production2():
-    score1_path = Path("test_scores/polyphonic_score_2a.mei")
+    score1_path = Path("tests/test_scores/polyphonic_score_2a.mei")
     with open(score1_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
         score1 = conv.run()
-    score2_path = Path("test_scores/polyphonic_score_2b.mei")
+    score2_path = Path("tests/test_scores/polyphonic_score_2b.mei")
     with open(score2_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
@@ -51,9 +51,9 @@ def test_json_production2():
 
 
 def test_json_production3():
-    score1_path = Path("test_scores/musicxml/articulation_score_1a.xml")
+    score1_path = Path("tests/test_scores/musicxml/articulation_score_1a.xml")
     score1 = m21.converter.parse(str(score1_path))
-    score2_path = Path("test_scores/musicxml/articulation_score_1b.xml")
+    score2_path = Path("tests/test_scores/musicxml/articulation_score_1b.xml")
     score2 = m21.converter.parse(str(score2_path))
     # build ScoreTrees
     score_lin1 = nlin.Score(score1)

@@ -94,12 +94,12 @@ def test_non_common_subsequences_myers4():
 
 def test_non_common_subsequences_bars1():
     # import scores
-    score1_path = Path("test_scores/polyphonic_score_1a.mei")
+    score1_path = Path("tests/test_scores/polyphonic_score_1a.mei")
     with open(score1_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
         score1 = conv.run()
-    score2_path = Path("test_scores/polyphonic_score_1b.mei")
+    score2_path = Path("tests/test_scores/polyphonic_score_1b.mei")
     with open(score2_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
@@ -117,12 +117,12 @@ def test_non_common_subsequences_bars1():
 
 def test_non_common_subsequences_bars2():
     # import scores
-    score1_path = Path("test_scores/monophonic_score_1a.mei")
+    score1_path = Path("tests/test_scores/monophonic_score_1a.mei")
     with open(score1_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
         score1 = conv.run()
-    score2_path = Path("test_scores/monophonic_score_1b.mei")
+    score2_path = Path("tests/test_scores/monophonic_score_1b.mei")
     with open(score2_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
@@ -159,12 +159,12 @@ def test_non_common_subsequences_bars2():
 
 def test_non_common_subsequences_bars3():
     # import scores
-    score1_path = Path("test_scores/monophonic_score_1a.mei")
+    score1_path = Path("tests/test_scores/monophonic_score_1a.mei")
     with open(score1_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
         score1 = conv.run()
-    score2_path = Path("test_scores/monophonic_score_1b.mei")
+    score2_path = Path("tests/test_scores/monophonic_score_1b.mei")
     with open(score2_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
@@ -266,12 +266,12 @@ def test_pitches_diff4():
 
 
 def test_block_diff1():
-    score1_path = Path("test_scores/monophonic_score_1a.mei")
+    score1_path = Path("tests/test_scores/monophonic_score_1a.mei")
     with open(score1_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
         score1 = conv.run()
-    score2_path = Path("test_scores/monophonic_score_1b.mei")
+    score2_path = Path("tests/test_scores/monophonic_score_1b.mei")
     with open(score2_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
@@ -287,12 +287,12 @@ def test_block_diff1():
 
 
 def test_multivoice_scorelin_diff1():
-    score1_path = Path("test_scores/multivoice_score_1a.mei")
+    score1_path = Path("tests/test_scores/multivoice_score_1a.mei")
     with open(score1_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
         score1 = conv.run()
-    score2_path = Path("test_scores/multivoice_score_1b.mei")
+    score2_path = Path("tests/test_scores/multivoice_score_1b.mei")
     with open(score2_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
@@ -306,12 +306,12 @@ def test_multivoice_scorelin_diff1():
 
 
 def test_complete_scorelin_diff1():
-    score1_path = Path("test_scores/monophonic_score_1a.mei")
+    score1_path = Path("tests/test_scores/monophonic_score_1a.mei")
     with open(score1_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
         score1 = conv.run()
-    score2_path = Path("test_scores/monophonic_score_1b.mei")
+    score2_path = Path("tests/test_scores/monophonic_score_1b.mei")
     with open(score2_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
@@ -325,9 +325,9 @@ def test_complete_scorelin_diff1():
 
 
 def test_musicxml_articulation_diff1():
-    score1_path = Path("test_scores/musicxml/articulation_score_1a.xml")
+    score1_path = Path("tests/test_scores/musicxml/articulation_score_1a.xml")
     score1 = m21.converter.parse(str(score1_path))
-    score2_path = Path("test_scores/musicxml/articulation_score_1b.xml")
+    score2_path = Path("tests/test_scores/musicxml/articulation_score_1b.xml")
     score2 = m21.converter.parse(str(score2_path))
     # build ScoreTrees
     score_lin1 = nlin.Score(score1)

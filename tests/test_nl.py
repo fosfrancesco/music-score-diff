@@ -70,7 +70,7 @@ def test_noteNode_size4():
 
 
 def test_noteNode_size5():
-    score2_path = Path("test_scores/monophonic_score_1b.mei")
+    score2_path = Path("tests/test_scores/monophonic_score_1b.mei")
     with open(score2_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
@@ -88,7 +88,7 @@ def test_noteNode_size5():
 
 def test_scorelin1():
     # import score
-    score1_path = Path("test_scores/polyphonic_score_1a.mei")
+    score1_path = Path("tests/test_scores/polyphonic_score_1a.mei")
     with open(score1_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
@@ -107,7 +107,7 @@ def test_scorelin1():
 
 def test_scorelin2():
     # import score
-    score1_path = Path("test_scores/monophonic_score_1a.mei")
+    score1_path = Path("tests/test_scores/monophonic_score_1a.mei")
     with open(score1_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
@@ -125,7 +125,7 @@ def test_scorelin2():
 
 def test_generalnotes1():
     # import score
-    score1_path = Path("test_scores/chord_score_1a.mei")
+    score1_path = Path("tests/test_scores/chord_score_1a.mei")
     with open(score1_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
@@ -144,7 +144,7 @@ def test_generalnotes1():
 
 def test_ties1():
     # import score
-    score1_path = Path("test_scores/tie_score_1a.mei")
+    score1_path = Path("tests/test_scores/tie_score_1a.mei")
     with open(score1_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
@@ -193,13 +193,13 @@ def test_equality_an2():
 
 def test_equality_all1():
     # import score1
-    score1_path = Path("test_scores/multivoice_score_1a.mei")
+    score1_path = Path("tests/test_scores/multivoice_score_1a.mei")
     with open(score1_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
         score1 = conv.run()
     # import score2
-    score2_path = Path("test_scores/multivoice_score_1b.mei")
+    score2_path = Path("tests/test_scores/multivoice_score_1b.mei")
     with open(score2_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
@@ -223,7 +223,7 @@ def test_equality_all1():
 
 def test_equality_all2():
     # import score1
-    score1_path = Path("test_scores/polyphonic_score_2b.mei")
+    score1_path = Path("tests/test_scores/polyphonic_score_2b.mei")
     with open(score1_path, "r") as f:
         mei_string = f.read()
         conv = m21.mei.MeiToM21Converter(mei_string)
