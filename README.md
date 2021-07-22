@@ -63,4 +63,4 @@ Licensed under the [MIT License](LICENSE).
 
 
 ## Acknowledgment
-Thanks goes to [gregchapman-dev](https://github.com/gregchapman-dev) for helping with the diff visualization in music21.
+Thanks goes to [gregchapman-dev](https://github.com/gregchapman-dev) for testing and helping with the diff visualization in music21.
