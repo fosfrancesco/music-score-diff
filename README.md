@@ -1,5 +1,5 @@
 # music-score-diff
-A tool to compute and visualize the differences between two music scores in MEI format.
+A tool to compute and visualize the differences between two music scores.
 
 <!-- The supported differences are:
 
@@ -33,4 +33,31 @@ A tool to compute and visualize the differences between two music scores in MEI 
 - "deltuplet" : tuplet deletion
 - "subtuplet" : tuplet substitution (e.g. a "continue" tuplet with a "end" beam)  -->
 
+## Setup
+
+The dependencies are listed in the file [environment.yml](environment.yml).
+If you use conda, you can install the dependencies with: `conda env create -f environment.yml` .
+
+Moreover you need to setup music21 to display a musical score (e.g. with MuseScore).
+
+## Usage
+An example is available in [tutorial.ipynb](tutorial.ipynb).
+
+## Citing
+If you use this work in any research, please cite the relevant paper:
+
+```
+@inproceedings{foscarin2019diff,
+  title={A diff procedure for music score files},
+  author={Foscarin, Francesco and Jacquemard, Florent and Fournier-S’niehotta, Raphael},
+  booktitle={6th International Conference on Digital Libraries for Musicology},
+  pages={58--64},
+  year={2019}
+}
+```
+
+The paper is freely available [here](https://hal.inria.fr/hal-02267454v2/document)
+
+## License
+Licensed under the [MIT License](LICENSE).
 
