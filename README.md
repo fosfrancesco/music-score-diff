@@ -61,3 +61,6 @@ The paper is freely available [here](https://hal.inria.fr/hal-02267454v2/documen
 ## License
 Licensed under the [MIT License](LICENSE).
 
+
+## Acknowledgment
+Thanks goes to [gregchapman-dev](https://github.com/gregchapman-dev) for helping with the diff visualization in music21.
