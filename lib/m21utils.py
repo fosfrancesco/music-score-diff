@@ -350,7 +350,9 @@ def note_to_string(note):
 
 
 def safe_get(list, idx):
-    if idx < len(list) and idx >= 0:
+    if list is None:
+        out = None
+    elif idx < len(list) and idx >= 0:
         out = list[idx]
     else:
         out = None
