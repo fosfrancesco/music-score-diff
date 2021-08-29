@@ -71,13 +71,6 @@ if badExt:
     printSupportedInputFormats()
     sys.exit(1)
 
-#print('stack limit =', resource.getrlimit(resource.RLIMIT_STACK))
-#print('recursion limit =', sys.getrecursionlimit())
-
-#sys.setrecursionlimit(1024*1024)
-
-#print('new stack limit =', resource.getrlimit(resource.RLIMIT_STACK))
-#print('new recursion limit =', sys.getrecursionlimit())
 totalTime = 0
 start = timer()
 score1 = m21.converter.parse(args.file1, forceSource=True)
