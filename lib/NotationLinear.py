@@ -231,10 +231,6 @@ class Bar:
         """
         :param measure: m21 measure
         """
-        # Have music21 run through the measure, marking whether or not each accidental will
-        # actually be displayed. We will use this info later, when comparing notation.
-        measure.makeAccidentals(inPlace=True, searchKeySignatureByContext=True)
-
         self.measure = measure.id
         self.voices_list = []
         if (
