@@ -193,16 +193,18 @@ def annotate_differences(score1, score2, operations):
             # color the modified note in both scores using INS_COLOR
             note1 = score1.recurse().getElementById(op[1].general_note)
             note1.style.color = INS_COLOR
-            for beam in note1.beams:
-                beam.style.color = INS_COLOR  # this apparently does nothing
+            if hasattr(note1, 'beams'):
+                for beam in note1.beams:
+                    beam.style.color = INS_COLOR  # this apparently does nothing
             textExp = m21.expressions.TextExpression("increased flags")
             textExp.style.color = INS_COLOR
             note1.activeSite.insert(note1.offset, textExp)
 
             note2 = score2.recurse().getElementById(op[2].general_note)
             note2.style.color = INS_COLOR
-            for beam in note2.beams:
-                beam.style.color = INS_COLOR  # this apparently does nothing
+            if hasattr(note1, 'beams'):
+                for beam in note2.beams:
+                    beam.style.color = INS_COLOR  # this apparently does nothing
             textExp = m21.expressions.TextExpression("increased flags")
             textExp.style.color = INS_COLOR
             note2.activeSite.insert(note2.offset, textExp)
@@ -213,16 +215,18 @@ def annotate_differences(score1, score2, operations):
             # color the modified note in both scores using DEL_COLOR
             note1 = score1.recurse().getElementById(op[1].general_note)
             note1.style.color = DEL_COLOR
-            for beam in note1.beams:
-                beam.style.color = DEL_COLOR  # this apparently does nothing
+            if hasattr(note1, 'beams'):
+                for beam in note1.beams:
+                    beam.style.color = DEL_COLOR  # this apparently does nothing
             textExp = m21.expressions.TextExpression("decreased flags")
             textExp.style.color = SUB_COLOR
             note1.activeSite.insert(note1.offset, textExp)
 
             note2 = score2.recurse().getElementById(op[2].general_note)
             note2.style.color = DEL_COLOR
-            for beam in note2.beams:
-                beam.style.color = DEL_COLOR  # this apparently does nothing
+            if hasattr(note1, 'beams'):
+                for beam in note2.beams:
+                    beam.style.color = DEL_COLOR  # this apparently does nothing
             textExp = m21.expressions.TextExpression("decreased flags")
             textExp.style.color = DEL_COLOR
             note2.activeSite.insert(note2.offset, textExp)
@@ -233,16 +237,18 @@ def annotate_differences(score1, score2, operations):
             # color the changed beam (in both scores) using SUB_COLOR
             note1 = score1.recurse().getElementById(op[1].general_note)
             note1.style.color = SUB_COLOR
-            for beam in note1.beams:
-                beam.style.color = SUB_COLOR  # this apparently does nothing
+            if hasattr(note1, 'beams'):
+                for beam in note1.beams:
+                    beam.style.color = SUB_COLOR  # this apparently does nothing
             textExp = m21.expressions.TextExpression("changed flags")
             textExp.style.color = SUB_COLOR
             note1.activeSite.insert(note1.offset, textExp)
 
             note2 = score2.recurse().getElementById(op[2].general_note)
             note2.style.color = SUB_COLOR
-            for beam in note2.beams:
-                beam.style.color = SUB_COLOR  # this apparently does nothing
+            if hasattr(note1, 'beams'):
+                for beam in note2.beams:
+                    beam.style.color = SUB_COLOR  # this apparently does nothing
             textExp = m21.expressions.TextExpression("changed flags")
             textExp.style.color = SUB_COLOR
             note2.activeSite.insert(note2.offset, textExp)
@@ -393,19 +399,51 @@ def annotate_differences(score1, score2, operations):
             textExp.style.color = SUB_COLOR
             note2.activeSite.insert(note2.offset, textExp)
 
-        # tuplets TODO
+        # tuplets
         elif op[0] == "instuplet":
-            pass
+            assert type(op[1]) == nlin.AnnotatedNote
+            assert type(op[2]) == nlin.AnnotatedNote
+            note1 = score1.recurse().getElementById(op[1].general_note)
+            note1.style.color = SUB_COLOR
+            textExp = m21.expressions.TextExpression("inserted tuplet")
+            textExp.style.color = SUB_COLOR
+            note1.activeSite.insert(note1.offset, textExp)
+
+            note2 = score2.recurse().getElementById(op[2].general_note)
+            note2.style.color = SUB_COLOR
+            textExp = m21.expressions.TextExpression("inserted tuplet")
+            textExp.style.color = SUB_COLOR
+            note2.activeSite.insert(note2.offset, textExp)
+
         elif op[0] == "deltuplet":
-            pass
+            assert type(op[1]) == nlin.AnnotatedNote
+            assert type(op[2]) == nlin.AnnotatedNote
+            note1 = score1.recurse().getElementById(op[1].general_note)
+            note1.style.color = SUB_COLOR
+            textExp = m21.expressions.TextExpression("deleted tuplet")
+            textExp.style.color = SUB_COLOR
+            note1.activeSite.insert(note1.offset, textExp)
+
+            note2 = score2.recurse().getElementById(op[2].general_note)
+            note2.style.color = SUB_COLOR
+            textExp = m21.expressions.TextExpression("deleted tuplet")
+            textExp.style.color = SUB_COLOR
+            note2.activeSite.insert(note2.offset, textExp)
+
         elif op[0] == "edittuplet":
-            pass
-        elif op[0] == "instuplet":
-            pass
-        elif op[0] == "deltuplet":
-            pass
-        elif op[0] == "edittuplet":
-            pass
+            assert type(op[1]) == nlin.AnnotatedNote
+            assert type(op[2]) == nlin.AnnotatedNote
+            note1 = score1.recurse().getElementById(op[1].general_note)
+            note1.style.color = SUB_COLOR
+            textExp = m21.expressions.TextExpression("changed tuplet")
+            textExp.style.color = SUB_COLOR
+            note1.activeSite.insert(note1.offset, textExp)
+
+            note2 = score2.recurse().getElementById(op[2].general_note)
+            note2.style.color = SUB_COLOR
+            textExp = m21.expressions.TextExpression("changed tuplet")
+            textExp.style.color = SUB_COLOR
+            note2.activeSite.insert(note2.offset, textExp)
 
         # ties
         elif op[0] == "tieins":
