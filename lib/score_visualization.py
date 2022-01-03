@@ -618,20 +618,25 @@ def annotate_differences(score1, score2, operations):
 
 def show_differences(score1: m21.stream.Score, score2: m21.stream.Score):
     # display the two (annotated) scores
-    originalComposer1: str = score1.metadata.composer
+    originalComposer1: str = None
+    originalComposer2: str = None
+
+    if score1.metadata is None:
+        score1.metadata = m21.metadata.Metadata()
+    if score2.metadata is None:
+        score2.metadata = m21.metadata.Metadata()
+
+    originalComposer1 = score1.metadata.composer
     if originalComposer1 is None:
-        originalComposer1 = "score1"
+        score1.metadata.composer = "score1"
     else:
-        originalComposer1 = "score1          " + originalComposer1
+        score1.metadata.composer = "score1          " + originalComposer1
 
-    originalComposer2: str = score2.metadata.composer
+    originalComposer2 = score2.metadata.composer
     if originalComposer2 is None:
-        originalComposer2 = "score2"
+        score2.metadata.composer = "score2"
     else:
-        originalComposer2 = "score2          " + originalComposer2
-
-    score1.metadata.composer = originalComposer1
-    score2.metadata.composer = originalComposer2
+        score2.metadata.composer = "score2          " + originalComposer2
 
     score1.show('musicxml.pdf', makeNotation=False)
     score2.show('musicxml.pdf', makeNotation=False)
