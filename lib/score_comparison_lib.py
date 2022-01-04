@@ -721,7 +721,7 @@ def beamtuplet_leveinsthein_diff(original, compare_to, note1, note2, type):
             original, compare_to[1:], note1, note2, type
         )
         cost["ins" + type] += 1
-        op_list["ins" + type].append(("ins" + type, None, compare_to[0], 1))
+        op_list["ins" + type].append(("ins" + type, note1, note2, 1))
         # edit-pitch
         op_list["edit" + type], cost["edit" + type] = beamtuplet_leveinsthein_diff(
             original[1:], compare_to[1:], note1, note2, type
