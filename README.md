@@ -1,5 +1,6 @@
 # music-score-diff
 A tool to compute and visualize the differences between two music scores.
+
 For an update version of this work (also available on PyPi), see [https://github.com/gregchapman-dev/musicdiff](this repository).
 
 <!-- The supported differences are:
